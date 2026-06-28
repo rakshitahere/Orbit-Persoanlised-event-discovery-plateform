@@ -1214,9 +1214,7 @@ button:disabled {
   </div>
 
   <script>
-    const API_BASE = window.location.origin.includes("5000")
-      ? window.location.origin
-      : "https://orbit-persoanlised-event-discovery.onrender.com";
+    const API_BASE = window.location.origin;
     const SETUP_SAVE_URL = `${API_BASE}/save-setup`;
     const PROFILE_URL = `${API_BASE}/profile.html`;
     const totalSteps = 6;
@@ -1495,6 +1493,7 @@ button:disabled {
       try {
         const response = await fetch(SETUP_SAVE_URL, {
           method: "POST",
+          credentials: "include",
           headers: {
             "Content-Type": "application/json"
           },

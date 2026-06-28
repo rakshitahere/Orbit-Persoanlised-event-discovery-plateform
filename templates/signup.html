@@ -859,9 +859,7 @@ const statusMessage = document.getElementById("statusMessage");
 const emailInput = document.getElementById("email");
 const nameInput = document.getElementById("name");
 
-const API_BASE = window.location.origin.includes("5000")
-  ? window.location.origin
-  : "https://orbit-persoanlised-event-discovery.onrender.com";
+const API_BASE = window.location.origin;
 
 function setStatus(message, type = "") {
   statusMessage.textContent = message;
