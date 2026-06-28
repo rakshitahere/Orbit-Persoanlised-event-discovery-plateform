@@ -1,0 +1,3387 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Orbit – Organiser Hub</title>
+<!-- Updated: Review routing to Admin+Organizer required. Admin access to UPI/UPI and payment settings required. -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<style>
+    :root{--accent:#8C72FF;--accent-d:#6C47FF;--text:#F4F1FF;--text2:#C8C1E4;--muted:#9E97BE;--bg:#0E0A18;--surface:rgba(23,18,38,.88);--border:rgba(140,114,255,.24);--success:#22c55e;--danger:#f87171;--shadow:0 20px 40px rgba(0,0,0,.35);--g-primary:linear-gradient(135deg,#E2A1FF 0%,#6C47FF 100%);--radius-sm:14px;--radius-lg:26px;--sidebar-w:280px}
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Plus Jakarta Sans',sans-serif;color:var(--text);background:radial-gradient(circle at 12% 0%,rgba(108,71,255,.18),transparent 26%),radial-gradient(circle at 90% 10%,rgba(226,161,255,.14),transparent 24%),radial-gradient(circle at 50% -20%,#251b4d 0%,var(--bg) 78%);min-height:100vh;display:flex;overflow:hidden}
+    button,input,select,textarea{font-family:inherit}
+    .sidebar{width:var(--sidebar-w);flex-shrink:0;border-right:1px solid var(--border);background:rgba(11,8,19,.84);backdrop-filter:blur(20px);padding:28px 20px 20px;display:flex;flex-direction:column;gap:24px;height:100vh;position:sticky;top:0}
+    .brand{display:flex;align-items:center;padding:6px 8px}.sidebar__host{border:1px solid var(--border);background:rgba(255,255,255,.04);border-radius:22px;padding:16px}.sidebar__host-name{font-size:1rem;font-weight:800;margin-bottom:4px}.sidebar__host-meta{color:var(--text2);font-size:.84rem;line-height:1.6}
+    .sidebar__nav{display:flex;flex-direction:column;gap:8px;flex:1}.nav-btn{border:1px solid transparent;background:transparent;color:var(--text2);border-radius:16px;padding:14px 16px;font-weight:700;font-size:.92rem;text-align:left;cursor:pointer;transition:.25s ease}.nav-btn:hover{color:#fff;background:rgba(255,255,255,.05)}.nav-btn.active{color:var(--accent);background:rgba(140,114,255,.12);border-color:rgba(140,114,255,.18)}
+    .sidebar__bottom{display:flex;flex-direction:column;gap:10px}.ghost-btn,.danger-btn,.primary-btn{border:none;border-radius:16px;padding:13px 16px;font-weight:800;cursor:pointer;transition:.25s ease}.ghost-btn{background:rgba(255,255,255,.06);color:var(--text);border:1px solid var(--border)}.danger-btn{background:rgba(248,113,113,.12);color:#ff9b9b;border:1px solid rgba(248,113,113,.2)}.primary-btn{background:var(--g-primary);color:#fff;box-shadow:0 14px 30px rgba(108,71,255,.25)}
+    .main{flex:1;height:100vh;overflow-y:auto;padding:28px}.view{display:none;animation:fadeIn .25s ease}.view.active{display:block}@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+    .hero{position:relative;padding:12px 2px 26px;margin-bottom:8px}.hero__title{font-size:clamp(2rem,4vw,3.1rem);line-height:1.05;letter-spacing:-.06em;font-weight:800;margin-bottom:10px;max-width:860px}.hero__title span{background:linear-gradient(135deg,#fff 0%,#d7c7ff 45%,#9d82ff 100%);-webkit-background-clip:text;background-clip:text;color:transparent}.hero__text{color:var(--text2);font-size:1rem;line-height:1.75;max-width:760px}
+    .section-title{font-size:1.02rem;font-weight:800;margin:28px 0 18px;text-transform:uppercase;letter-spacing:.05em;display:flex;align-items:center;gap:12px}.section-title::after{content:'';flex:1;height:1px;background:var(--border)}
+    .panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:24px;box-shadow:var(--shadow)}.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}.stat-card{border:1px solid rgba(140,114,255,.14);background:rgba(255,255,255,.035);border-radius:20px;padding:18px}.stat-card h3{font-size:1.55rem;font-weight:800;margin-bottom:6px}.stat-card p{color:var(--muted);font-size:.8rem;text-transform:uppercase;letter-spacing:.08em;font-weight:700}
+    .grid-2{display:grid;grid-template-columns:1.1fr .9fr;gap:22px;align-items:start}.form-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}.field{margin-bottom:18px}.field--full{grid-column:1/-1}.field label{display:block;margin-bottom:10px;font-size:.68rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.12em}.input,textarea,select{width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);color:#fff;padding:14px 16px;border-radius:var(--radius-sm);outline:none;font-size:.95rem}textarea{resize:vertical;min-height:130px}select option{background:#1a1230;color:#fff}
+    .multi-select-box{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.multi-chip{border:1px solid var(--border);background:rgba(255,255,255,.04);color:var(--text2);border-radius:16px;padding:12px;font-size:.82rem;font-weight:700;cursor:pointer;user-select:none;transition:.25s ease}.multi-chip:hover{border-color:var(--accent);background:rgba(140,114,255,.1);color:#fff}.multi-chip input{display:none}.multi-chip:has(input:checked){background:linear-gradient(135deg,var(--accent-d),var(--accent));color:white;border-color:transparent;box-shadow:0 10px 24px rgba(108,71,255,.2)}
+    .event-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:18px}.event-card{min-height:300px;border-radius:24px;overflow:hidden;border:1px solid var(--border);background:linear-gradient(to top,rgba(14,10,24,.97),rgba(14,10,24,.3)),radial-gradient(circle at top right,rgba(140,114,255,.24),transparent 35%),rgba(255,255,255,.03);display:flex;flex-direction:column;justify-content:flex-end;padding:22px;background-size:cover;background-position:center;position:relative}.event-card>*{position:relative;z-index:1}.event-card::before{content:'';position:absolute;inset:0;background:linear-gradient(to top,rgba(14,10,24,.96),rgba(14,10,24,.28));z-index:0}.event-card__tag{display:inline-block;margin-bottom:10px;padding:6px 10px;border-radius:999px;font-size:.7rem;font-weight:800;text-transform:uppercase;background:rgba(140,114,255,.12);color:#EEE9FF;border:1px solid rgba(140,114,255,.16)}.event-card__title{font-size:1.1rem;font-weight:800;margin-bottom:8px;line-height:1.35}.event-card__meta{color:var(--text2);font-size:.85rem;line-height:1.7;margin-bottom:14px}.event-card__chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}.chip,.small-badge{padding:7px 11px;border-radius:999px;font-size:.76rem;font-weight:700;color:#e7ddff;background:rgba(140,114,255,.1);border:1px solid rgba(140,114,255,.2)}
+    .preview-card{position:sticky;top:26px}.preview-banner{height:180px;border-radius:22px;border:1px solid rgba(140,114,255,.2);background:linear-gradient(135deg,rgba(226,161,255,.22),rgba(108,71,255,.22)),rgba(255,255,255,.04);background-size:cover;background-position:center;margin-bottom:18px;display:flex;align-items:flex-end;padding:16px;overflow:hidden}.reference-preview-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:12px 0}.reference-preview-grid img{width:100%;height:82px;object-fit:cover;border-radius:14px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.08)}.preview-title{font-size:1.3rem;font-weight:800;margin-bottom:8px;line-height:1.25}.preview-text{color:var(--text2);line-height:1.7;font-size:.9rem}.badge-row{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.preview-pay{margin-top:14px;display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center}.upi-preview{width:92px;height:92px;border-radius:16px;background:rgba(255,255,255,.06);border:1px solid var(--border);display:grid;place-items:center;overflow:hidden;color:var(--muted);font-size:.72rem;text-align:center}.upi-preview img{width:100%;height:100%;object-fit:cover}.mini-title{font-size:.8rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:12px;font-weight:800}.file-note{font-size:.75rem;color:var(--muted);margin-top:8px;line-height:1.5}.inline-status{margin-top:10px;min-height:20px;font-size:.9rem;font-weight:700}.inline-status.success{color:var(--success)}.inline-status.error{color:var(--danger)}.empty-state{padding:28px;border-radius:20px;border:1px dashed var(--border);color:var(--text2);background:rgba(255,255,255,.02);text-align:center;line-height:1.7}
+    .toolbar{display:grid;grid-template-columns:1fr 220px;gap:12px;margin-bottom:18px}.search-input,.filter-select{border-radius:999px}.table-wrap{overflow:auto}.data-table{width:100%;border-collapse:collapse;min-width:900px}.data-table th{text-align:left;font-size:.68rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);padding:14px 10px;border-bottom:1px solid var(--border)}.data-table td{padding:16px 10px;font-size:.9rem;border-bottom:1px solid rgba(140,114,255,.08);color:var(--text2)}.data-table td strong{color:#fff}
+
+    .notif-badge-inline{float:right;min-width:22px;height:22px;padding:0 7px;border-radius:999px;background:#ff6b6b;color:#fff;font-size:.72rem;font-weight:800;display:none;align-items:center;justify-content:center;box-shadow:0 8px 20px rgba(255,107,107,.25)}
+    .notification-toolbar{display:flex;gap:12px;justify-content:space-between;align-items:center;margin-bottom:18px;flex-wrap:wrap}.notification-list{display:grid;gap:14px}.notif-item{padding:12px;border-radius:16px;border:1px solid #2b153f;background:#120C20;margin-bottom:10px}.notif-item.unread{border-color:#3F22D8;background:#2A0F52}.notif-item__title{font-size:.9rem;font-weight:800;margin-bottom:4px;color:#F7EEFF}.notif-item__text{color:#E6DFF9;font-size:.82rem;line-height:1.5}.notif-item__time{margin-top:6px;color:var(--muted);font-size:.72rem;white-space:nowrap}.notif-tag{border-radius:999px;padding:2px 8px;font-size:.65rem;font-weight:800;text-transform:uppercase;letter-spacing:.03em}.notif-tag--new{background:rgba(140,114,255,.22);color:#E2A1FF}.notif-tag--success{background:rgba(16,185,129,.16);color:#10B981}.notif-tag--info{background:rgba(140,114,255,.14);color:#E2A1FF}.notif-tag--warning{background:rgba(245,158,11,.16);color:#F59E0B}.notif-tag--error,.notif-tag--danger,.notif-tag--cancelled{background:rgba(255,139,139,.18);color:#FFB3B3}.notif-tag--registered{background:rgba(116,228,163,.14);color:#10B981}.notif-tag--update{background:rgba(59,130,246,.16);color:#60A5FA}.notification-card{border:1px solid var(--border);background:rgba(255,255,255,.075);border-radius:22px;padding:18px;box-shadow:var(--shadow-soft);position:relative;overflow:hidden}.notification-card.unread{border-color:rgba(226,161,255,.40);background:radial-gradient(circle at top right,rgba(140,114,255,.22),transparent 34%),rgba(255,255,255,.09)}.notification-card__top{display:flex;justify-content:space-between;gap:14px;align-items:flex-start;margin-bottom:10px}.notification-card__title{font-size:1rem;font-weight:800;color:#fff;line-height:1.35}.notification-card__time{color:var(--muted);font-size:.76rem;font-weight:800;white-space:nowrap}.notification-card__text{color:var(--text2);font-size:.95rem;line-height:1.75;margin-top:6px}.notification-card__meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.notification-card__dot{width:9px;height:9px;border-radius:999px;background:var(--accent-soft);box-shadow:0 0 18px rgba(226,161,255,.8);margin-top:5px;flex-shrink:0}.notification-card__title-wrap{display:flex;gap:10px;align-items:flex-start;width:100%}.notification-summary-text{color:var(--text2);font-size:.92rem;line-height:1.7;margin-bottom:16px;padding:14px 18px;border-radius:18px;border:1px solid rgba(140,114,255,.12);background:rgba(255,255,255,.04)}.notification-filter{max-width:220px;border-radius:999px;margin:0}.notification-actions{display:flex;gap:10px;flex-wrap:wrap}
+
+
+    .calendar-panel{margin-bottom:24px;overflow:hidden;border:1px solid rgba(226,161,255,.36)!important;background:radial-gradient(circle at 10% 0%,rgba(226,161,255,.18),transparent 30%),radial-gradient(circle at 92% 0%,rgba(140,114,255,.22),transparent 34%),rgba(255,255,255,.12)!important;box-shadow:0 22px 55px rgba(0,0,0,.34),0 0 0 1px rgba(255,255,255,.08) inset}.calendar-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:18px;flex-wrap:wrap}.calendar-title{font-size:1.35rem;font-weight:900;color:#fff;letter-spacing:-.03em}.calendar-subtitle{color:#F1EBFF;font-size:.92rem;margin-top:6px;font-weight:700}.calendar-legend{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:4px 0 16px}.legend-chip{display:inline-flex;align-items:center;gap:7px;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.08);border-radius:999px;padding:8px 11px;font-size:.74rem;font-weight:800;color:#fff}.legend-dot{width:10px;height:10px;border-radius:50%;background:var(--accent-soft);box-shadow:0 0 18px rgba(226,161,255,.75)}.calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:10px}.calendar-day-name{text-align:center;color:#F1EBFF;font-size:.76rem;font-weight:900;text-transform:uppercase;letter-spacing:.08em;padding:9px 4px;background:rgba(255,255,255,.07);border-radius:12px}.calendar-day{min-height:118px;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.07);border-radius:18px;padding:11px;position:relative;overflow:hidden}.calendar-day.is-muted{opacity:.42}.calendar-day.is-today{border-color:#fff;box-shadow:0 0 0 2px rgba(226,161,255,.34) inset}.calendar-day.has-event{border-color:rgba(226,161,255,.52);background:radial-gradient(circle at top right,rgba(226,161,255,.25),transparent 42%),radial-gradient(circle at bottom left,rgba(140,114,255,.22),transparent 38%),rgba(255,255,255,.12);box-shadow:0 14px 28px rgba(108,71,255,.18)}.calendar-date{font-size:.86rem;font-weight:900;color:#fff;margin-bottom:8px}.calendar-event-pill{display:block;width:100%;border:1px solid rgba(255,255,255,.18);border-radius:12px;padding:7px 8px;margin-top:7px;background:linear-gradient(135deg,rgba(226,161,255,.30),rgba(108,71,255,.30));color:#fff;font-size:.72rem;font-weight:900;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;box-shadow:0 10px 18px rgba(0,0,0,.18)}.calendar-event-pill small{display:block;font-size:.62rem;color:#F1EBFF;font-weight:800;margin-top:2px;opacity:.9}.calendar-event-pill.cancelled{background:rgba(255,139,139,.18);color:#ffd0d0;text-decoration:line-through}.calendar-more{display:inline-block;margin-top:7px;color:#F1EBFF;font-size:.7rem;font-weight:900}.payment-flow-panel{border:1px solid rgba(116,228,163,.28)!important;background:radial-gradient(circle at top right,rgba(116,228,163,.14),transparent 34%),rgba(255,255,255,.10)!important}.payment-flow-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:14px}.payment-step{border:1px solid rgba(255,255,255,.14);border-radius:18px;padding:14px;background:rgba(255,255,255,.07)}.payment-step strong{display:block;color:#fff;margin-bottom:5px}.payment-step span{color:var(--text2);font-size:.84rem;line-height:1.5}.settlement-badge{display:inline-flex;align-items:center;border-radius:999px;padding:7px 10px;background:rgba(116,228,163,.14);border:1px solid rgba(116,228,163,.30);color:#caffdd;font-size:.72rem;font-weight:900;margin-top:8px}@media(max-width:900px){.payment-flow-steps{grid-template-columns:1fr}}@media(max-width:720px){.calendar-grid{gap:6px}.calendar-day{min-height:86px;padding:8px;border-radius:13px}.calendar-event-pill{font-size:.62rem;padding:6px}.calendar-day-name{font-size:.62rem}}
+
+    .event-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}.cancel-small{background:rgba(255,211,111,.14);border:1px solid rgba(255,211,111,.34);color:#ffe19a;border-radius:12px;padding:10px 12px;font-weight:800;cursor:pointer}.edit-small{background:rgba(140,114,255,.15);border:1px solid rgba(140,114,255,.32);color:#e7ddff;border-radius:12px;padding:10px 12px;font-weight:800;cursor:pointer}.delete-small{background:rgba(248,113,113,.15);border:1px solid rgba(248,113,113,.32);color:#ffb4b4;border-radius:12px;padding:10px 12px;font-weight:800;cursor:pointer}
+    @media(max-width:1100px){.stats-grid{grid-template-columns:repeat(2,1fr)}.grid-2{grid-template-columns:1fr}.form-grid{grid-template-columns:1fr}.preview-card{position:relative;top:auto}}@media(max-width:900px){body{flex-direction:column;overflow:auto}.sidebar{width:100%;height:auto;position:relative;border-right:none;border-bottom:1px solid var(--border)}.sidebar__nav{flex-direction:row;flex-wrap:wrap}.nav-btn{flex:1 1 180px}.main{height:auto;overflow:visible;padding:20px}.toolbar{grid-template-columns:1fr}}@media(max-width:640px){.stats-grid{grid-template-columns:1fr}.event-grid{grid-template-columns:1fr}.multi-select-box{grid-template-columns:1fr}}
+  
+
+    /* ===== Orbit user-side theme match override ===== */
+    :root{
+      --accent:#8C72FF;
+      --accent-d:#6C47FF;
+      --accent-soft:#E2A1FF;
+      --accent-l:#EEE9FF;
+      --text:#F8F5FF;
+      --text2:#E3DCF8;
+      --muted:#BDB4DB;
+      --bg:#090611;
+      --surface:rgba(255,255,255,0.10);
+      --surface-2:rgba(255,255,255,0.145);
+      --surface-strong:rgba(24,17,40,0.82);
+      --border:rgba(255,255,255,0.16);
+      --border-strong:rgba(196,170,255,0.32);
+      --success:#74E4A3;
+      --danger:#FF8B8B;
+      --shadow:0 28px 80px rgba(0,0,0,0.34);
+      --shadow-soft:0 14px 34px rgba(0,0,0,0.22);
+      --g-primary:linear-gradient(135deg,#E2A1FF 0%,#8C72FF 42%,#6C47FF 100%);
+      --g-card:linear-gradient(145deg,rgba(255,255,255,0.16),rgba(255,255,255,0.07));
+      --radius-sm:16px;
+      --radius-lg:28px;
+    }
+
+    body{
+      color:var(--text);
+      background:
+        radial-gradient(circle at 12% 12%, rgba(140,114,255,0.24), transparent 28%),
+        radial-gradient(circle at 88% 10%, rgba(226,161,255,0.13), transparent 30%),
+        radial-gradient(circle at 70% 86%, rgba(108,71,255,0.16), transparent 34%),
+        linear-gradient(135deg,#070511 0%,#100A1D 42%,#1B1230 100%);
+      background-attachment:fixed;
+      -webkit-font-smoothing:antialiased;
+    }
+
+    body::before{
+      content:'';
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      opacity:.58;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.045) 1px, transparent 1px),
+        linear-gradient(90deg,rgba(255,255,255,0.045) 1px, transparent 1px);
+      background-size:34px 34px;
+      mask-image:radial-gradient(circle at center, black 24%, transparent 78%);
+      z-index:-2;
+    }
+
+    body::after{
+      content:'';
+      position:fixed;
+      width:380px;
+      height:380px;
+      right:-120px;
+      top:18%;
+      border-radius:50%;
+      background:rgba(140,114,255,.16);
+      filter:blur(90px);
+      pointer-events:none;
+      z-index:-1;
+    }
+
+    .sidebar{
+      margin:18px 0 18px 18px;
+      height:calc(100vh - 36px);
+      border:1px solid var(--border);
+      border-radius:24px;
+      background:rgba(15,10,26,.72);
+      backdrop-filter:blur(22px) saturate(145%);
+      box-shadow:0 18px 50px rgba(0,0,0,.24);
+      padding:24px 18px;
+    }
+
+    .brand svg,
+    .nav-btn,
+    .sidebar__host,
+    .panel,
+    .stat-card,
+    .event-card,
+    .preview-card,
+    .input,
+    textarea,
+    select,
+    .multi-chip,
+    .ghost-btn,
+    .danger-btn,
+    .primary-btn,
+    .chip,
+    .small-badge,
+    .data-table,
+    .preview-banner,
+    .reference-preview-grid img,
+    .upi-preview{
+      transition:.25s cubic-bezier(.22,1,.36,1);
+    }
+
+    .sidebar__host{
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.08);
+      border-radius:22px;
+      box-shadow:var(--shadow-soft);
+    }
+
+    .sidebar__host-name{color:#fff;}
+    .sidebar__host-meta{color:var(--text2);}
+
+    .nav-btn{
+      color:var(--text2);
+      border-radius:999px;
+      font-weight:800;
+      border:1px solid transparent;
+    }
+
+    .nav-btn:hover,
+    .nav-btn.active{
+      color:#fff;
+      background:rgba(255,255,255,.10);
+      box-shadow:inset 0 0 0 1px rgba(255,255,255,.10);
+      border-color:rgba(255,255,255,.10);
+    }
+
+    .nav-btn.active{
+      background:rgba(140,114,255,.20);
+      border-color:var(--border-strong);
+      box-shadow:0 12px 24px rgba(108,71,255,.16);
+    }
+
+    .main{
+      padding:28px;
+    }
+
+    .hero{
+      margin:12px 0 22px;
+      padding:36px;
+      border:1px solid var(--border);
+      border-radius:34px;
+      overflow:hidden;
+      background:
+        radial-gradient(circle at 18% 20%, rgba(226,161,255,.18), transparent 30%),
+        radial-gradient(circle at 82% 30%, rgba(108,71,255,.24), transparent 34%),
+        rgba(255,255,255,.08);
+      backdrop-filter:blur(22px) saturate(145%);
+      box-shadow:var(--shadow);
+    }
+
+    .hero::before{
+      content:'';
+      position:absolute;
+      inset:0;
+      background-image:radial-gradient(rgba(255,255,255,.08) 1px, transparent 1px);
+      background-size:28px 28px;
+      pointer-events:none;
+      opacity:.6;
+    }
+
+    .hero > *{position:relative;z-index:1;}
+    .hero__title span{
+      background:linear-gradient(135deg,#fff 0%,#E2A1FF 45%,#8C72FF 100%);
+      -webkit-background-clip:text;
+      background-clip:text;
+      color:transparent;
+    }
+
+    .section-title{
+      letter-spacing:.08em;
+      color:#fff;
+    }
+    .section-title::after{background:rgba(255,255,255,.14);}
+
+    .panel,
+    .event-card,
+    .stat-card,
+    .preview-card{
+      border:1px solid var(--border);
+      background:var(--g-card);
+      backdrop-filter:blur(22px) saturate(150%);
+      box-shadow:var(--shadow-soft);
+    }
+
+    .panel{border-radius:var(--radius-lg);}
+    .stat-card{border-radius:22px;background:var(--g-card);}
+    .stat-card h3{color:#fff;}
+    .stat-card p{color:var(--muted);}
+
+    .input,
+    textarea,
+    select{
+      border:1px solid var(--border);
+      border-radius:var(--radius-sm);
+      background:rgba(255,255,255,.09);
+      color:#fff;
+      outline:none;
+    }
+
+    .input::placeholder,
+    textarea::placeholder{color:rgba(227,220,248,.64);}
+
+    .input:focus,
+    textarea:focus,
+    select:focus{
+      border-color:var(--border-strong);
+      background:rgba(255,255,255,.13);
+      box-shadow:0 0 0 4px rgba(140,114,255,.13);
+    }
+
+    .field label{
+      color:var(--muted);
+      letter-spacing:.06em;
+    }
+
+    .multi-chip{
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.08);
+      color:var(--text2);
+      border-radius:999px;
+      font-weight:800;
+    }
+    .multi-chip:hover,
+    .multi-chip:has(input:checked){
+      background:rgba(140,114,255,.20);
+      border-color:var(--border-strong);
+      color:#fff;
+      transform:translateY(-1px);
+      box-shadow:0 12px 24px rgba(108,71,255,.16);
+    }
+
+    .primary-btn{
+      background:var(--g-primary);
+      color:#fff;
+      box-shadow:0 12px 26px rgba(108,71,255,.30);
+    }
+    .ghost-btn{
+      background:rgba(255,255,255,.10);
+      border:1px solid var(--border);
+      color:var(--text);
+    }
+    .danger-btn{
+      background:rgba(255,139,139,.12);
+      border:1px solid rgba(255,139,139,.28);
+      color:#ffb4b4;
+    }
+    .primary-btn:hover,
+    .ghost-btn:hover,
+    .danger-btn:hover,
+    .edit-small:hover,
+    .delete-small:hover{transform:translateY(-1px);}
+
+    .event-card{
+      border-radius:26px;
+      background:
+        linear-gradient(to top,rgba(9,6,17,.97),rgba(9,6,17,.38)),
+        radial-gradient(circle at top right,rgba(140,114,255,.28),transparent 38%),
+        var(--g-card);
+      box-shadow:var(--shadow-soft);
+    }
+    .event-card::before{background:radial-gradient(circle at 100% 0%, rgba(226,161,255,.14), transparent 34%);}
+    .event-card:hover{
+      transform:translateY(-5px);
+      border-color:var(--border-strong);
+      box-shadow:0 22px 48px rgba(0,0,0,.34);
+    }
+    .event-card__tag,
+    .chip,
+    .small-badge{
+      background:rgba(140,114,255,.18);
+      color:#F1EBFF;
+      border:1px solid rgba(255,255,255,.16);
+    }
+
+    .preview-banner,
+    .upi-preview,
+    .reference-preview-grid img{
+      border-color:var(--border);
+      background:
+        radial-gradient(circle at top right,rgba(140,114,255,.32),transparent 38%),
+        rgba(255,255,255,.08);
+    }
+
+    .data-table th{color:var(--muted);border-bottom:1px solid var(--border);}
+    .data-table td{border-bottom:1px solid rgba(255,255,255,.10);color:var(--text2);}
+
+    .empty-state{
+      border:1px dashed var(--border);
+      color:var(--text2);
+      background:rgba(255,255,255,.06);
+    }
+
+    @media(max-width:900px){
+      body{overflow:auto;}
+      .sidebar{
+        margin:12px;
+        width:calc(100% - 24px);
+        height:auto;
+        border:1px solid var(--border);
+        border-radius:24px;
+      }
+      .main{padding:18px 12px 28px;}
+      .hero{padding:26px 22px;}
+    }
+
+  
+    .stats-grid{grid-template-columns:repeat(3,1fr)}
+    @media(max-width:900px){.stats-grid{grid-template-columns:1fr}}
+
+
+    .event-row-card{min-height:auto;padding:18px;display:block;background:var(--g-card)}
+    .event-row-card::before{display:none}.event-row-head{display:flex;justify-content:space-between;gap:14px;align-items:flex-start;margin-bottom:12px}.event-row-title{font-size:1.05rem;font-weight:900;color:#fff;line-height:1.35}.event-row-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:12px 0}.event-row-field{border:1px solid var(--border);background:rgba(255,255,255,.07);border-radius:16px;padding:11px}.event-row-field span{display:block;color:var(--muted);font-size:.66rem;text-transform:uppercase;letter-spacing:.08em;font-weight:900;margin-bottom:4px}.event-row-field strong{color:#fff;font-size:.84rem;line-height:1.35}.event-photo-strip{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.event-photo-strip img{width:64px;height:52px;object-fit:cover;border-radius:12px;border:1px solid var(--border);cursor:pointer;background:rgba(255,255,255,.08)}.status-pill{border-radius:999px;padding:7px 10px;font-size:.68rem;font-weight:900;text-transform:uppercase;letter-spacing:.05em;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.08);color:#fff}.status-pill.cancelled{color:#ffd1d1;border-color:rgba(255,139,139,.34);background:rgba(255,139,139,.13)}.status-pill.rejected{color:#ffb4b4;border-color:rgba(255,139,139,.42);background:rgba(255,139,139,.16)}.status-pill.completed,.status-pill.past{color:#caffdd;border-color:rgba(116,228,163,.30);background:rgba(116,228,163,.13)}.status-pill.inactive,.status-pill.pending{color:#ffe19a;border-color:rgba(255,211,111,.34);background:rgba(255,211,111,.13)}.status-pill.approved{color:#caffdd;border-color:rgba(116,228,163,.30);background:rgba(116,228,163,.13)}.event-group-title{grid-column:1/-1;color:#fff;font-size:.9rem;text-transform:uppercase;letter-spacing:.08em;margin:8px 0 0}.support-note{margin-top:12px;color:var(--text2);font-size:.86rem;line-height:1.6;border:1px solid var(--border);background:rgba(255,255,255,.07);border-radius:16px;padding:12px}
+    @media(max-width:720px){.event-row-head,.event-row-fields{grid-template-columns:1fr;display:grid}.event-row-head{gap:8px}.event-row-fields{grid-template-columns:1fr}}
+    .rating-stars{letter-spacing:.08em;color:#F7D56B;font-weight:900;white-space:nowrap}
+    .review-breakdown-card{min-height:auto;padding:18px;background:var(--g-card);display:block}
+    .review-breakdown-card::before{display:none}
+    .review-breakdown-card h3{font-size:1rem;font-weight:900;color:#fff;margin-bottom:8px;line-height:1.35}
+    .review-breakdown-card p{color:var(--text2);font-size:.84rem;line-height:1.6;margin-top:7px}
+    .review-meter{height:9px;border-radius:999px;background:rgba(255,255,255,.10);overflow:hidden;margin-top:12px;border:1px solid var(--border)}
+    .review-meter span{display:block;height:100%;border-radius:999px;background:linear-gradient(135deg,#E2A1FF,#8C72FF,#6C47FF)}
+
+
+
+    /* Sidebar bottom button spacing fix */
+    .sidebar__bottom{
+      margin-top:auto;
+      padding-top:16px;
+      border-top:1px solid rgba(255,255,255,.12);
+      display:flex;
+      flex-direction:column;
+      gap:14px;
+      flex-shrink:0;
+    }
+    .sidebar__bottom .danger-btn{
+      width:100%;
+      min-height:48px;
+      padding:14px 16px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      text-align:center;
+      line-height:1.2;
+      white-space:normal;
+    }
+    @media(max-width:900px){
+      .sidebar__bottom{
+        margin-top:8px;
+        padding-top:14px;
+        width:100%;
+      }
+      .sidebar__bottom .danger-btn{
+        flex:0 0 auto;
+      }
+    }
+
+
+
+    /* Final stable sidebar action layout fix */
+    .sidebar{
+      display:grid !important;
+      grid-template-rows:auto auto minmax(0,1fr) auto !important;
+      gap:18px !important;
+      overflow:hidden !important;
+    }
+
+    .sidebar__nav{
+      min-height:0 !important;
+      overflow-y:auto !important;
+      overflow-x:hidden !important;
+      padding-right:4px !important;
+      padding-bottom:10px !important;
+      flex:unset !important;
+    }
+
+    .sidebar__nav::-webkit-scrollbar{width:6px;}
+    .sidebar__nav::-webkit-scrollbar-thumb{background:rgba(196,170,255,.28);border-radius:999px;}
+
+    .sidebar__bottom{
+      width:100% !important;
+      min-width:0 !important;
+      margin-top:0 !important;
+      padding-top:16px !important;
+      border-top:1px solid rgba(255,255,255,.14) !important;
+      display:grid !important;
+      grid-template-columns:1fr !important;
+      gap:12px !important;
+      flex:none !important;
+      flex-shrink:0 !important;
+      position:relative !important;
+      z-index:2 !important;
+      background:linear-gradient(to bottom,rgba(15,10,26,.02),rgba(15,10,26,.72));
+    }
+
+    .sidebar__bottom .danger-btn{
+      width:100% !important;
+      min-width:0 !important;
+      min-height:52px !important;
+      height:auto !important;
+      margin:0 !important;
+      padding:15px 16px !important;
+      display:flex !important;
+      align-items:center !important;
+      justify-content:center !important;
+      text-align:center !important;
+      line-height:1.2 !important;
+      white-space:nowrap !important;
+      border-radius:16px !important;
+    }
+
+    @media(max-width:900px){
+      .sidebar{
+        display:flex !important;
+        flex-direction:column !important;
+        height:auto !important;
+        max-height:none !important;
+        overflow:visible !important;
+      }
+      .sidebar__nav{
+        display:grid !important;
+        grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+        overflow:visible !important;
+        padding-right:0 !important;
+      }
+      .nav-btn{
+        width:100% !important;
+        flex:none !important;
+      }
+      .sidebar__bottom{
+        display:grid !important;
+        grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+        gap:12px !important;
+      }
+      .sidebar__bottom .danger-btn{
+        white-space:normal !important;
+        min-height:50px !important;
+      }
+    }
+
+    @media(max-width:520px){
+      .sidebar__nav,
+      .sidebar__bottom{
+        grid-template-columns:1fr !important;
+      }
+    }
+
+
+
+    /* ===== Organiser payout summary update ===== */
+    .payout-summary-grid{
+      display:grid;
+      grid-template-columns:repeat(4,minmax(0,1fr));
+      gap:14px;
+      margin-bottom:18px;
+    }
+    .payout-card{
+      border:1px solid var(--border);
+      border-radius:22px;
+      padding:16px;
+      background:rgba(255,255,255,.075);
+      box-shadow:var(--shadow-soft);
+    }
+    .payout-card span{
+      display:block;
+      color:var(--muted);
+      font-size:.68rem;
+      font-weight:900;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+      margin-bottom:7px;
+    }
+    .payout-card strong{
+      display:block;
+      color:#fff;
+      font-size:1.35rem;
+      line-height:1.25;
+      font-weight:900;
+    }
+    .payout-card small{
+      display:block;
+      color:var(--text2);
+      font-size:.75rem;
+      line-height:1.5;
+      margin-top:7px;
+    }
+    .payout-status-pill{
+      display:inline-flex;
+      width:fit-content;
+      border-radius:999px;
+      padding:7px 10px;
+      font-size:.68rem;
+      font-weight:900;
+      text-transform:uppercase;
+      letter-spacing:.04em;
+      border:1px solid rgba(255,255,255,.16);
+      background:rgba(255,255,255,.08);
+      color:#fff;
+    }
+    .payout-status-pill.pending{color:#ffe19a;border-color:rgba(255,211,111,.34);background:rgba(255,211,111,.13)}
+    .payout-status-pill.settled{color:#caffdd;border-color:rgba(116,228,163,.30);background:rgba(116,228,163,.13)}
+    .payout-status-pill.free{color:#e7ddff;border-color:rgba(140,114,255,.30);background:rgba(140,114,255,.13)}
+    @media(max-width:1100px){.payout-summary-grid{grid-template-columns:repeat(2,minmax(0,1fr));}}
+    @media(max-width:640px){.payout-summary-grid{grid-template-columns:1fr;}}
+
+
+    .edit-lock-note{
+      display:none;
+      margin:0 0 18px;
+      padding:14px 16px;
+      border-radius:18px;
+      border:1px solid rgba(255,211,111,.34);
+      background:rgba(255,211,111,.12);
+      color:#ffe7aa;
+      font-size:.86rem;
+      line-height:1.6;
+      font-weight:800;
+    }
+    .edit-lock-note.show{display:block}
+    .field.is-locked .input,
+    .field.is-locked select,
+    .field.is-locked textarea{
+      opacity:.72;
+      cursor:not-allowed;
+      background:rgba(255,255,255,.045);
+      border-color:rgba(255,255,255,.10);
+    }
+    .field.is-locked::after{
+      content:'Locked after posting';
+      display:inline-block;
+      margin-top:8px;
+      color:#ffe7aa;
+      font-size:.72rem;
+      font-weight:900;
+      letter-spacing:.04em;
+      text-transform:uppercase;
+    }
+    .multi-select-box.is-locked{
+      opacity:.72;
+      pointer-events:none;
+      filter:saturate(.7);
+    }
+
+
+/* ===== Orbit Ultra Dark Theme Override ===== */
+:root {
+  --accent: #6E4CFF !important;
+  --accent-d: #3F22D8 !important;
+  --accent-dark: #3F22D8 !important;
+  --accent-soft: #A995FF !important;
+  --accent-l: #DCD4F8 !important;
+  --accent-glow: rgba(98, 67, 255, 0.24) !important;
+  --text: #FFFFFF !important;
+  --text2: #E8E1FF !important;
+  --muted: #BEB3E6 !important;
+  --muted-strong: #DCD4F8 !important;
+  --dark-text: #FFFFFF !important;
+  --dark-muted: #BEB3E6 !important;
+  --bg: #020106 !important;
+  --card: rgba(255,255,255,0.045) !important;
+  --card-strong: rgba(255,255,255,0.075) !important;
+  --glass: rgba(255,255,255,0.045) !important;
+  --glass-strong: rgba(255,255,255,0.075) !important;
+  --glass-border: rgba(255,255,255,0.115) !important;
+  --surface: rgba(255,255,255,0.045) !important;
+  --surface-2: rgba(255,255,255,0.075) !important;
+  --surface-strong: rgba(5,3,13,0.88) !important;
+  --surface-deep: rgba(5,3,13,0.90) !important;
+  --border: rgba(255,255,255,0.115) !important;
+  --border-strong: rgba(180,160,255,0.28) !important;
+  --border-bright: rgba(180,160,255,0.28) !important;
+  --shadow: 0 30px 84px rgba(0,0,0,0.68) !important;
+  --shadow-sm: 0 20px 55px rgba(0,0,0,0.56) !important;
+  --shadow-md: 0 30px 84px rgba(0,0,0,0.68) !important;
+  --shadow-soft: 0 18px 46px rgba(0,0,0,0.48) !important;
+  --g-primary: linear-gradient(135deg, #A995FF 0%, #6E4CFF 44%, #3F22D8 100%) !important;
+  --g-card: linear-gradient(145deg, rgba(255,255,255,0.07), rgba(255,255,255,0.025)) !important;
+}
+
+html, body {
+  color-scheme: dark;
+}
+
+body {
+  font-family: 'Plus Jakarta Sans', sans-serif !important;
+  color: var(--text) !important;
+  background:
+    radial-gradient(circle at 12% 15%, rgba(98, 67, 255, 0.16), transparent 30%),
+    radial-gradient(circle at 82% 22%, rgba(77, 45, 210, 0.12), transparent 28%),
+    radial-gradient(circle at 50% 88%, rgba(120, 80, 220, 0.07), transparent 34%),
+    linear-gradient(135deg, #020106 0%, #05030D 38%, #080512 68%, #020105 100%) !important;
+  background-attachment: fixed !important;
+}
+
+body::before {
+  background:
+    linear-gradient(120deg, rgba(255,255,255,0.018), transparent 30%, rgba(255,255,255,0.012) 58%, transparent 80%),
+    radial-gradient(circle at 50% 0%, rgba(130,100,255,0.035), transparent 38%) !important;
+  opacity: .45 !important;
+}
+
+body::after {
+  opacity: .018 !important;
+  border-color: rgba(255,255,255,0.055) !important;
+  background-color: transparent !important;
+}
+
+nav, .nav, .sidebar, .topbar {
+  background: rgba(5,3,14,0.84) !important;
+  border-color: rgba(255,255,255,0.10) !important;
+  box-shadow: 0 24px 70px rgba(0,0,0,0.62), inset 0 1px 0 rgba(255,255,255,0.07) !important;
+}
+
+nav.scrolled, .nav.scrolled {
+  background: rgba(4,2,11,0.93) !important;
+  border-color: rgba(164,142,255,0.22) !important;
+  box-shadow: 0 26px 78px rgba(0,0,0,0.72), inset 0 1px 0 rgba(255,255,255,0.08) !important;
+}
+
+.shell, .visual, .form-side, .hero-inner::before, .feature-card, .step, .cta-card,
+.panel, .event-card, .dashboard-tile, .detail-card, .orbit-modal, .settings-card,
+.login-card, .card, .stat-card, .preview-card, .sidebar__host, .sidebar__admin,
+.dropdown, .empty-state, .chart-panel, .calendar-panel, .notif-item, .modal, .box,
+.payment-card, .refund-card, .approval-card, .table-wrap, .admin-card, .settings-panel {
+  background: linear-gradient(145deg, rgba(255,255,255,0.065), rgba(255,255,255,0.022)) !important;
+  border-color: rgba(255,255,255,0.105) !important;
+  color: var(--text) !important;
+  box-shadow: 0 22px 64px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.055) !important;
+}
+
+.visual, .hero, .cta-card {
+  background:
+    radial-gradient(circle at 18% 20%, rgba(98,67,255,0.16), transparent 32%),
+    radial-gradient(circle at 82% 30%, rgba(150,115,255,0.09), transparent 34%),
+    linear-gradient(145deg, rgba(255,255,255,0.055), rgba(255,255,255,0.018)) !important;
+}
+
+.hero, .hero-inner::before {
+  background:
+    radial-gradient(circle at 18% 20%, rgba(98,67,255,0.15), transparent 32%),
+    radial-gradient(circle at 82% 30%, rgba(130,100,255,0.08), transparent 34%),
+    rgba(255,255,255,0.035) !important;
+  border-color: rgba(255,255,255,0.10) !important;
+}
+
+.bg-blob, .blob-one, .blob-two, .blob-tl, .blob-br {
+  opacity: .42 !important;
+  filter: blur(86px) !important;
+}
+
+.bg-blob.v1, .blob-one, .blob-tl { background: rgba(98,67,255,0.22) !important; }
+.bg-blob.v2, .blob-two { background: rgba(125,92,255,0.14) !important; }
+.bg-blob.v3, .blob-br { background: rgba(77,45,210,0.16) !important; }
+
+.bg-grid, .hero::before {
+  opacity: .055 !important;
+}
+
+h1, h2, h3, h4, h5, h6, .title h1, .hero__title, .htitle, .section-title {
+  color: #FFFFFF !important;
+}
+
+p, .hero-sub, .hero__text, .section-header p, .feature-card p, .step p,
+.event-card__meta, .preview-text, .settings-subtitle, .notif-item__text,
+.sidebar__host-meta, .sidebar__admin-meta, .text-muted, label, .field label {
+  color: var(--text2) !important;
+}
+
+.nav-links a, .nav__links a, .nav-btn, .muted, .small, .help, .meta {
+  color: var(--muted-strong) !important;
+}
+
+.nav-links a:hover, .nav-links a.active, .nav__links a:hover, .nav__links a.active,
+.nav-btn:hover, .nav-btn.active {
+  color: #FFFFFF !important;
+  background: rgba(110,76,255,0.14) !important;
+  border-color: rgba(180,160,255,0.22) !important;
+}
+
+input, textarea, select, .input, .location-select {
+  background: rgba(255,255,255,0.045) !important;
+  border-color: rgba(255,255,255,0.12) !important;
+  color: #FFFFFF !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.035) !important;
+}
+
+input::placeholder, textarea::placeholder, .input::placeholder {
+  color: rgba(220,212,248,0.56) !important;
+}
+
+input:focus, textarea:focus, select:focus, .input:focus, .location-select:focus {
+  border-color: rgba(169,149,255,0.38) !important;
+  background: rgba(255,255,255,0.065) !important;
+  box-shadow: 0 0 0 4px rgba(98,67,255,0.14) !important;
+}
+
+select option {
+  background: #07040F !important;
+  color: #FFFFFF !important;
+}
+
+.btn-primary, .btn-hero, .primary-btn, .btn--primary, .snum, .avatar,
+button[type="submit"], .submit-btn {
+  background: linear-gradient(135deg, #6E4CFF, #9F86FF) !important;
+  color: #FFFFFF !important;
+  border-color: rgba(255,255,255,0.14) !important;
+  box-shadow: 0 16px 36px rgba(70,40,220,0.32), inset 0 1px 0 rgba(255,255,255,0.16) !important;
+}
+
+.btn-ghost, .btn-outline, .btn-sec, .ghost-btn, .btn--secondary,
+.category-btn, .multi-chip, .option-chip, .chip, .small-badge, .btn-cw {
+  background: rgba(255,255,255,0.045) !important;
+  color: #F4F0FF !important;
+  border-color: rgba(255,255,255,0.12) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.045) !important;
+}
+
+.btn-ghost:hover, .btn-outline:hover, .btn-sec:hover, .ghost-btn:hover,
+.btn--secondary:hover, .category-btn:hover, .category-btn.active,
+.multi-chip:hover, .option-chip:hover, .btn-cw:hover {
+  background: rgba(110,76,255,0.16) !important;
+  border-color: rgba(180,160,255,0.26) !important;
+  color: #FFFFFF !important;
+}
+
+.event-card {
+  background:
+    linear-gradient(to top, rgba(2,1,6,.98), rgba(2,1,6,.62)),
+    radial-gradient(circle at top right, rgba(98,67,255,.16), transparent 38%),
+    linear-gradient(145deg, rgba(255,255,255,0.05), rgba(255,255,255,0.018)) !important;
+}
+
+.event-card::before {
+  background: linear-gradient(to top, rgba(2,1,6,.96), rgba(2,1,6,.40)) !important;
+}
+
+table, th, td {
+  border-color: rgba(255,255,255,0.10) !important;
+}
+
+th {
+  background: rgba(255,255,255,0.045) !important;
+  color: var(--muted-strong) !important;
+}
+
+td {
+  color: var(--text2) !important;
+}
+
+footer {
+  background: rgba(3,2,8,0.62) !important;
+  border-color: rgba(255,255,255,0.07) !important;
+  color: var(--muted-strong) !important;
+}
+
+  
+
+/* ===== FINAL FIX: selectable option chips ===== */
+.multi-chip{
+  position:relative !important;
+  pointer-events:auto !important;
+}
+.multi-select-box, .multi-chip, .multi-chip *{
+  touch-action:manipulation !important;
+}
+.multi-chip input[type="checkbox"]{
+  display:block !important;
+  position:absolute !important;
+  width:1px !important;
+  height:1px !important;
+  opacity:0 !important;
+  pointer-events:none !important;
+}
+.multi-chip.selected,
+.multi-chip:has(input[type="checkbox"]:checked){
+  background:linear-gradient(135deg,var(--accent-d),var(--accent)) !important;
+  color:#fff !important;
+  border-color:rgba(180,160,255,.42) !important;
+  box-shadow:0 12px 28px rgba(70,40,220,.28), inset 0 1px 0 rgba(255,255,255,.12) !important;
+}
+
+  </style>
+
+<style id="ux-fixes">
+.multi-select-box{grid-template-columns:repeat(auto-fit,minmax(180px,1fr))!important;align-items:stretch}
+.multi-chip{min-height:52px!important;display:flex!important;align-items:center!important;justify-content:center!important;text-align:center!important;white-space:normal!important;line-height:1.35!important}
+.event-actions,.notification-actions,.sidebar__bottom{gap:14px!important}
+.primary-btn,.ghost-btn,.danger-btn,.edit-small,.delete-small,.cancel-small,.nav-btn{
+transition:all .22s cubic-bezier(.22,1,.36,1)!important}
+.primary-btn:hover,.ghost-btn:hover,.danger-btn:hover,.nav-btn:hover{transform:translateY(-2px)!important}
+.primary-btn{background:linear-gradient(135deg,#9e87ff,#6E4CFF)!important}
+.preview-card{overflow:visible!important}
+#previewBenefits{white-space:normal!important;word-break:break-word!important}
+
+/* ===== Create event layout + benefit overlap fix ===== */
+.multi-select-box {
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)) !important;
+  align-items: stretch !important;
+  gap: 12px !important;
+  margin-top: 12px !important;
+}
+
+#benefitsBox {
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)) !important;
+}
+
+.multi-chip {
+  min-height: 52px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+  white-space: normal !important;
+  line-height: 1.35 !important;
+  overflow-wrap: anywhere !important;
+  padding: 12px 14px !important;
+}
+
+#previewBenefits {
+  white-space: normal !important;
+  word-break: break-word !important;
+}
+
+</style>
+</head>
+<body>
+<aside class="sidebar">
+<div class="brand">
+<svg style="width:102px;flex-shrink:0;" viewbox="0 0 220 60"><defs><lineargradient id="orbitGrad" x1="0%" x2="100%" y1="0%" y2="100%"><stop offset="0%" style="stop-color:#E2A1FF"></stop><stop offset="100%" style="stop-color:#6C47FF"></stop></lineargradient></defs><circle cx="26" cy="26" fill="none" r="18" stroke="url(#orbitGrad)" stroke-dasharray="74 24" stroke-width="8" transform="rotate(-16 26 26)"></circle><circle cx="26" cy="26" fill="#fff" r="5.5"></circle><text fill="#F4F1FF" font-family="Plus Jakarta Sans" font-size="35" font-weight="800" x="72" y="42">Or<tspan fill="#8C72FF">bit</tspan></text></svg>
+</div>
+<div class="sidebar__host"><div class="sidebar__host-name" id="hostName">Organiser</div><div class="sidebar__host-meta" id="hostMeta">Loading organiser profile…</div></div>
+<div class="sidebar__nav">
+<button class="nav-btn active" data-view="dashboard" type="button">Dashboard</button>
+<button class="nav-btn" data-view="create" type="button">Create Event</button>
+<button class="nav-btn" data-view="events" type="button">My Events</button>
+<button class="nav-btn" data-view="attendees" type="button">Registrations</button>
+<button class="nav-btn" data-view="notifications" type="button">Notifications <span class="notif-badge-inline" id="organiserNotifBadge">0</span></button>
+<button class="nav-btn" data-view="reviews" type="button">Reviews</button>
+<button class="nav-btn" data-view="settings" type="button">Profile Settings</button>
+</div>
+<div class="sidebar__bottom"><button class="danger-btn" data-action="delete-account" type="button">Delete Account</button><button class="danger-btn" data-action="logout" type="button">Logout</button></div>
+</aside>
+<main class="main">
+<section class="view active" id="view-dashboard">
+<div class="hero"><h1 class="hero__title"><span id="dashboardTitle">Welcome back</span></h1></div>
+<h2 class="section-title">Overview</h2><div class="stats-grid" id="statsGrid"></div>
+<h2 class="section-title">Host Calendar</h2><div class="panel calendar-panel" id="dashboardCalendar"></div>
+<h2 class="section-title">Recent Events</h2><div class="event-grid" id="dashboardEvents"></div>
+</section>
+<section class="view" id="view-create">
+<div class="hero"><h1 class="hero__title"><span>Create an Event</span></h1></div>
+<div class="grid-2">
+<div class="panel">
+<form id="createEventForm">
+<div class="edit-lock-note" id="editLockNote">Editing mode: event date, time, city, venue/address, audience and matching fields are locked after posting. You can update title, price, slots, benefits, banner, event photos, description, and contact details.</div>
+<div class="form-grid">
+<div class="field"><label>Event Title</label><input class="input" id="title" required="" type="text"/></div>
+<div class="field"><label>City / Location</label><select class="input" id="location" required=""><option value="">Select city</option><option>Bangalore</option><option>Mumbai</option><option>Delhi</option><option>Goa</option><option>Pune</option><option>Hyderabad</option><option>Chennai</option><option>Jaipur</option><option>Kolkata</option><option>Ahmedabad</option><option>Online</option></select></div>
+<div class="field"><label>Start Date</label><input class="input" id="start_date" required="" type="date"/></div>
+<div class="field"><label>End Date</label><input class="input" id="end_date" required="" type="date"/></div>
+<div class="field"><label>Start Time</label><input class="input" id="start_time" required="" type="time"/></div>
+<div class="field"><label>End Time</label><input class="input" id="end_time" required="" type="time"/></div>
+<div class="field field--full"><label>Detailed Address</label><input class="input" id="exact_address" placeholder="Building / venue name, street, landmark" required="" type="text"/></div>
+<div class="field"><label>Ticket Price</label><input class="input" id="price" min="0" placeholder="0 for free" type="number"/></div>
+<div class="field"><label>Total Slots</label><input class="input" id="total_slots" min="1" required="" type="number"/></div>
+<div class="field"><label>Organiser Name</label><input class="input" id="organiser_name" placeholder="Organiser name" type="text"/></div>
+<div class="field"><label>Organization Name</label><input class="input" id="organization" placeholder="Organization / team name" type="text"/></div>
+<div class="field"><label>Contact Email</label><input class="input" id="contact_email" placeholder="contact@example.com" type="email"/></div>
+<div class="field"><label>Contact Phone (optional)</label><input class="input" id="contact_phone" placeholder="Show only if you want" type="tel"/></div>
+<div class="field field--full"><label>Benefits</label><input class="input" id="benefits" placeholder="Type custom benefits or select below" type="text"/><div class="multi-select-box" id="benefitsBox">
+<label class="multi-chip"><input type="checkbox" value="Certificate"/>Certificate</label>
+<label class="multi-chip"><input type="checkbox" value="Study Material"/>Study Material</label>
+<label class="multi-chip"><input type="checkbox" value="Refreshments"/>Refreshments</label>
+<label class="multi-chip"><input type="checkbox" value="Food"/>Food</label>
+<label class="multi-chip"><input type="checkbox" value="Networking"/>Networking</label>
+<label class="multi-chip"><input type="checkbox" value="Mentorship"/>Mentorship</label>
+<label class="multi-chip"><input type="checkbox" value="Internship Opportunities"/>Internship Opportunities</label>
+<label class="multi-chip"><input type="checkbox" value="Portfolio Review"/>Portfolio Review</label>
+<label class="multi-chip"><input type="checkbox" value="Goodies"/>Goodies</label>
+<label class="multi-chip"><input type="checkbox" value="Placement Support"/>Placement Support</label>
+<label class="multi-chip"><input type="checkbox" value="Industry Expert Sessions"/>Industry Expert Sessions</label>
+<label class="multi-chip"><input type="checkbox" value="Startup Exposure"/>Startup Exposure</label>
+<label class="multi-chip"><input type="checkbox" value="Job Referrals"/>Job Referrals</label>
+<label class="multi-chip"><input type="checkbox" value="Competition Prizes"/>Competition Prizes</label>
+<label class="multi-chip"><input type="checkbox" value="Hands-on Projects"/>Hands-on Projects</label>
+<label class="multi-chip"><input type="checkbox" value="Resume Building"/>Resume Building</label>
+<label class="multi-chip"><input type="checkbox" value="Exclusive Community Access"/>Exclusive Community Access</label>
+<label class="multi-chip"><input type="checkbox" value="1-on-1 Coaching"/>1-on-1 Coaching</label>
+</div></div>
+<div class="field field--full"><label>Interests This Event Matches</label><div class="multi-select-box" id="interestBox">
+<label class="multi-chip"><input type="checkbox" value="Career &amp; Networking"/>Career &amp; Networking</label><label class="multi-chip"><input type="checkbox" value="Public Speaking"/>Public Speaking</label><label class="multi-chip"><input type="checkbox" value="Entrepreneurship"/>Entrepreneurship</label><label class="multi-chip"><input type="checkbox" value="Technology &amp; Coding"/>Technology &amp; Coding</label><label class="multi-chip"><input type="checkbox" value="Digital Marketing"/>Digital Marketing</label><label class="multi-chip"><input type="checkbox" value="Creative Arts"/>Creative Arts</label><label class="multi-chip"><input type="checkbox" value="Music &amp; Dance"/>Music &amp; Dance</label><label class="multi-chip"><input type="checkbox" value="Writing &amp; Content Creation"/>Writing &amp; Content</label><label class="multi-chip"><input type="checkbox" value="Photography &amp; Videography"/>Photography</label><label class="multi-chip"><input type="checkbox" value="Fitness &amp; Gym"/>Fitness &amp; Gym</label><label class="multi-chip"><input type="checkbox" value="Yoga &amp; Meditation"/>Yoga &amp; Meditation</label><label class="multi-chip"><input type="checkbox" value="Mental Health &amp; Self-growth"/>Mental Health</label><label class="multi-chip"><input type="checkbox" value="Learning &amp; Workshops"/>Learning &amp; Workshops</label><label class="multi-chip"><input type="checkbox" value="Social Events &amp; Meetups"/>Social Events</label><label class="multi-chip"><input type="checkbox" value="Volunteering &amp; Social Impact"/>Volunteering</label>
+</div></div>
+<div class="field field--full"><label>Age Groups</label><div class="multi-select-box" id="ageBox"><label class="multi-chip"><input type="checkbox" value="Below 18"/>Below 18</label><label class="multi-chip"><input type="checkbox" value="18-25"/>18–25</label><label class="multi-chip"><input type="checkbox" value="26-30"/>26–30</label><label class="multi-chip"><input type="checkbox" value="30-35"/>30–35</label><label class="multi-chip"><input type="checkbox" value="35+"/>35+</label></div></div>
+<div class="field field--full"><label>Personality Types</label><div class="multi-select-box" id="personalityBox"><label class="multi-chip"><input type="checkbox" value="Introvert"/>Introvert</label><label class="multi-chip"><input type="checkbox" value="Extrovert"/>Extrovert</label><label class="multi-chip"><input type="checkbox" value="Ambivert"/>Ambivert</label><label class="multi-chip"><input type="checkbox" value="All Types"/>All Types</label></div></div>
+<div class="field field--full"><label>What This Event Helps Improve</label><div class="multi-select-box" id="improvementBox">
+<label class="multi-chip"><input type="checkbox" value="Confidence"/>Confidence</label>
+<label class="multi-chip"><input type="checkbox" value="Communication"/>Communication</label>
+<label class="multi-chip"><input type="checkbox" value="Career Clarity"/>Career Clarity</label>
+<label class="multi-chip"><input type="checkbox" value="Focus"/>Focus</label>
+<label class="multi-chip"><input type="checkbox" value="Mental Wellness"/>Mental Wellness</label>
+<label class="multi-chip"><input type="checkbox" value="Leadership"/>Leadership</label>
+<label class="multi-chip"><input type="checkbox" value="Public Speaking"/>Public Speaking</label>
+<label class="multi-chip"><input type="checkbox" value="Time Management"/>Time Management</label>
+<label class="multi-chip"><input type="checkbox" value="Creativity"/>Creativity</label>
+<label class="multi-chip"><input type="checkbox" value="Networking Skills"/>Networking Skills</label>
+</div></div>
+
+<div class="field field--full"><label>Who Can Attend</label><div class="multi-select-box" id="professionalBox"><label class="multi-chip"><input type="checkbox" value="All"/>All</label><label class="multi-chip"><input type="checkbox" value="Student"/>Student</label><label class="multi-chip"><input type="checkbox" value="Working Professional"/>Working Professional</label><label class="multi-chip"><input type="checkbox" value="Entrepreneur"/>Entrepreneur</label><label class="multi-chip"><input type="checkbox" value="Freelancer"/>Freelancer</label><label class="multi-chip"><input type="checkbox" value="Job Seeker"/>Job Seeker</label><label class="multi-chip"><input type="checkbox" value="Homemaker"/>Homemaker</label><label class="multi-chip"><input type="checkbox" value="Creator / Artist"/>Creator / Artist</label><label class="multi-chip"><input type="checkbox" value="Other"/>Other</label></div></div>
+<div class="field"><label>Banner Image</label><input accept="image/*" class="input" id="banner_image" type="file"/></div>
+<div class="field"><label>Event Photos</label><input accept="image/*" class="input" id="reference_photos" multiple="" type="file"/><div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;"><button class="ghost-btn" data-action="add-photos" type="button">Add Photos</button><button class="ghost-btn" data-action="clear-photos" type="button">Clear Photos</button></div></div>
+<div class="field field--full"><label>Full Event Description</label><textarea class="input" id="description" required=""></textarea></div>
+</div>
+<button class="primary-btn" id="submitEventBtn" style="width:100%;" type="submit">Post Event</button>
+<button class="ghost-btn" data-action="save-draft" type="button" style="width:100%;margin-top:10px;">Save Draft</button>
+<button class="ghost-btn" data-action="clear-draft" type="button" style="width:100%;margin-top:10px;">Clear Draft</button>
+<button class="ghost-btn" data-action="cancel-edit" id="cancelEditBtn" style="display:none;width:100%;margin-top:10px;" type="button">Cancel Edit</button>
+<div class="inline-status" id="createStatus"></div>
+</form>
+</div>
+<div class="panel preview-card">
+<p class="mini-title">Live Preview</p><div class="preview-banner" id="previewBanner"></div><p class="mini-title" style="margin-top:10px;">Event Photos</p><div class="reference-preview-grid" id="previewReferences"><div class="empty-state" style="grid-column:1/-1;padding:12px;">No event photos selected.</div></div>
+<div class="preview-title" id="previewTitle">Your event title</div><p class="preview-text" id="previewMeta">City • Date • Time • ₹0</p>
+<p class="mini-title" style="margin-top:12px;margin-bottom:6px;">Venue</p><p class="preview-text" id="previewVenue">Add detailed venue address.</p>
+<div class="badge-row" id="previewBadges"><span class="small-badge">0 slots</span></div><p class="mini-title" style="margin-top:12px;margin-bottom:6px;">Benefits</p><p class="preview-text" id="previewBenefits">Add benefits users will receive.</p><p class="preview-text" id="previewDesc">Your full event description will appear here.</p>
+</div>
+</div>
+</section>
+<section class="view" id="view-events">
+<div class="hero"><h1 class="hero__title"><span>My Events</span></h1></div>
+<div class="toolbar"><input class="input search-input" id="eventSearchInput" placeholder="Search your events" type="text"/><select class="input filter-select" id="eventFilterCity"><option value="All">All Cities</option></select></div>
+<div class="event-grid" id="myEventsGrid"></div>
+</section>
+<section class="view" id="view-attendees">
+<div class="hero"><h1 class="hero__title"><span>Registrations &amp; Payouts</span></h1></div>
+<div class="panel">
+<div class="payout-summary-grid" id="payoutSummaryGrid"></div>
+<div class="toolbar"><input class="input search-input" id="attendeesSearchInput" placeholder="Search registrations" type="text"/><select class="input filter-select" id="attendeesFilterStatus"><option value="All">All Status</option><option value="Registered">Registered</option><option value="Cancelled">Cancelled</option><option value="Paid">Paid</option><option value="Pending">Pending</option></select></div>
+<div class="table-wrap"><table class="data-table"><thead><tr><th>Registration</th><th>Event</th><th>Date</th><th>Tickets</th><th>Ticket Amount</th><th>Your Payout</th><th>Payout Status</th><th>Pending / Paid</th><th>UPI Reference</th><th>City</th></tr></thead><tbody id="attendeesTableBody"></tbody></table></div>
+</div>
+</section>
+<section class="view" id="view-notifications">
+<div class="hero"><h1 class="hero__title"><span>Notifications</span></h1></div>
+<div class="panel">
+<div class="notification-toolbar">
+<select class="input notification-filter" id="notificationFilter">
+<option value="All">All</option>
+<option value="Unread">Unread</option>
+<option value="Approval">Approvals</option>
+<option value="Reminder">Reminders</option>
+<option value="Completed">Completed</option>
+<option value="Cancellation">Cancellations</option>
+<option value="Registration">Registrations</option>
+<option value="Payment">Payments</option>
+</select>
+<div class="notification-actions">
+<button class="ghost-btn" data-action="mark-read" type="button">Mark all read</button>
+</div>
+</div>
+<div class="notification-list" id="organiserNotificationsList"></div>
+</div>
+</section>
+<section class="view" id="view-reviews">
+<div class="hero"><h1 class="hero__title"><span>Reviews</span></h1></div>
+<h2 class="section-title">Overall Rating</h2>
+<div class="stats-grid" id="reviewsSummary"></div>
+<h2 class="section-title">Event Performance</h2>
+<div class="event-grid" id="eventReviewBreakdown"></div>
+<h2 class="section-title">All Reviews</h2>
+<div class="notification-list" id="reviewsList"></div>
+</section>
+<section class="view" id="view-settings">
+<div class="hero"><h1 class="hero__title"><span>Profile Settings</span></h1></div>
+<div class="panel">
+<div class="form-grid">
+<div class="field"><label>Name</label><input class="input" id="hostProfileName" placeholder="Your name" type="text"/></div>
+<div class="field"><label>Organization Name</label><input class="input" id="hostProfileOrganization" placeholder="Organization / team" type="text"/></div>
+<div class="field"><label>New Email ID</label><input class="input" id="hostProfileEmail" placeholder="email@example.com" type="email"/></div>
+<div class="field"><label>Phone Number (optional)</label><input class="input" id="hostProfilePhone" placeholder="Optional phone number" type="tel"/></div>
+<div class="field"><label>UPI ID</label><input class="input" id="hostProfileUpi" placeholder="example@upi" type="text" required/></div>
+</div>
+<button class="primary-btn" data-action="save-profile" type="button">Save Profile</button>
+<div class="inline-status" id="hostProfileStatus"></div>
+</div>
+</section>
+</main>
+
+
+
+
+
+<script>(function () {
+  'use strict';
+
+  const state = {
+    host: {},
+    events: [],
+    attendees: [],
+    notifications: [],
+    reviews: [],
+    editingEventId: null,
+    referencePhotos: []
+  };
+
+  const $ = (id) => document.getElementById(id);
+  const $$ = (selector, root = document) => Array.from(root.querySelectorAll(selector));
+  const clean = (v) => String(v ?? '').trim();
+  const lower = (v) => clean(v).toLowerCase();
+  const money = (v) => '₹' + Math.max(0, Math.round(Number(v || 0))).toLocaleString('en-IN');
+  const esc = (v) => String(v ?? '').replace(/[&<>"']/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const safeJson = (v, fallback) => { try { return JSON.parse(v) ?? fallback; } catch { return fallback; } };
+  function urlParam(name) {
+    try { return new URLSearchParams(window.location.search).get(name) || ''; } catch { return ''; }
+  }
+
+  function readHostSessionObject() {
+    const fromSession = safeJson(sessionStorage.getItem('orbitOrganiserSession'), {});
+    const fromLocal = safeJson(localStorage.getItem('hostUser'), {});
+    return { ...(fromLocal || {}), ...(fromSession || {}) };
+  }
+
+  const hostEmail = () => lower(
+    state.host.email ||
+    sessionStorage.getItem('orbitOrganiserEmail') ||
+    readHostSessionObject().email ||
+    urlParam('host_email') ||
+    urlParam('organiser_email') ||
+    localStorage.getItem('hostEmail') ||
+    localStorage.getItem('orbitLastHostEmail') ||
+    ''
+  );
+
+  function cachedHostSession() {
+    const cachedHost = readHostSessionObject();
+    const sessionEmail = sessionStorage.getItem('orbitOrganiserEmail') || cachedHost.email || state.host.email || '';
+    const email = lower(
+      sessionEmail ||
+      localStorage.getItem('hostEmail') ||
+      localStorage.getItem('orbitLastHostEmail') ||
+      urlParam('host_email') ||
+      urlParam('organiser_email') ||
+      ''
+    );
+    const hasDedicatedOrganiserTab = !!(state.host.email || sessionStorage.getItem('orbitOrganiserEmail') || sessionStorage.getItem('orbitOrganiserSession'));
+    const role = hasDedicatedOrganiserTab ? 'host' : lower(cachedHost.role || cachedHost.user_type || cachedHost.account_type || localStorage.getItem('hostRole') || 'host');
+    return { host: cachedHost, email, role, hasHost: !!email && role !== 'user' && role !== 'customer' };
+  }
+
+  function rememberHostSession(host = state.host) {
+    const email = lower(host?.email || hostEmail());
+    if (!email) return;
+    const compactHost = { ...(host || {}), email, role: 'host', user_type: 'host', account_type: 'host', upi_upi_image: '' };
+    try {
+      sessionStorage.setItem('orbitOrganiserEmail', email);
+      sessionStorage.setItem('orbitOrganiserSession', JSON.stringify(compactHost));
+      sessionStorage.setItem('orbitOrganiserSessionTouchedAt', new Date().toISOString());
+    } catch {}
+    try {
+      localStorage.setItem('hostEmail', email);
+      localStorage.setItem('orbitLastHostEmail', email);
+      localStorage.setItem('hostRole', 'host');
+      localStorage.setItem('orbitHostSessionActive', '1');
+      localStorage.setItem('orbitHostSessionTouchedAt', new Date().toISOString());
+      safeSetJson('hostUser', compactHost);
+    } catch {}
+  }
+
+  function useCachedHostSession(reason) {
+    const cached = cachedHostSession();
+    if (!cached.hasHost) return false;
+    updateHostUi({ ...(cached.host || {}), email: cached.email, role: 'host', user_type: 'host' });
+    console.warn('Using cached organiser session:', reason || 'backend session was not available');
+    return true;
+  }
+
+  function clearHostLocalData(email = hostEmail()) {
+    /**
+     * COMPLETE DATA CLEANUP: Remove ALL localStorage traces of host/organizer account.
+     * Called on logout and especially on account deletion.
+     * Must clear every key that contains this host's data to prevent reappearance.
+     */
+    const target = lower(email);
+    
+    // Phase 1: Clear known host-related keys
+    const exactKeys = [
+      'hostUser', 'hostEmail', 'orbitLastHostEmail', 'hostWelcomeMode',
+      'orbitSharedEvents', 'orbitSharedRegistrations', 'orbitSharedPayments',
+      'orbitSharedRefunds', 'orbitSharedNotifications', 'orbitSharedReviews',
+      'orbitEventReviews', 'orbitSharedRatings', 'orbitEventMetricOverrides',
+      'orbitOrganiserProfile', 'orbitHostData', 'orbitOrganiserEvents',
+      'orbitOrganiserNotifications', 'orbitOrganiserRegistrations',
+      'orbitOrganiserReviews', 'orbitOrganiserSettlements'
+    ];
+    
+    exactKeys.forEach(k => {
+      try {
+        localStorage.removeItem(k);
+        // Also remove email-scoped versions
+        if(target) localStorage.removeItem(`${k}_${target}`);
+      } catch (e) {}
+    });
+    
+    // Phase 2: Aggressive sweep - delete ANY key that mentions this host
+    try {
+      const keysToDelete = [];
+      for (let i = localStorage.length - 1; i >= 0; i--) {
+        const key = localStorage.key(i) || '';
+        if(!key) continue;
+        
+        const keyLower = key.toLowerCase();
+        const keyContainsEmail = target && (keyLower.includes(target) || key.includes(email));
+        
+        const hostScoped = [
+          'orbitorganiserevents_', 'orbit_organiser_events_history_',
+          'orbitorganizer_events_', 'orbit_organizer_events_history_',
+          'orbithostevents_', 'orbit_host_events_history_',
+          'orbitorganiserprofile_', 'orbitorganisernotifications_',
+          'orbitorganiserregistrations_', 'orbit_organiser_registrations_history_',
+          'orbit_organiser_notifications_history_', 'orbit_organiser_reviews_history_',
+          'orbitorganiserreviews_', 'orbitorganisersettlements_',
+          'orbithostsettlements_', 'orbithostregistrations_',
+          'orbithostnotifications_', 'orbithostreviews_'
+        ].some(prefix => keyLower.startsWith(prefix));
+        
+        if ((hostScoped && (!target || keyContainsEmail)) || keyContainsEmail) {
+          keysToDelete.push(key);
+        }
+      }
+      
+      // Delete all marked keys
+      keysToDelete.forEach(key => {
+        try {
+          localStorage.removeItem(key);
+        } catch (e) {}
+      });
+      
+      if(keysToDelete.length > 0){
+        console.log(`🧹 Cleared ${keysToDelete.length} localStorage entries for host account deletion`);
+      }
+    } catch (e) {
+      console.warn('Error during aggressive localStorage cleanup:', e);
+    }
+    
+    // Phase 3: Clear sessionStorage as backup
+    try {
+      const sessionKeys = [];
+      for(let i = sessionStorage.length - 1; i >= 0; i--){
+        const key = sessionStorage.key(i) || '';
+        if(target && (key.toLowerCase().includes(target) || key.includes(email))){
+          sessionKeys.push(key);
+        }
+      }
+      sessionKeys.forEach(k => sessionStorage.removeItem(k));
+      sessionStorage.clear();
+    } catch (e) {}
+  }
+
+
+  function organiserHistoryKey(email = hostEmail()) {
+    return 'orbit_organiser_events_history_' + (lower(email) || 'session');
+  }
+
+  function organiserAttendeesKey(email = hostEmail()) {
+    return 'orbit_organiser_registrations_history_' + (lower(email) || 'session');
+  }
+
+  function organiserNotificationsKey(email = hostEmail()) {
+    return 'orbit_organiser_notifications_history_' + (lower(email) || 'session');
+  }
+
+  function organiserReviewsKey(email = hostEmail()) {
+    return 'orbit_organiser_reviews_history_' + (lower(email) || 'session');
+  }
+
+  function eventKey(e) {
+    const raw = e || {};
+    return clean(raw.event_id || raw.eventId || raw._id || raw.id || raw.eventID || [raw.title, raw.start_date || raw.event_date || raw.date, raw.start_time || raw.event_time, raw.host_email || raw.organiser_email || raw.organizer_email].filter(Boolean).join('|'));
+  }
+
+  function readEventHistory(email = hostEmail()) {
+    const rows = safeJson(localStorage.getItem(organiserHistoryKey(email)), []);
+    return Array.isArray(rows) ? rows.filter(Boolean) : [];
+  }
+
+  function keepSmallStoredImage(img) {
+    img = clean(img);
+    if (!img) return '';
+    if (!img.startsWith('data:')) return img;
+    return img.length <= 45000 ? img : '';
+  }
+
+  function compactEventForStorage(event) {
+    // localStorage is only a small browser fallback store. Do not save large base64 photos here,
+    // because a few event images can exceed the browser quota and crash setItem().
+    const e = normalizeEvent(event || {});
+    const compact = { ...e };
+    compact.banner_image = keepSmallStoredImage(compact.banner_image || compact.poster_image || '');
+    compact.poster_image = compact.banner_image;
+    compact.reference_photos = normalizeList(compact.reference_photos || compact.event_photos || compact.images)
+      .map(keepSmallStoredImage)
+      .filter(Boolean)
+      .slice(0, 3);
+    compact.event_photos = compact.reference_photos;
+    compact.images = compact.reference_photos;
+    return compact;
+  }
+
+  function compactAttendeeForStorage(row) {
+    const copy = { ...(row || {}) };
+    delete copy.banner_image; delete copy.poster_image; delete copy.reference_photos;
+    delete copy.event_photos; delete copy.images; delete copy.upi_upi_image;
+    return copy;
+  }
+
+  function compactNotificationForStorage(row) {
+    const copy = { ...(row || {}) };
+    delete copy.banner_image; delete copy.poster_image; delete copy.reference_photos;
+    delete copy.event_photos; delete copy.images; delete copy.upi_upi_image;
+    return copy;
+  }
+
+  function safeSetJson(key, value, compactFn = null) {
+    const trySet = (data) => {
+      localStorage.setItem(key, JSON.stringify(data));
+      return data;
+    };
+    try {
+      return trySet(value);
+    } catch (err) {
+      if (!err || !String(err.name || err.message || '').toLowerCase().includes('quota')) throw err;
+      let reduced = Array.isArray(value) ? value : [];
+      if (compactFn) reduced = reduced.map(compactFn);
+      // Keep newest records first. 25 lightweight events are enough for offline/history fallback.
+      reduced = reduced.slice(0, 25);
+      try {
+        return trySet(reduced);
+      } catch (err2) {
+        if (!err2 || !String(err2.name || err2.message || '').toLowerCase().includes('quota')) throw err2;
+        try { localStorage.removeItem(key); } catch {}
+        reduced = reduced.map(row => {
+          const copy = { ...(row || {}) };
+          delete copy.banner_image; delete copy.poster_image; delete copy.reference_photos;
+          delete copy.event_photos; delete copy.images; delete copy.upi_upi_image;
+          return copy;
+        }).slice(0, 12);
+        return trySet(reduced);
+      }
+    }
+  }
+
+  function writeEventHistory(rows, email = hostEmail()) {
+    const normalized = mergeEventRows((rows || []).filter(Boolean).map(compactEventForStorage));
+    return safeSetJson(organiserHistoryKey(email), normalized, compactEventForStorage);
+  }
+
+  function rememberEvents(rows) {
+    if (!Array.isArray(rows) || !rows.length) return readEventHistory();
+    const email = hostEmail();
+    const scopedRows = (rows || []).map(stampCurrentHostOnEvent).filter(e => isCurrentHostEvent(e, { allowOwnerless: false }));
+    const saved = writeEventHistory([...readEventHistory(email), ...scopedRows]);
+    writeSharedEvents(saved);
+    return saved;
+  }
+
+  function readAttendeeHistory(email = hostEmail()) {
+    const rows = safeJson(localStorage.getItem(organiserAttendeesKey(email)), []);
+    return Array.isArray(rows) ? rows.filter(Boolean) : [];
+  }
+
+  function rememberAttendees(rows, email = hostEmail()) {
+    const normalized = mergeAttendees([...(readAttendeeHistory(email) || []), ...(rows || [])]).map(compactAttendeeForStorage);
+    return safeSetJson(organiserAttendeesKey(email), normalized.slice(0, 250), compactAttendeeForStorage);
+  }
+
+  function readNotificationHistory(email = hostEmail()) {
+    const rows = safeJson(localStorage.getItem(organiserNotificationsKey(email)), []);
+    return Array.isArray(rows) ? rows.filter(Boolean) : [];
+  }
+
+  function rememberNotifications(rows, email = hostEmail()) {
+    const normalized = mergeByKey([...(readNotificationHistory(email) || []), ...(rows || [])].filter(Boolean), n => notificationDedupeKey(normalizeAllowedNotification(n) || n))
+      .map(compactNotificationForStorage);
+    const sorted = sortNotificationsNewestFirst(normalized);
+    return safeSetJson(organiserNotificationsKey(email), sorted.slice(0, 180), compactNotificationForStorage);
+  }
+
+  function readReviewHistory(email = hostEmail()) {
+    const rows = safeJson(localStorage.getItem(organiserReviewsKey(email)), []);
+    return Array.isArray(rows) ? rows.filter(Boolean) : [];
+  }
+
+  function rememberReviews(rows, email = hostEmail()) {
+    const normalized = mergeByKey([...(readReviewHistory(email) || []), ...(rows || [])].filter(Boolean), r => r.review_id || r._id || r.id || [r.event_id || r.event_title, r.user_email || r.email, r.created_at || r.date].filter(Boolean).join('|'));
+    return safeSetJson(organiserReviewsKey(email), normalized.slice(0, 150));
+  }
+
+  function forgetEventEverywhere(eventId) {
+    const id = clean(eventId);
+    if (!id) return;
+    const removeFrom = (key) => {
+      try {
+        const rows = safeJson(localStorage.getItem(key), []);
+        if (!Array.isArray(rows)) return;
+        safeSetJson(key, rows.filter(e => eventKey(e) !== id && clean(e.event_id) !== id), compactEventForStorage);
+      } catch {}
+    };
+    removeFrom(organiserHistoryKey());
+    removeFrom('orbitSharedEvents');
+    const email = hostEmail();
+    if (email) removeFrom('orbitOrganiserEvents_' + email);
+    state.events = state.events.filter(e => eventKey(e) !== id && clean(e.event_id) !== id);
+  }
+
+  function sharedRead(key) {
+    const data = safeJson(localStorage.getItem(key), []);
+    return Array.isArray(data) ? data.filter(Boolean) : [];
+  }
+
+  function sharedWrite(key, rows, keyFn) {
+    safeSetJson(key, mergeByKey(rows || [], keyFn), key === 'orbitSharedEvents' || key.startsWith('orbitOrganiserEvents_') ? compactEventForStorage : null);
+  }
+
+  function isUserVisibleEvent(e) {
+    const status = effectiveEventStatus(normalizeEvent(e));
+    const text = lower([e?.status, e?.event_status, e?.approval_status, e?.admin_status, e?.rejection_reason, e?.cancelled_at, e?.completed_at].filter(Boolean).join(' '));
+    return status === 'Approved' && !text.includes('reject') && !text.includes('cancel') && !text.includes('complete') && !text.includes('past');
+  }
+
+  function syncProfileVisibleEvents(rows) {
+    // profile.html often reads orbitSharedEvents directly. Keep only APPROVED active organiser events there.
+    // Pending/rejected/cancelled/completed events remain in organiser history but must not leak to user profile.
+    const email = hostEmail();
+    const incoming = (rows || []).map(normalizeEvent).filter(e => e.event_id);
+    const mineIds = new Set(incoming.map(eventKey).filter(Boolean));
+    const mineFps = new Set(incoming.map(eventFingerprint).filter(Boolean));
+    const existing = sharedRead('orbitSharedEvents').map(normalizeEvent).filter(e => {
+      const sameHost = email && sameValue(e.host_email || e.organiser_email || e.organizer_email, email);
+      const sameId = mineIds.has(eventKey(e));
+      const sameFp = mineFps.has(eventFingerprint(e));
+      return !(sameHost || sameId || sameFp);
+    });
+    const visible = incoming.filter(isUserVisibleEvent).map(e => ({ ...e, is_visible_to_users: true, user_visible: true }));
+    sharedWrite('orbitSharedEvents', [...existing, ...visible], eventKey);
+  }
+
+  function writeSharedEvents(rows) {
+    const normalized = (rows || []).map(stampCurrentHostOnEvent).map(normalizeEvent).filter(e => e.event_id && isCurrentHostEvent(e, { allowOwnerless: false }));
+    const email = hostEmail();
+    if (email) sharedWrite('orbitOrganiserEvents_' + email, normalized, eventKey);
+    syncProfileVisibleEvents(normalized);
+  }
+
+  function readSharedEvents() {
+    const email = hostEmail();
+    // Organiser dashboard must never read public user-feed cache (orbitSharedEvents),
+    // otherwise one organiser can see another organiser's approved events.
+    return mergeEventRows(email ? sharedRead('orbitOrganiserEvents_' + email).filter(e => isCurrentHostEvent(e, { allowOwnerless: true })) : []);
+  }
+
+  function readSharedRowsForHost(key) {
+    const email = hostEmail();
+    return sharedRead(key).filter(row => {
+      if (!email) return true;
+      const recipientType = lower(row.recipient_type || row.role || row.user_type || '');
+      const directOwner = lower(row.host_email || row.hostEmail || row.organiser_email || row.organiserEmail || row.organizer_email || row.organizerEmail || '');
+      const recipient = lower(row.recipient_email || row.email || '');
+      if (directOwner && directOwner !== email) return false;
+      if (recipientType && !['host', 'organiser', 'organizer'].includes(recipientType) && !directOwner) return false;
+      if (recipient && recipient === email) return true;
+      if (directOwner === email) return true;
+      const eventId = clean(row.event_id || row.related_event_id || row.eventId || '');
+      return !!eventId && state.events.some(e => sameValue(e.event_id, eventId) && isCurrentHostEvent(e, { allowOwnerless: false }));
+    });
+  }
+
+  function upsertLocalOrganiserNotification(note) {
+    const email = hostEmail();
+    if (!email || !note) return;
+    const row = {
+      ...note,
+      email,
+      recipient_email: email,
+      recipient_type: 'organiser',
+      status: note.status || 'Unread',
+      unread: note.unread !== false,
+      created_at: note.created_at || new Date().toISOString()
+    };
+    const list = [...sharedRead('orbitSharedNotifications'), row];
+    sharedWrite('orbitSharedNotifications', list, n => notificationDedupeKey(n));
+  }
+
+  function toast(message, type = '') {
+    const status = $('createStatus') || $('hostProfileStatus');
+    if (status) {
+      status.textContent = message || '';
+      status.className = 'inline-status ' + (type || '');
+    }
+    console.log('[Orbit organiser]', message);
+  }
+
+  async function api(url, options = {}) {
+    const res = await fetch(url, {
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json', ...(options.headers || {}) },
+      ...options
+    });
+    let data = {};
+    try { data = await res.json(); } catch { data = {}; }
+    if (!res.ok || data.success === false) throw new Error(data.error || data.message || 'Request failed: ' + res.status);
+    return data;
+  }
+
+  function fileToBase64(file) {
+    return new Promise((resolve, reject) => {
+      if (!file) return resolve('');
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+
+  async function filesToBase64(inputId) {
+    const input = $(inputId);
+    const files = inputId === 'reference_photos' && state.referencePhotos.length
+      ? state.referencePhotos
+      : Array.from(input?.files || []);
+    return Promise.all(files.map(fileToBase64));
+  }
+
+  function normalizeList(value) {
+    if (Array.isArray(value)) return value.filter(Boolean).map(clean);
+    if (typeof value === 'string') return value.split(',').map(clean).filter(Boolean);
+    return [];
+  }
+
+  function getSelectedValues(boxId) {
+    const box = $(boxId);
+    return box ? $$('input[type="checkbox"]:checked', box).map(i => i.value) : [];
+  }
+
+  function setSelectedValues(boxId, values) {
+    const wanted = new Set(normalizeList(values));
+    const box = $(boxId);
+    if (!box) return;
+    $$('input[type="checkbox"]', box).forEach(input => {
+      input.checked = wanted.has(input.value);
+      const chip = input.closest('.multi-chip');
+      if (chip) chip.classList.toggle('selected', input.checked);
+    });
+  }
+
+  function dateLabel(value) {
+    if (!value) return 'Upcoming';
+    // Always parse as-is (ISO strings with Z are UTC; without Z are treated as local by spec but vary)
+    const d = new Date(String(value).includes('T') ? value : String(value) + 'T00:00:00');
+    if (Number.isNaN(d.getTime())) return String(value);
+    // If value includes a time component, show date + local time
+    if (String(value).includes('T') || (String(value).includes(' ') && String(value).match(/\d:\d/))) {
+      return d.toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' }) + ', ' + d.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true });
+    }
+    return d.toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' }).replace(/,/g, '');
+  }
+
+  function notificationTimestamp(n) {
+    const raw = n?.created_at || n?.sentAt || n?.createdAt || n?.updated_at || n?.date || n?.time || n?.timestamp || '';
+    if (!raw) return 0;
+    if (typeof raw === 'number') return raw;
+    const text = String(raw).trim();
+    let d = new Date(text);
+    if (!Number.isNaN(d.getTime())) return d.getTime();
+    const m = text.match(/^(\d{1,2})[\/-](\d{1,2})[\/-](\d{2,4})(?:\s+(\d{1,2}):(\d{2}))?/);
+    if (m) {
+      const year = Number(m[3].length === 2 ? '20' + m[3] : m[3]);
+      d = new Date(year, Number(m[2]) - 1, Number(m[1]), Number(m[4] || 0), Number(m[5] || 0));
+      if (!Number.isNaN(d.getTime())) return d.getTime();
+    }
+    return 0;
+  }
+
+  function sortNotificationsNewestFirst(rows) {
+    return [...(rows || [])].sort((a, b) => notificationTimestamp(b) - notificationTimestamp(a));
+  }
+
+  function eventDateRange(e) {
+    const start = e.start_date || e.event_date || e.date || '';
+    const end = e.end_date && e.end_date !== start ? e.end_date : '';
+    return end ? `${dateLabel(start)} - ${dateLabel(end)}` : dateLabel(start);
+  }
+
+  function eventTimeRange(e) {
+    const start = e.start_time || e.event_time || '';
+    const end = e.end_time && e.end_time !== start ? e.end_time : '';
+    return [start, end].filter(Boolean).join(' - ') || 'Time not set';
+  }
+
+  // Robust date/time parsing functions (from profile.html)
+  function parseEventDate(value) {
+    if (!value) return null;
+    const clean = String(value).trim();
+    const tryParse = (dateString) => { const d = new Date(dateString); return isNaN(d.getTime()) ? null : d; };
+    let parsed = tryParse(clean);
+    if (parsed) return parsed;
+    parsed = tryParse(clean + 'T00:00:00');
+    if (parsed) return parsed;
+    const dm = clean.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
+    if (dm) {
+      const [, first, second, year] = dm;
+      const f = Number(first), s = Number(second);
+      // Smart detection: if first > 12, it's DD/MM; if second > 12, it's MM/DD; otherwise try MM/DD first (US common), then DD/MM
+      let day, month;
+      if (f > 12) {
+        // Must be DD/MM
+        day = f; month = s;
+      } else if (s > 12) {
+        // Must be MM/DD
+        month = f; day = s;
+      } else {
+        // Both valid for months, try MM/DD first (US format), then DD/MM
+        month = f; day = s;
+        parsed = tryParse(`${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}T00:00:00`);
+        if (parsed) return parsed;
+        // If MM/DD didn't work or day>31, try DD/MM
+        if (day > 31 || !parsed) {
+          day = f; month = s;
+        }
+      }
+      parsed = tryParse(`${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}T00:00:00`);
+      if (parsed) return parsed;
+    }
+    return null;
+  }
+
+  function formatEventDate(value) {
+    const d = parseEventDate(value);
+    if (!d) return value || 'Upcoming';
+    return d.toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' }).replace(/,/g, '');
+  }
+
+  function formatEventDateRange(event) {
+    event = normalizeEvent(event);
+    const start = event.start_date || event.event_date || event.date || '';
+    const end = event.end_date && event.end_date !== start ? event.end_date : '';
+    if (!end) return formatEventDate(start);
+    return `${formatEventDate(start)} - ${formatEventDate(end)}`;
+  }
+
+  function parseEventTime(value) {
+    if (!value) return null;
+    const clean = String(value).trim().toLowerCase();
+    const rangeMatch = clean.match(/(.+?)(?:\s*(?:[-–—]|to)\s*)(.+)$/i);
+    if (rangeMatch) {
+      return parseEventTime(rangeMatch[2]);
+    }
+    const match = clean.match(/^(\d{1,2})(?::(\d{2}))?\s*(am|pm)?$/i);
+    if (!match) return null;
+    let h = Number(match[1]);
+    const m = Number(match[2] || 0);
+    const mer = match[3];
+    if (mer === 'pm' && h < 12) h += 12;
+    if (mer === 'am' && h === 12) h = 0;
+    if (h > 23 || m > 59) return null;
+    return { h, m };
+  }
+
+  function formatEventTime(value) {
+    const t = parseEventTime(value);
+    if (!t) return value || '';
+    const hour12 = t.h % 12 || 12;
+    const min = t.m ? `:${String(t.m).padStart(2, '0')}` : '';
+    const mer = t.h >= 12 ? 'pm' : 'am';
+    return `${hour12}${min} ${mer}`;
+  }
+
+  function formatEventTimeDuration(event) {
+    event = normalizeEvent(event);
+    const time = formatEventTime(event.start_time || event.event_time || '');
+    const start = parseEventTime(event.start_time || event.event_time || '');
+    const end = parseEventTime(event.end_time || '');
+    if (!start || !end) return time || 'Time not set';
+    let startMin = start.h * 60 + start.m;
+    let endMin = end.h * 60 + end.m;
+    if (endMin < startMin) endMin += 24 * 60;
+    const diff = endMin - startMin;
+    const hrs = Math.floor(diff / 60), mins = diff % 60;
+    if (time && (hrs || mins)) {
+      let duration = '';
+      if (hrs && mins) duration = `${hrs} hour${hrs > 1 ? 's' : ''} ${mins} min`;
+      else if (hrs) duration = `${hrs} hour${hrs > 1 ? 's' : ''}`;
+      else duration = `${mins} min`;
+      return `${time} • ${duration}`;
+    }
+    if (time && event.end_time) return `${time} - ${formatEventTime(event.end_time)}`;
+    return time || 'Time not set';
+  }
+
+  function imageUrl(e) {
+    return e.banner_image || e.poster_image || normalizeList(e.images)[0] || normalizeList(e.reference_photos)[0] || '';
+  }
+
+  function updateHostUi(host) {
+    state.host = { ...state.host, ...(host || {}) };
+    if (state.host.email) {
+      state.host.email = lower(state.host.email);
+      state.host.role = 'host';
+      state.host.user_type = 'host';
+      rememberHostSession(state.host);
+    }
+    const name = clean(state.host.full_name || state.host.fullName || state.host.name || state.host.hostName || state.host.organiserName || state.host.organizerName || ((state.host.first_name || state.host.firstName) ? clean(state.host.first_name || state.host.firstName) + (state.host.last_name || state.host.lastName ? ' ' + clean(state.host.last_name || state.host.lastName) : '') : '') || state.host.username || '');
+    const displayName = name || (state.host.email ? state.host.email.split('@')[0] : 'Your organiser profile');
+    const org = state.host.organization || state.host.organisation || '';
+    const email = state.host.email || '';
+    if ($('hostName')) $('hostName').textContent = displayName;
+    if ($('hostMeta')) $('hostMeta').textContent = [org, email].filter(Boolean).join(' • ') || 'Organiser profile';
+    if ($('dashboardTitle')) {
+      const params = new URLSearchParams(location.search);
+      const mode = params.get('mode') || localStorage.getItem('hostWelcomeMode') || 'login';
+      $('dashboardTitle').textContent = mode === 'signup' ? 'Welcome ' + displayName : 'Welcome back ' + displayName;
+      localStorage.setItem('hostWelcomeMode', 'login');
+    }
+    const map = {
+      hostProfileName: name,
+      hostProfileOrganization: org,
+      hostProfileEmail: email,
+      hostProfilePhone: state.host.phone || '',
+      hostProfileUpi: state.host.upi_id || '',
+      organiser_name: name,
+      organization: org,
+      contact_email: email,
+      contact_phone: state.host.phone || ''
+    };
+    Object.entries(map).forEach(([id, value]) => { if ($(id) && !$(id).value) $(id).value = value; });
+  }
+
+  function showView(viewName, btn) {
+    $$('.view').forEach(v => v.classList.remove('active'));
+    const view = $('view-' + viewName);
+    if (view) view.classList.add('active');
+    $$('.nav-btn').forEach(b => b.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+    if (viewName === 'dashboard') { renderStats(); renderCalendar(); renderDashboardEvents(); }
+    if (viewName === 'events') renderEvents();
+    if (viewName === 'attendees') renderAttendees();
+    if (viewName === 'notifications') renderNotifications();
+    if (viewName === 'reviews') loadReviews();
+    if (viewName === 'create' && !state.editingEventId) {
+      if (!restoreEventDraft()) resetEventForm();
+    }
+  }
+
+  function organiserUpiReminderStorageKey(email) {
+    return 'organiserUpiReminderShown:' + lower(email || hostEmail() || '');
+  }
+
+  function hasOrganiserUpiReminderBeenShown(email) {
+    if (!email) return false;
+    return localStorage.getItem(organiserUpiReminderStorageKey(email)) === 'true';
+  }
+
+  function markOrganiserUpiReminderShown(email) {
+    if (!email) return;
+    localStorage.setItem(organiserUpiReminderStorageKey(email), 'true');
+  }
+
+  function isOrganiserSignupEntry() {
+    const params = new URLSearchParams(location.search);
+    return params.get('mode') === 'signup' || localStorage.getItem('hostWelcomeMode') === 'signup';
+  }
+
+  function organiserUpiReminderNotification() {
+    const email = hostEmail();
+    if (!email) return null;
+    if (state.host.upi_id && state.host.upi_id.trim()) return null;
+    if (!isOrganiserSignupEntry()) return null;
+    if (hasOrganiserUpiReminderBeenShown(email)) return null;
+    markOrganiserUpiReminderShown(email);
+    return {
+      id: 'upi-reminder',
+      type: 'Reminder',
+      category: 'Update',
+      title: 'Update your UPI ID',
+      message: 'Please add your UPI ID in Profile Settings so Orbit can pay you for your events.',
+      created_at: new Date().toISOString(),
+      status: 'Unread',
+      unread: true,
+      isUpiReminder: true
+    };
+  }
+
+  function normalizeStatusLabel(value) {
+    const text = lower(value);
+    if (text.includes('reject') || text.includes('declin')) return 'Rejected';
+    if (text.includes('cancel')) return 'Cancelled';
+    if (text.includes('complete') || text.includes('past')) return 'Completed';
+    if (text.includes('approve') || text.includes('active')) return 'Approved';
+    if (text.includes('pending') || text.includes('review')) return 'Pending';
+    return clean(value);
+  }
+
+  function normalizeEvent(event) {
+    const raw = event || {};
+    const explicitOwner = raw.host_email || raw.hostEmail || raw.organiser_email || raw.organiserEmail || raw.organizer_email || raw.organizerEmail || raw.owner_email || raw.created_by_email || '';
+    const id = raw.event_id || raw.eventId || raw.id || raw._id || raw.eventID || [raw.title, raw.start_date || raw.event_date || raw.date, raw.start_time || raw.event_time, explicitOwner].filter(Boolean).join('-');
+    const approvalRaw = raw.approval_status || raw.approvalStatus || raw.admin_status || raw.adminStatus || raw.approval || raw.review_status || '';
+    const statusRaw = raw.status || raw.event_status || raw.eventStatus || raw.state || '';
+    const joined = [approvalRaw, statusRaw, raw.rejection_reason, raw.rejected_at, raw.cancelled_at, raw.completed_at].filter(Boolean).join(' ');
+    let approval = normalizeStatusLabel(approvalRaw) || '';
+    let status = normalizeStatusLabel(statusRaw) || '';
+    if (lower(joined).includes('reject') || lower(joined).includes('declin')) { approval = 'Rejected'; status = 'Rejected'; }
+    else if (lower(joined).includes('cancel')) { status = 'Cancelled'; if (!approval) approval = 'Cancelled'; }
+    else if (lower(joined).includes('complete') || lower(joined).includes('past')) { status = 'Completed'; if (!approval) approval = 'Completed'; }
+    else if (!approval && lower(status).includes('approved')) approval = 'Approved';
+    else if (!approval && lower(status).includes('pending')) approval = 'Pending';
+    if (!approval) approval = 'Pending';
+    if (!status) status = approval;
+    return {
+      ...raw,
+      event_id: String(id || ''),
+      host_email: explicitOwner,
+      organiser_email: raw.organiser_email || raw.organiserEmail || raw.organizer_email || raw.organizerEmail || raw.host_email || raw.hostEmail || raw.owner_email || raw.created_by_email || '',
+      approval_status: approval,
+      status,
+      start_date: raw.start_date || raw.event_date || raw.date || '',
+      end_date: raw.end_date || raw.start_date || raw.event_date || raw.date || '',
+      start_time: raw.start_time || raw.event_time || '',
+      end_time: raw.end_time || raw.start_time || raw.event_time || ''
+    };
+  }
+
+  function sameValue(a, b) {
+    return !!clean(a) && !!clean(b) && lower(a) === lower(b);
+  }
+
+  function explicitEventOwner(e) {
+    const raw = e || {};
+    return lower(raw.host_email || raw.hostEmail || raw.organiser_email || raw.organiserEmail || raw.organizer_email || raw.organizerEmail || raw.owner_email || raw.created_by_email || raw.created_by || '');
+  }
+
+  function stampCurrentHostOnEvent(e) {
+    const email = hostEmail();
+    const row = { ...(e || {}) };
+    if (email && !explicitEventOwner(row)) {
+      row.host_email = email;
+      row.organiser_email = email;
+      row.owner_email = email;
+    }
+    return row;
+  }
+
+  function isCurrentHostEvent(e, options = {}) {
+    const email = hostEmail();
+    if (!email) return true;
+    const owner = explicitEventOwner(e);
+    if (owner) return owner === email;
+    return !!options.allowOwnerless;
+  }
+
+  function mergeByKey(rows, keyFn) {
+    const map = new Map();
+    rows.filter(Boolean).forEach((row, index) => {
+      const key = keyFn(row) || String(index) + JSON.stringify(row).slice(0, 40);
+      if (!map.has(key)) map.set(key, row);
+      else map.set(key, { ...map.get(key), ...row });
+    });
+    return Array.from(map.values());
+  }
+
+  function eventFingerprint(e) {
+    const date = e.start_date || e.event_date || e.date || '';
+    const time = e.start_time || e.event_time || '';
+    return [lower(e.title), date, time, lower(explicitEventOwner(e))].filter(Boolean).join('|');
+  }
+
+  function statusRank(e) {
+    const text = lower([e.approval_status, e.status, e.event_status, e.rejection_reason, e.rejected_at, e.cancelled_at, e.completed_at].filter(Boolean).join(' '));
+    if (text.includes('cancel')) return 60;
+    if (text.includes('reject') || text.includes('declin')) return 55;
+    if (text.includes('complete') || text.includes('past')) return 50;
+    if (text.includes('approve') || text.includes('active')) return 40;
+    if (text.includes('pending')) return 30;
+    return 10;
+  }
+
+  function mergeEventRows(rows) {
+    const map = new Map();
+    (rows || []).filter(Boolean).map(normalizeEvent).forEach((row, index) => {
+      const key = eventKey(row) || eventFingerprint(row) || String(index);
+      const fp = eventFingerprint(row);
+      let existingKey = map.has(key) ? key : '';
+      if (!existingKey && fp) {
+        for (const [k, item] of map.entries()) {
+          if (eventFingerprint(item) === fp) { existingKey = k; break; }
+        }
+      }
+      if (!existingKey) { map.set(key, row); return; }
+      const previous = map.get(existingKey) || {};
+      let merged = { ...previous, ...row };
+      const stronger = statusRank(row) >= statusRank(previous) ? row : previous;
+      merged.approval_status = normalizeEvent(stronger).approval_status || merged.approval_status;
+      merged.status = normalizeEvent(stronger).status || merged.status;
+      // Preserve images/details from the richer row while preserving stronger admin status.
+      if (!merged.banner_image && previous.banner_image) merged.banner_image = previous.banner_image;
+      if (!normalizeList(merged.reference_photos || merged.event_photos).length) {
+        merged.reference_photos = previous.reference_photos || previous.event_photos || row.reference_photos || row.event_photos || [];
+        merged.event_photos = merged.reference_photos;
+      }
+      map.set(existingKey, normalizeEvent(merged));
+    });
+    return Array.from(map.values()).sort((a, b) => String(b.updated_at || b.created_at || b.start_date || '').localeCompare(String(a.updated_at || a.created_at || a.start_date || '')));
+  }
+
+  function collectRowsByAllowedKeys(value, keys = [], rows = [], depth = 0) {
+    // STRICT: only read arrays from allowed response keys.
+    // Do NOT collect every array in the payload, because that turns event arrays into fake registrations.
+    if (!value || depth > 5) return rows;
+    if (Array.isArray(value)) {
+      value.forEach(item => { if (item && typeof item === 'object') rows.push(item); });
+      return rows;
+    }
+    if (typeof value !== 'object') return rows;
+
+    keys.forEach(key => {
+      const found = value[key];
+      if (Array.isArray(found)) {
+        found.forEach(item => { if (item && typeof item === 'object') rows.push(item); });
+      }
+    });
+
+    Object.values(value).forEach(child => {
+      if (child && typeof child === 'object' && !Array.isArray(child)) {
+        collectRowsByAllowedKeys(child, keys, rows, depth + 1);
+      }
+    });
+    return rows;
+  }
+
+  function allArraysFromPayload(payload, keys = []) {
+    return mergeByKey(
+      collectRowsByAllowedKeys(payload, keys),
+      row => row.registration_id || row.booking_id || row.payment_id || row._id || row.id || [row.event_id || row.eventId, row.user_email || row.email, row.created_at || row.registered_at].filter(Boolean).join('|')
+    );
+  }
+
+  function eventObjectFromRegistration(reg) {
+    return (reg && typeof reg.event === 'object') ? reg.event : (reg?.event_details || reg?.eventData || reg?.event_info || {});
+  }
+
+  function registrationEventId(reg) {
+    const nested = eventObjectFromRegistration(reg);
+    return clean(reg.event_id || reg.eventId || reg.eventID || reg.event_ref || reg.eventRef || nested.event_id || nested.eventId || nested._id || nested.id || (typeof reg.event === 'string' ? reg.event : ''));
+  }
+
+  function registrationTitle(reg) {
+    const nested = eventObjectFromRegistration(reg);
+    return clean(reg.event_title || reg.eventName || reg.event_name || reg.title || nested.title || nested.event_title || '');
+  }
+
+  function findEventForRegistration(reg) {
+    const eventId = registrationEventId(reg);
+    const title = registrationTitle(reg);
+    return state.events.find(e =>
+      sameValue(e.event_id, eventId) || sameValue(e._id, eventId) || sameValue(e.id, eventId) || (title && sameValue(e.title, title))
+    ) || eventObjectFromRegistration(reg) || {};
+  }
+
+  function isMineRegistration(reg) {
+    const email = hostEmail();
+    const nested = eventObjectFromRegistration(reg);
+    if (!email) return true;
+    if (sameValue(reg.host_email, email) || sameValue(reg.hostEmail, email) || sameValue(reg.organiser_email, email) || sameValue(reg.organiserEmail, email) || sameValue(reg.organizer_email, email) || sameValue(reg.organizerEmail, email) || sameValue(reg.contact_email, email) || sameValue(reg.contactEmail, email)) return true;
+    if (sameValue(nested.host_email, email) || sameValue(nested.hostEmail, email) || sameValue(nested.organiser_email, email) || sameValue(nested.organiserEmail, email) || sameValue(nested.organizer_email, email) || sameValue(nested.organizerEmail, email) || sameValue(nested.contact_email, email) || sameValue(nested.contactEmail, email)) return true;
+    const ev = findEventForRegistration(reg);
+    return !!(ev.event_id || ev._id || ev.id || ev.title);
+  }
+
+  function normalizeAttendee(reg) {
+    const nested = eventObjectFromRegistration(reg);
+    const event = findEventForRegistration(reg);
+    const tickets = Number(reg.tickets || reg.ticket_count || reg.quantity || reg.seats || 1) || 1;
+    const price = Number(reg.event_price ?? reg.ticket_price ?? reg.price ?? nested.price ?? event.price ?? 0) || 0;
+    const amount = Number(reg.event_amount ?? reg.ticket_total ?? reg.amount_paid ?? reg.amount ?? reg.total_amount ?? reg.total ?? reg.payment_amount ?? (price * tickets)) || 0;
+    const payout = Number(reg.organiser_payout ?? reg.organizer_payout ?? reg.payout_amount ?? reg.organiser_amount ?? reg.organizer_amount ?? (amount ? Math.max(amount - (5 * tickets), 0) : 0)) || 0;
+    const cancelled = isRegistrationCancelled(reg);
+    return {
+      ...reg,
+      event_id: registrationEventId(reg) || event.event_id || event._id || event.id || '',
+      event_title: registrationTitle(reg) || event.title || 'Event',
+      event_date: reg.event_date || reg.start_date || nested.start_date || event.start_date || event.event_date || reg.registered_at || reg.created_at || '',
+      city: reg.city || reg.location || nested.location || event.location || '',
+      tickets,
+      event_amount: amount,
+      organiser_payout: payout,
+      user_name: reg.user_name || reg.userName || reg.name || reg.full_name || reg.username || reg.attendee_name || reg.customer_name || 'User',
+      user_email: reg.user_email || reg.userEmail || reg.email || reg.customer_email || reg.attendee_email || '',
+      settlement_status: cancelled ? (reg.settlement_status || reg.payment_status || 'Cancelled') : (reg.settlement_status || reg.payout_status || reg.payment_status || ''),
+      registration_status: cancelled ? 'Cancelled' : (reg.cancellation_status || reg.registration_status || reg.booking_status || reg.status || reg.refund_status || 'Registered'),
+      booking_status: cancelled ? 'Cancelled' : (reg.booking_status || reg.registration_status || reg.status || 'Registered'),
+      status: cancelled ? 'Cancelled' : (reg.status || reg.registration_status || 'registered'),
+      cancelled_at: reg.cancelled_at || '',
+      cancellation_reason: reg.cancellation_reason || reg.cancel_reason || reg.reason || '',
+      refund_status: reg.refund_status || '',
+      registered_at: reg.registered_at || reg.created_at || reg.booking_date || reg.date || ''
+    };
+  }
+
+  function mergeAttendees(rows) {
+    const normalized = rows.filter(Boolean).filter(isMineRegistration).map(normalizeAttendee);
+    const map = new Map();
+    normalized.forEach((a, index) => {
+      const key = [
+        a.registration_id || a.booking_id || a.payment_id || a._id || a.id || '',
+        a.event_id || a.event_title || '',
+        a.user_email || '',
+        a.user_email ? '' : (a.registered_at || a.created_at || index)
+      ].filter(Boolean).join('|') || String(index);
+      const previous = map.get(key);
+      if (!previous) {
+        map.set(key, a);
+        return;
+      }
+      const merged = { ...previous, ...a };
+      const prevCancelled = isRegistrationCancelled(previous);
+      const nextCancelled = isRegistrationCancelled(a);
+      if (prevCancelled || nextCancelled) {
+        merged.status = 'Cancelled';
+        merged.registration_status = 'Cancelled';
+        merged.booking_status = 'Cancelled';
+      }
+      map.set(key, merged);
+    });
+    return Array.from(map.values()).sort((a, b) => {
+      const ad = new Date(a.cancelled_at || a.registered_at || a.created_at || 0).getTime() || 0;
+      const bd = new Date(b.cancelled_at || b.registered_at || b.created_at || 0).getTime() || 0;
+      return bd - ad;
+    });
+  }
+
+  async function tryLoadArray(urls, keys) {
+    const collected = [];
+    for (const url of urls) {
+      if (!url || url.includes('undefined')) continue;
+      try {
+        const data = await api(url);
+        const rows = allArraysFromPayload(data, keys);
+        if (rows.length) collected.push(...rows);
+      } catch (err) {
+        console.warn('Skipped optional endpoint:', url, err.message);
+      }
+    }
+    return mergeByKey(collected, row => row.registration_id || row.booking_id || row.payment_id || row._id || row.id || [row.event_id || row.eventId, row.user_email || row.email, row.created_at || row.registered_at].filter(Boolean).join('|'));
+  }
+
+  function parseEventEnd(e) {
+    const date = e.end_date || e.start_date || e.event_date || e.date || '';
+    const time = e.end_time || e.start_time || e.event_time || '23:59';
+    if (!date) return null;
+    const d = new Date(String(date).includes('T') ? String(date) : `${date}T${time || '23:59'}`);
+    return Number.isNaN(d.getTime()) ? null : d;
+  }
+
+  function payloadEndDateTime(payload) {
+    const date = payload?.end_date || payload?.start_date || payload?.event_date || payload?.date || '';
+    const time = payload?.end_time || payload?.start_time || payload?.event_time || '23:59';
+    if (!date) return null;
+    const d = new Date(String(date).includes('T') ? String(date) : `${date}T${time || '23:59'}`);
+    return Number.isNaN(d.getTime()) ? null : d;
+  }
+
+  function shouldSaveAsCompleted(payload) {
+    const end = payloadEndDateTime(payload);
+    return !!end && end < new Date();
+  }
+
+  function forceCompletedEvent(event) {
+    return normalizeEvent({
+      ...(event || {}),
+      status: 'Completed',
+      event_status: 'Completed',
+      approval_status: 'Completed',
+      completed_at: (event && event.completed_at) || new Date().toISOString()
+    });
+  }
+
+  function isEventRejected(e) {
+    return lower([e.status, e.event_status, e.approval_status, e.admin_status, e.rejection_reason, e.rejected_at].filter(Boolean).join(' ')).includes('reject');
+  }
+
+  function isEventCompleted(e) {
+    const st = lower([e.status, e.event_status, e.approval_status].filter(Boolean).join(' '));
+    if (isEventRejected(e) || st.includes('cancel')) return false;
+    if (st.includes('completed') || st.includes('past')) return true;
+    const end = parseEventEnd(e);
+    return !!end && end < new Date();
+  }
+
+  function isEventCancelled(e) {
+    return lower([e.status, e.event_status, e.cancelled_at, e.cancellation_reason].filter(Boolean).join(' ')).includes('cancel');
+  }
+
+  const lockedEditFields = ['location','start_date','end_date','start_time','end_time','exact_address'];
+
+  function setEditLocks(locked) {
+    lockedEditFields.forEach(id => {
+      const el = $(id);
+      if (!el) return;
+      el.disabled = !!locked;
+      const field = el.closest('.field');
+      if (field) field.classList.toggle('is-locked', !!locked);
+    });
+  }
+
+  function canEditEvent(e) {
+    return !!e && !isEventCompleted(e) && !isEventCancelled(e) && !isEventRejected(e);
+  }
+
+  function canCancelEvent(e) {
+    return !!e && !isEventCompleted(e) && !isEventCancelled(e) && !isEventRejected(e);
+  }
+
+  function effectiveEventStatus(e) {
+    if (isEventCancelled(e)) return 'Cancelled';
+    if (isEventRejected(e)) return 'Rejected';
+    if (isEventCompleted(e)) return 'Completed';
+    const approval = lower(e.approval_status || '');
+    const status = lower(e.status || e.event_status || '');
+    if (approval.includes('cancel') || approval.includes('reject')) return 'Cancelled';
+    if (approval.includes('completed') || approval.includes('past')) return 'Completed';
+    if (approval.includes('pending') || approval.includes('review')) return 'Pending';
+    if (approval.includes('approved') || approval.includes('active')) return 'Approved';
+    if (status.includes('cancel') || status.includes('reject')) return 'Cancelled';
+    if (status.includes('completed') || status.includes('past')) return 'Completed';
+    if (status.includes('pending') || status.includes('review')) return 'Pending';
+    if (status.includes('approve') || status.includes('active')) return 'Approved';
+    return clean(e.approval_status || e.status || e.event_status || 'Pending');
+  }
+
+  function renderStats(stats = {}) {
+    const box = $('statsGrid');
+    if (!box) return;
+    const totalEvents = stats.total_events ?? state.events.length;
+    const totalRegs = stats.total_registrations ?? state.attendees.length;
+    const earning = stats.paid_by_orbit ?? stats.total_revenue ?? state.attendees.reduce((s, a) => s + Number(a.paid_by_orbit || 0), 0);
+    box.innerHTML = [
+      ['Total Events', totalEvents, 'Events created by you'],
+      ['Registrations', totalRegs, 'Total user bookings'],
+      ['Paid Payout', money(earning), 'Paid by Orbit after event completion'],
+      ['Pending Approval', state.events.filter(e => effectiveEventStatus(e) === 'Pending').length, 'Waiting for admin'],
+      ['Rejected', state.events.filter(e => effectiveEventStatus(e) === 'Rejected').length, 'Rejected by admin'],
+      ['Completed', state.events.filter(e => effectiveEventStatus(e) === 'Completed').length, 'Past/completed history'],
+      ['Cancelled', state.events.filter(e => effectiveEventStatus(e) === 'Cancelled').length, 'Cancelled history']
+    ].map(([label, value, note]) => `<div class="stat-card"><h3>${esc(value)}</h3><p>${esc(label)}</p><small>${esc(note)}</small></div>`).join('');
+  }
+
+  function renderCityFilter() {
+    const select = $('eventFilterCity');
+    if (!select) return;
+    const current = select.value || 'All';
+    const cities = Array.from(new Set(state.events.map(e => e.location).filter(Boolean))).sort();
+    select.innerHTML = '<option value="All">All Cities</option>' + cities.map(c => `<option>${esc(c)}</option>`).join('');
+    select.value = cities.includes(current) ? current : 'All';
+  }
+
+  function renderDashboardEvents() {
+    const box = $('dashboardEvents');
+    if (!box) return;
+    const rows = [...state.events];
+    box.innerHTML = rows.length ? rows.map(eventCard).join('') : '<div class="empty-state">No events yet. Create your first event from the Create Event section.</div>';
+  }
+
+  function renderEvents() {
+    const box = $('myEventsGrid');
+    if (!box) return;
+    const search = lower($('eventSearchInput')?.value || '');
+    const city = $('eventFilterCity')?.value || 'All';
+    let rows = [...state.events];
+    if (city !== 'All') rows = rows.filter(e => e.location === city);
+    if (search) rows = rows.filter(e => lower([e.title, e.description, e.location, e.exact_address, e.venue_address, e.category, normalizeList(e.interest_tags).join(' '), e.benefits, e.organiser_name, e.organization].join(' ')).includes(search));
+    box.innerHTML = rows.length ? rows.map(eventCard).join('') : '<div class="empty-state">No matching events found.</div>';
+  }
+
+  function eventCard(e) {
+    const img = imageUrl(e);
+    const completed = isEventCompleted(e);
+    const cancelled = isEventCancelled(e);
+    const rejected = isEventRejected(e);
+    const status = effectiveEventStatus(e);
+    const photos = normalizeList(e.reference_photos || e.event_photos).slice(0, 4);
+    const hasAnyRegistration = Number(e.registered_count || e.total_registrations || e.registration_count || 0) > 0;
+    const actions = (completed || cancelled || rejected)
+      ? `<div class="support-note">${completed ? 'Completed events are locked. You cannot edit or cancel them.' : rejected ? 'Rejected events are locked and kept in history. Create a corrected event if needed.' : 'Cancelled events are locked and kept only for history.'}</div>`
+      : `<div class="event-actions">
+          <button class="edit-small" type="button" data-action="edit-event" data-event-id="${esc(e.event_id)}">Edit</button>
+          <button class="cancel-small" type="button" data-action="cancel-event" data-event-id="${esc(e.event_id)}">Cancel</button>
+        </div>${hasAnyRegistration ? '<div class="support-note">This event has registrations/history. Use Cancel so admin, payment and refund records stay safe.</div>' : ''}`;
+    return `<article class="event-card event-row-card" ${img ? `style="background-image:url('${String(img).replace(/'/g, '%27')}')"` : ''}>
+      <div class="event-row-head"><div><span class="event-card__tag">${esc(e.category || 'Event')}</span><div class="event-row-title">${esc(e.title || 'Untitled event')}</div></div><span class="status-pill ${esc(lower(status))}">${esc(status)}</span></div>
+      <div class="event-row-fields">
+        <div class="event-row-field"><span>Date</span><strong>${esc(formatEventDateRange(e))}</strong></div>
+        <div class="event-row-field"><span>Time</span><strong>${esc(formatEventTimeDuration(e))}</strong></div>
+        <div class="event-row-field"><span>City</span><strong>${esc(e.location || 'Not set')}</strong></div>
+        <div class="event-row-field"><span>Slots</span><strong>${esc(e.registered_count || 0)} / ${esc(e.total_slots || 0)}</strong></div>
+        <div class="event-row-field"><span>Price</span><strong>${Number(e.price || 0) ? money(e.price) : 'Free'}</strong></div>
+        <div class="event-row-field"><span>Venue</span><strong>${esc(e.exact_address || e.venue_address || e.address || 'Not set')}</strong></div>
+      </div>
+      ${photos.length ? `<div class="event-photo-strip">${photos.map(p => `<img src="${esc(p)}" alt="Event photo">`).join('')}</div>` : ''}
+      <p class="preview-text">${esc(e.benefits || e.inclusions || e.description || '')}</p>
+      ${actions}
+    </article>`;
+  }
+
+  function renderCalendar() {
+    const box = $('dashboardCalendar');
+    if (!box) return;
+    const now = new Date();
+    const y = now.getFullYear(), m = now.getMonth();
+    const first = new Date(y, m, 1);
+    const startDay = first.getDay();
+    const days = new Date(y, m + 1, 0).getDate();
+    const monthName = first.toLocaleString('en-GB', { month: 'long', year: 'numeric' });
+    const byDay = {};
+    state.events.forEach(e => {
+      const d = new Date((e.start_date || e.event_date || '') + 'T00:00:00');
+      if (!Number.isNaN(d.getTime()) && d.getMonth() === m && d.getFullYear() === y) {
+        const day = d.getDate();
+        byDay[day] = byDay[day] || [];
+        byDay[day].push(e);
+      }
+    });
+    let cells = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map(d => `<div class="calendar-day-name">${d}</div>`).join('');
+    for (let i = 0; i < startDay; i++) cells += '<div class="calendar-day is-muted"></div>';
+    for (let d = 1; d <= days; d++) {
+      const events = byDay[d] || [];
+      cells += `<div class="calendar-day ${events.length ? 'has-event' : ''} ${d === now.getDate() ? 'is-today' : ''}"><div class="calendar-date">${d}</div>${events.slice(0,2).map(e => `${canEditEvent(e) ? `<button type="button" class="calendar-event-pill" data-action="edit-event" data-event-id="${esc(e.event_id)}">${esc(e.title)}<small>${esc(e.start_time || '')}</small></button>` : `<span class="calendar-event-pill ${isEventCancelled(e) ? 'cancelled' : ''}">${esc(e.title)}<small>${effectiveEventStatus(e)}</small></span>`}`).join('')}${events.length > 2 ? `<span class="calendar-more">+${events.length - 2} more</span>` : ''}</div>`;
+    }
+    box.innerHTML = `<div class="calendar-head"><div><div class="calendar-title">${esc(monthName)}</div><div class="calendar-subtitle">${state.events.length} event${state.events.length === 1 ? '' : 's'} created</div></div><button class="primary-btn" type="button" data-view="create">Create Event</button></div><div class="calendar-legend"><span class="legend-chip"><span class="legend-dot"></span>Event date</span></div><div class="calendar-grid">${cells}</div>`;
+  }
+
+  function renderAttendees() {
+    const body = $('attendeesTableBody');
+    if (!body) return;
+    renderPayoutSummary();
+    const searchTerm = lower($('attendeesSearchInput')?.value || '');
+    const filterStatus = $('attendeesFilterStatus')?.value || 'All';
+    let filtered = state.attendees;
+    if (searchTerm) {
+      filtered = filtered.filter(a => lower([a.user_name || a.name, a.user_email || a.email, a.event_title || a.title, a.city || a.location].filter(Boolean).join(' ')).includes(searchTerm));
+    }
+    if (filterStatus !== 'All') {
+      if (filterStatus === 'Registered') {
+        filtered = filtered.filter(a => !isRegistrationCancelled(a));
+      } else if (filterStatus === 'Cancelled') {
+        filtered = filtered.filter(a => isRegistrationCancelled(a));
+      } else if (filterStatus === 'Paid') {
+        filtered = filtered.filter(a => !isRegistrationCancelled(a) && (lower([a.settlement_status, a.payment_status, a.payout_status].filter(Boolean).join(' ')).includes('settled') || lower([a.settlement_status, a.payment_status, a.payout_status].filter(Boolean).join(' ')).includes('paid by orbit')));
+      } else if (filterStatus === 'Pending') {
+        filtered = filtered.filter(a => !isRegistrationCancelled(a) && !(lower([a.settlement_status, a.payment_status, a.payout_status].filter(Boolean).join(' ')).includes('settled') || lower([a.settlement_status, a.payment_status, a.payout_status].filter(Boolean).join(' ')).includes('paid by orbit')));
+      }
+    }
+    body.innerHTML = filtered.length ? filtered.map(a => {
+    const amount = Number(a.event_amount || a.amount_paid || a.amount || (Number(a.event_price || a.price || 0) * Number(a.tickets || 1)) || 0);
+      const payout = Number(a.organiser_payout || a.organizer_payout || (amount > 0 ? Math.max(amount - 5, 0) : 0));
+      const statusText = lower([a.settlement_status, a.payment_status, a.payout_status].filter(Boolean).join(' '));
+      const settled = statusText.includes('settled') || statusText.includes('paid by orbit') || statusText.includes('paid to organiser') || statusText.includes('paid to organizer');
+      const initiated = statusText.includes('initiat') || statusText.includes('processing');
+      const cancelled = isRegistrationCancelled(a);
+      const isFree = amount <= 0;
+      const registrationLabel = cancelled ? 'Cancelled' : clean(a.registration_status || a.booking_status || a.status || 'Registered');
+      const label = cancelled ? 'Cancelled' : isFree ? 'Free Event' : settled ? 'Paid by Orbit' : initiated ? 'Payment Initiated' : 'Pending from Orbit';
+      const statusClass = cancelled ? 'pending' : settled ? 'settled' : isFree ? 'free' : 'pending';
+      return `<tr><td><strong>${esc(a.user_name || a.name || 'User')}</strong><br><small>${esc(a.user_email || a.email || '')}</small><br><span class="payout-status-pill ${cancelled ? 'pending' : 'settled'}" style="margin-top:8px;">${esc(registrationLabel)}</span></td><td><strong>${esc(a.event_title || a.title || 'Event')}</strong></td><td>${esc(dateLabel(a.event_date || a.start_date || a.registered_at || ''))}</td><td>${esc(a.tickets || 1)}</td><td>${isFree ? 'Free' : amount ? money(amount) : 'Free'}</td><td><strong>${cancelled ? '—' : isFree ? 'Free' : payout ? money(payout) : '—'}</strong></td><td><span class="payout-status-pill ${statusClass}">${esc(label)}</span></td><td>${cancelled ? 'Cancelled' : isFree ? 'Free Event' : settled ? money(payout) + ' paid' : initiated ? money(payout) + ' initiated' : amount ? money(payout) + ' pending' : '-'}</td><td>${esc(a.upi_reference || a.upi_ref || a.transaction_id || 'Not added')}</td><td>${esc(a.city || a.location || '')}</td></tr>`;
+    }).join('') : '<tr><td colspan="10"><div class="empty-state">' + (state.attendees.length && (searchTerm || filterStatus !== 'All') ? 'No matching registrations.' : 'No registrations yet.') + '</div></td></tr>';
+  }
+
+  function renderPayoutSummary() {
+    const box = $('payoutSummaryGrid');
+    if (!box) return;
+    const paidRows = state.attendees.filter(a => !isRegistrationCancelled(a));
+    const payout = paidRows.reduce((s, a) => s + Number(a.organiser_payout || a.organizer_payout || 0), 0);
+    const pending = paidRows.reduce((s, a) => s + Number(a.pending_from_orbit || 0), 0);
+    const paid = paidRows.reduce((s, a) => s + Number(a.paid_by_orbit || 0), 0);
+    box.innerHTML = [['Your Earning', payout], ['Pending Payout', pending], ['Paid Payout', paid]].map(([l,v]) => `<div class="payout-card"><span>${esc(l)}</span><strong>${money(v)}</strong><small>Based on current registrations.</small></div>`).join('');
+  }
+
+
+  function isRegistrationCancelled(row) {
+    const text = lower([
+      row.status,
+      row.registration_status,
+      row.booking_status,
+      row.payment_status,
+      row.refund_status,
+      row.cancellation_status,
+      row.cancelled_at,
+      row.cancellation_reason,
+      row.cancel_reason
+    ].filter(Boolean).join(' '));
+    return text.includes('cancel') || text.includes('refund requested') || text.includes('refunded') || text.includes('not required');
+  }
+
+  function registrationDayKey(row) {
+    const raw = row.registered_at || row.created_at || row.booking_date || row.date || row.event_date || row.start_date || new Date().toISOString();
+    const d = new Date(String(raw).includes('T') ? raw : String(raw) + 'T00:00:00');
+    if (Number.isNaN(d.getTime())) return String(raw).slice(0, 10) || new Date().toISOString().slice(0, 10);
+    return d.toISOString().slice(0, 10);
+  }
+
+  function notificationText(n) {
+    return lower([n.type, n.category, n.title, n.message, n.content, n.body, n.notification_type, n.event_status, n.status].filter(Boolean).join(' '));
+  }
+
+  function notificationIsIndividualRegistration(n) {
+    const text = notificationText(n);
+    if (text.includes('summary')) return false;
+    if (text.includes('daily registration')) return false;
+    return text.includes('register') ||
+      text.includes('registration') ||
+      text.includes('registered') ||
+      text.includes('booking') ||
+      text.includes('booked') ||
+      text.includes('attendee');
+  }
+
+  function notificationIsUserCancellation(n) {
+    const text = notificationText(n);
+    if (!text.includes('cancel')) return false;
+    if (text.includes('event cancelled') || text.includes('event canceled') || text.includes('your event') || text.includes('organiser cancelled') || text.includes('organizer cancelled')) return false;
+    return text.includes('user') || text.includes('attendee') || text.includes('registration') || text.includes('booking') || text.includes('cancelled registration') || text.includes('canceled registration');
+  }
+
+  function eventForNotification(n) {
+    const eventId = clean(n?.related_event_id || n?.event_id || n?.eventId || '');
+    const eventTitle = lower(n?.event_title || n?.title || '');
+    if (eventId) return (state.events || []).find(e => sameValue(e.event_id, eventId));
+    if (eventTitle) return (state.events || []).find(e => lower(e.title || '') && eventTitle.includes(lower(e.title || '')));
+    const msg = lower(n?.message || n?.content || n?.body || '');
+    return (state.events || []).find(e => lower(e.title || '') && msg.includes(lower(e.title || '')));
+  }
+
+  function isApprovalNotificationForCompletedEvent(n) {
+    const text = notificationText(n);
+    if (!(text.includes('approval') || text.includes('approved') || text.includes('pending approval'))) return false;
+    const ev = eventForNotification(n);
+    return !!ev && isEventCompleted(ev);
+  }
+
+  function normalizeAllowedNotification(n) {
+    const text = notificationText(n);
+    const base = {
+      ...n,
+      message: n.message || n.content || n.body || '',
+      created_at: n.created_at || n.sentAt || n.createdAt || n.date || n.updated_at || new Date().toISOString(),
+      status: n.status || (n.unread ? 'Unread' : 'Read'),
+      unread: Boolean(n.unread || lower(n.status) === 'unread')
+    };
+
+    if (notificationIsIndividualRegistration(base) || notificationIsUserCancellation(base)) return null;
+    if (isApprovalNotificationForCompletedEvent(base)) return null;
+
+    if (text.includes('welcome')) {
+      return { ...base, type: 'Welcome', category: 'Welcome', title: base.title || 'Welcome to Orbit' };
+    }
+    if (text.includes('approval') || text.includes('approved') || text.includes('rejected') || text.includes('pending approval')) {
+      return { ...base, type: 'Approval', category: 'Approval', title: base.title || 'Event Approval Update' };
+    }
+    if (text.includes('event') && (text.includes('today') || text.includes('tomorrow') || text.includes('reminder'))) {
+      return { ...base, type: 'Reminder', category: 'Reminder', title: base.title || 'Event Reminder' };
+    }
+    if ((text.includes('completed') || text.includes('complete')) && text.includes('event')) {
+      return { ...base, type: 'Completed', category: 'Completed', title: base.title || 'Completed Event Update' };
+    }
+    if (text.includes('event') && (text.includes('cancelled') || text.includes('canceled') || text.includes('cancel'))) {
+      return { ...base, type: 'Cancellation', category: 'Cancellation', title: base.title || 'You have cancelled your event' };
+    }
+    if (text.includes('refund') && (text.includes('sent') || text.includes('processed') || text.includes('refunded') || text.includes('orbit'))) {
+      return { ...base, type: 'Refund', category: 'Refund', title: base.title || 'Refund Sent by Orbit to User' };
+    }
+    if (text.includes('payment received') || text.includes('payout') || text.includes('settled') || text.includes('paid by orbit') || text.includes('paid by admin')) {
+      return { ...base, type: 'Payment', category: 'Payment', title: base.title || 'Payment Received' };
+    }
+    if (text.includes('summary') && text.includes('registration')) {
+      return { ...base, type: 'Registration', category: 'Registration', title: base.title || 'Daily Registration Summary' };
+    }
+
+    return null;
+  }
+
+  function applyEventStatusFromNotifications(rows) {
+    const updates = (rows || []).map(normalizeAllowedNotification).filter(Boolean).filter(n => {
+      const text = notificationText(n);
+      return text.includes('approved') || text.includes('rejected') || text.includes('pending approval') || text.includes('completed') || text.includes('cancelled') || text.includes('canceled');
+    });
+    if (!updates.length || !state.events.length) return;
+    const titleCounts = state.events.reduce((acc, ev) => {
+      const key = lower(ev.title || '');
+      if (key) acc[key] = (acc[key] || 0) + 1;
+      return acc;
+    }, {});
+    state.events = state.events.map(event => {
+      let patched = { ...event };
+      updates.forEach(n => {
+        const eventId = clean(n.related_event_id || n.event_id || n.eventId || '');
+        const eventTitleKey = lower(event.title || '');
+        const uniqueTitleMatch = !eventId && eventTitleKey && titleCounts[eventTitleKey] === 1 && n.message && lower(n.message).includes(eventTitleKey);
+        // For duplicate event titles, never update by title text alone. Use event_id only.
+        if ((eventId && sameValue(event.event_id, eventId)) || uniqueTitleMatch) {
+          const text = notificationText(n);
+          if (isEventCompleted(patched) && (text.includes('reject') || text.includes('approved') || text.includes('pending approval'))) return;
+          if (text.includes('reject')) patched = { ...patched, status: 'Rejected', approval_status: 'Rejected' };
+          else if (text.includes('approved')) patched = { ...patched, approval_status: 'Approved', status: patched.status === 'Pending' ? 'Approved' : patched.status };
+          else if (text.includes('completed')) patched = { ...patched, status: 'Completed', approval_status: 'Completed' };
+          else if (text.includes('cancelled') || text.includes('canceled')) patched = { ...patched, status: 'Cancelled' };
+        }
+      });
+      return normalizeEvent(patched);
+    });
+  }
+
+  function allowedServerNotifications() {
+    return (state.notifications || []).map(normalizeAllowedNotification).filter(Boolean);
+  }
+
+  function stableNotificationTimeKey(n) {
+    const raw = n.created_at || n.sentAt || n.createdAt || n.date || n.updated_at || '';
+    if (!raw) return '';
+    const d = new Date(raw);
+    if (Number.isNaN(d.getTime())) return String(raw).slice(0, 10);
+    // Dedupe same generated/server notifications from the same minute.
+    return d.toISOString().slice(0, 16);
+  }
+
+  function notificationDedupeKey(n) {
+    const type = lower(n.type || n.category || n.notification_type || 'update').replace(/[^a-z0-9]+/g, '-');
+    const eventId = clean(n.related_event_id || n.event_id || n.eventId || '');
+    const regId = clean(n.registration_id || n.booking_id || '');
+    const refundId = clean(n.refund_id || '');
+    const paymentId = clean(n.payment_id || n.settlement_id || '');
+    const title = lower(n.title || '').replace(/[^a-z0-9]+/g, ' ').trim();
+    const message = lower(n.message || n.content || n.body || '').replace(/₹\s*/g, 'rs ').replace(/[^a-z0-9]+/g, ' ').trim();
+
+    // Backend aliases can return the same DB row once with _id and once without _id.
+    // Prefer action identity over raw _id so both copies collapse into one card.
+    if (refundId) return ['refund', refundId, type, title].join('|');
+    if (regId && (type.includes('refund') || title.includes('refund') || message.includes('refund'))) return ['refund-reg', regId, title, message].join('|');
+    if (paymentId) return ['payment', paymentId, type, eventId, title].join('|');
+    if (eventId && (type.includes('payment') || title.includes('payment') || message.includes('payment received') || message.includes('payout'))) return ['payment-event', eventId, title, message].join('|');
+    if (eventId && (type.includes('approval') || title.includes('approved') || title.includes('rejected'))) return ['approval', eventId, title].join('|');
+    if (eventId && (type.includes('reminder') || title.includes('reminder'))) return ['reminder', eventId, title, stableNotificationTimeKey(n).slice(0, 10)].join('|');
+    if (type.includes('registration') || title.includes('daily registration summary')) return ['registration-summary', title, message].join('|');
+    return [type, title, message, stableNotificationTimeKey(n)].filter(Boolean).join('|');
+  }
+
+  function eventStartDate(e) {
+    const date = e.start_date || e.event_date || e.date || '';
+    const time = e.start_time || e.event_time || '00:00';
+    if (!date) return null;
+    const d = new Date(String(date).includes('T') ? String(date) : `${date}T${time || '00:00'}`);
+    return Number.isNaN(d.getTime()) ? null : d;
+  }
+
+  function eventReminderNotifications() {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const tomorrow = new Date(today);
+    tomorrow.setDate(today.getDate() + 1);
+    return (state.events || []).filter(e => !isEventCancelled(e) && !isEventCompleted(e) && !isEventRejected(e)).map(e => {
+      const start = eventStartDate(e);
+      if (!start) return null;
+      const day = new Date(start);
+      day.setHours(0, 0, 0, 0);
+      const diffDays = Math.round((day - today) / 86400000);
+      if (diffDays !== 0 && diffDays !== 1) return null;
+      const timing = eventTimeRange(e);
+      const when = diffDays === 0 ? 'today' : 'tomorrow';
+      const title = e.title || e.event_title || 'your event';
+      return {
+        id: `event-reminder-${e._id || e.id || e.event_id || title}-${when}`,
+        type: 'Reminder',
+        category: 'Reminder',
+        title: 'Event Reminder',
+        message: `Your event ${title} is scheduled for ${when}${timing && timing !== 'Time not set' ? ' at ' + timing : ''}.`,
+        created_at: new Date().toISOString(),
+        status: 'Read',
+        unread: false,
+        isEventReminder: true
+      };
+    }).filter(Boolean);
+  }
+
+  function completedEventNotifications() {
+    return (state.events || []).filter(e => isEventCompleted(e)).map(e => ({
+      notification_id: 'completed-event-' + eventKey(e),
+      type: 'Completed',
+      category: 'Completed',
+      title: 'Event Completed',
+      message: `${e.title || 'Your event'} is completed and saved in your completed event history.`,
+      related_event_id: e.event_id,
+      event_id: e.event_id,
+      created_at: (parseEventEnd(e) || new Date()).toISOString(),
+      status: 'Read',
+      unread: false
+    }));
+  }
+
+  function dailyRegistrationSummaries() {
+    const groups = new Map();
+    state.attendees.forEach(row => {
+      if (isRegistrationCancelled(row)) return;
+      const key = registrationDayKey(row);
+      groups.set(key, (groups.get(key) || 0) + 1);
+    });
+    return Array.from(groups.entries()).sort((a, b) => b[0].localeCompare(a[0])).map(([day, count]) => ({
+      id: 'daily-registration-summary-' + day,
+      type: 'Registration',
+      category: 'Registration',
+      title: 'Daily Registration Summary',
+      message: `On ${dateLabel(day)}, ${count} ${count === 1 ? 'person registered' : 'people registered'} for your events.`,
+      created_at: day,
+      status: 'Read',
+      unread: false,
+      isDailySummary: true
+    }));
+  }
+
+  function isAdminPayoutPaid(row) {
+    if (isRegistrationCancelled(row)) return false;
+    const paidAmount = Number(row.paid_by_orbit || row.paid_by_admin || row.admin_paid_amount || row.payout_paid || row.paid_payout || 0);
+    if (paidAmount > 0) return true;
+    const payoutText = lower([
+      row.settlement_status,
+      row.payout_status,
+      row.organiser_payment_status,
+      row.organizer_payment_status,
+      row.admin_payment_status,
+      row.admin_payout_status,
+      row.paid_by_admin_status,
+      row.settlement_stage,
+      row.payout_stage
+    ].filter(Boolean).join(' '));
+    return payoutText.includes('settled') || payoutText.includes('paid') || payoutText.includes('released') || payoutText.includes('transferred');
+  }
+
+  function payoutStageOf(row) {
+    if (isRegistrationCancelled(row)) return '';
+    const text = lower([row.settlement_status, row.payout_status, row.payment_status, row.organiser_payment_status, row.admin_payment_status, row.admin_payout_status, row.settlement_stage, row.payout_stage].filter(Boolean).join(' '));
+    if (text.includes('initiat') || text.includes('processing') || text.includes('process')) return 'initiated';
+    if (text.includes('ready')) return 'ready';
+    if (isAdminPayoutPaid(row)) return 'paid';
+    return '';
+  }
+
+  function payoutStatusNotifications() {
+    const groups = new Map();
+    state.attendees.forEach(row => {
+      const stage = payoutStageOf(row);
+      if (!stage) return;
+      const key = (row.event_id || row.event_title || row.title || 'event') + '|' + stage;
+      const eventTitle = row.event_title || row.title || 'your event';
+      const amount = Number(row.paid_by_orbit || row.paid_by_admin || row.admin_paid_amount || row.pending_from_orbit || row.organiser_payout || row.organizer_payout || 0);
+      const when = row.initiated_at || row.ready_at || row.paid_at || row.settled_at || row.admin_paid_at || row.updated_at || new Date().toISOString();
+      const existing = groups.get(key) || { eventTitle, amount: 0, when, stage, event_id: row.event_id || '' };
+      existing.amount += amount;
+      if (new Date(when) > new Date(existing.when)) existing.when = when;
+      groups.set(key, existing);
+    });
+    return Array.from(groups.values()).map(item => {
+      const label = item.stage === 'initiated' ? 'Payment Initiated' : item.stage === 'ready' ? 'Payment Ready' : 'Payment Received';
+      const msg = item.stage === 'initiated'
+        ? `Orbit has initiated your payout for ${item.eventTitle}${item.amount ? ' — ' + money(item.amount) : ''}.`
+        : item.stage === 'ready'
+          ? `Orbit marked your payout ready for ${item.eventTitle}${item.amount ? ' — ' + money(item.amount) : ''}.`
+          : `Your payment is received after completion of event for ${item.eventTitle}${item.amount ? ' — ' + money(item.amount) : ''}.`;
+      return {
+        id: `payout-${item.stage}-${item.event_id || item.eventTitle}`,
+        type: 'Payment',
+        category: 'Payment',
+        title: label,
+        message: msg,
+        created_at: item.when,
+        status: 'Read',
+        unread: false,
+        related_event_id: item.event_id,
+        isPayoutStatus: true
+      };
+    });
+  }
+
+  function paymentReceivedNotifications() {
+    const groups = new Map();
+    state.attendees.forEach(row => {
+      if (!isAdminPayoutPaid(row)) return;
+      const eventKey = row.event_id || row.eventId || row.event_title || row.title || 'event';
+      const eventTitle = row.event_title || row.title || 'your event';
+      const paidDate = row.paid_at || row.settled_at || row.payout_paid_at || row.admin_paid_at || row.updated_at || row.created_at || new Date().toISOString();
+      const amount = Number(row.paid_by_orbit || row.paid_by_admin || row.admin_paid_amount || row.payout_paid || row.paid_payout || row.organiser_payout || row.organizer_payout || 0);
+      const existing = groups.get(eventKey) || { eventTitle, amount: 0, paidDate };
+      existing.amount += amount;
+      if (new Date(paidDate) > new Date(existing.paidDate)) existing.paidDate = paidDate;
+      groups.set(eventKey, existing);
+    });
+    return Array.from(groups.entries()).map(([eventKey, item]) => ({
+      id: 'payment-received-' + eventKey,
+      type: 'Payment',
+      category: 'Payment',
+      title: 'Payment Received',
+      message: `Your payment is received after completion of event${item.eventTitle ? ' for ' + item.eventTitle : ''}${item.amount ? ' — ' + money(item.amount) : ''}.`,
+      created_at: item.paidDate,
+      status: 'Read',
+      unread: false,
+      isPaymentReceived: true
+    }));
+  }
+
+  function renderNotifications() {
+    const box = $('organiserNotificationsList') || $('notificationsList');
+    if (!box) return;
+    const filter = $('notificationFilter')?.value || 'All';
+    const dailyRows = dailyRegistrationSummaries();
+    const reminderRows = eventReminderNotifications();
+    const completedRows = completedEventNotifications();
+    const paymentRows = paymentReceivedNotifications();
+    const payoutStageRows = payoutStatusNotifications();
+    const serverRows = allowedServerNotifications();
+    // Allowed organiser notifications: welcome, approvals, today/tomorrow event reminders, completed-event updates,
+    // organiser event cancellations, refund-sent updates, daily registration summaries,
+    // and admin-paid payout confirmations. Individual user registration/cancellation
+    // notifications are still hidden.
+    let rows = mergeByKey([...dailyRows, ...reminderRows, ...completedRows, ...paymentRows, ...payoutStageRows, ...serverRows], notificationDedupeKey);
+    rememberNotifications(rows);
+    if (filter === 'Unread') rows = rows.filter(n => n.unread || lower(n.status) === 'unread');
+    if (filter === 'Read') rows = rows.filter(n => !(n.unread || lower(n.status) === 'unread'));
+    if (filter !== 'All' && filter !== 'Unread' && filter !== 'Read') {
+      rows = rows.filter(n => lower([n.type, n.category, n.title, n.message, n.content].filter(Boolean).join(' ')).includes(lower(filter)));
+    }
+    rows = sortNotificationsNewestFirst(rows);
+    box.innerHTML = rows.length ? rows.map(n => {
+      const isUnread = n.unread || lower(n.status) === 'unread';
+      const ts = n.created_at || n.sentAt || n.createdAt || '';
+      const timeStr = ts ? (() => { const d = new Date(String(ts).includes('T') ? ts : String(ts) + 'T00:00:00'); return Number.isNaN(d.getTime()) ? String(ts) : d.toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' }).replace(/,/g, ''); })() : '';
+      const typeKey = lower(n.type || n.category || 'info');
+      const badgeType = isUnread ? 'new' : (typeKey === 'warning' ? 'warning' : (typeKey === 'error' || typeKey === 'danger' || typeKey === 'cancelled' ? 'error' : (typeKey === 'success' || typeKey === 'registered' ? 'success' : (typeKey === 'update' ? 'update' : 'info'))));
+      const badgeLabel = isUnread ? 'New' : (typeKey === 'registered' ? 'Registered' : typeKey === 'cancelled' ? 'Cancelled' : typeKey === 'success' ? 'Success' : typeKey === 'warning' ? 'Alert' : typeKey === 'error' ? 'Error' : typeKey === 'update' ? 'Update' : 'Info');
+      return `<div class="notif-item ${isUnread ? 'unread' : ''}"><div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;"><div style="flex:1;min-width:0;"><div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:3px;"><div class="notif-item__title">${esc(n.title || 'Notification')}</div><span class="notif-tag notif-tag--${badgeType}">${esc(badgeLabel)}</span></div><div class="notif-item__text">${esc(((n.message||'').length>120)?(n.message.slice(0,117)+'…'):(n.message||''))}</div></div><div class="notif-item__time" style="white-space:nowrap;flex-shrink:0;margin-left:12px;">${esc(timeStr)}</div></div></div>`;
+    }).join('') : '<div class="empty-state">No notifications yet.</div>';
+    const unread = rows.filter(n => n.unread || lower(n.status) === 'unread').length;
+    if ($('organiserNotifBadge')) { $('organiserNotifBadge').textContent = unread; $('organiserNotifBadge').style.display = unread ? 'inline-flex' : 'none'; }
+  }
+
+
+  async function loadData(options = {}) {
+    const silent = !!options.silent;
+    const cached = cachedHostSession();
+
+    // IMPORTANT SESSION FIX:
+    // Browser cookies are shared between profile.html and organiser.html. If you log in as a user
+    // on profile.html, /api/me will start returning role:'user' even while this organiser tab is open.
+    // So once this page has an organiser email saved, NEVER let /api/me overwrite it with the user profile.
+    // We only call /api/me when there is no organiser identity saved at all.
+    if (cached.hasHost || hostEmail()) {
+      useCachedHostSession('kept organiser tab on its own saved organiser account; ignored current profile.html user cookie');
+      // Ask the backend for this exact organiser account, not the shared /api/me cookie.
+      // This prevents profile.html login from turning the organiser tab into a user tab.
+      try {
+        const hostCheck = await api('/api/host/me?host_email=' + encodeURIComponent(hostEmail()));
+        if (hostCheck && hostCheck.success) {
+          updateHostUi({ ...(hostCheck.account || hostCheck.host || {}), role: 'host', user_type: 'host' });
+        }
+      } catch (err) {
+        console.warn('host/me check skipped:', err.message);
+      }
+    } else {
+      try {
+        const me = await api('/api/me');
+        const role = lower(me.role || me.user_type || me.account_type || me.type || '');
+        if (me.success && (role === 'host' || role === 'organiser' || role === 'organizer')) {
+          updateHostUi({ ...(me.account || me.host || me.organiser || me.organizer || {}), role: 'host', user_type: 'host' });
+        } else if (role && role !== 'host' && role !== 'organiser' && role !== 'organizer') {
+          if (!silent) alert('Please login as organiser. User accounts cannot open the organiser dashboard.');
+          location.replace('/hlog.html');
+          return;
+        } else {
+          if (!silent) alert('Please login as organiser.');
+          location.replace('/hlog.html');
+          return;
+        }
+      } catch (err) {
+        if (!silent) alert('Please login as organiser.');
+        location.replace('/hlog.html');
+        return;
+      }
+    }
+
+    const email = hostEmail();
+    if (email && !state.host.email) updateHostUi({ ...(state.host || {}), email, role: 'host', user_type: 'host' });
+    let serverStats = {};
+    let serverEvents = [];
+    let serverAttendees = [];
+    let serverNotifications = [];
+    let organiserBackendLoaded = false;
+
+    try {
+      const data = await api('/organiser-data/' + encodeURIComponent(email || state.host.email || ''));
+      organiserBackendLoaded = true;
+      updateHostUi(data.organiser || data.host || state.host);
+      serverStats = data.stats || {};
+      serverEvents = allArraysFromPayload(data, ['events']);
+      serverAttendees = allArraysFromPayload(data, ['attendees', 'registrations', 'bookings', 'payments', 'registered_events', 'registeredEvents']);
+      serverNotifications = allArraysFromPayload(data, ['notifications', 'alerts']);
+    } catch (err) {
+      console.warn('organiser-data failed:', err.message);
+    }
+
+    const extraEvents = await tryLoadArray([
+      '/api/host/events?host_email=' + encodeURIComponent(email),
+      '/api/events?host_email=' + encodeURIComponent(email),
+      '/api/organiser/events?host_email=' + encodeURIComponent(email)
+    ], ['events', 'data', 'items']);
+
+    // STRICT DATA ISOLATION FIX: Always require explicit owner verification
+    // Never allow ownerless events from backend, even if it loaded successfully
+    const cachedEvents = organiserBackendLoaded ? [] : readEventHistory(email).filter(e => isCurrentHostEvent(e, { allowOwnerless: true }));
+    const sharedEvents = organiserBackendLoaded ? [] : readSharedEvents();
+    const serverOwnedEvents = [...serverEvents, ...extraEvents]
+      .map(normalizeEvent)
+      .filter(e => isCurrentHostEvent(e, { allowOwnerless: false })); // STRICT: No ownerless events
+    const loadedEvents = [...serverOwnedEvents, ...cachedEvents, ...sharedEvents].map(stampCurrentHostOnEvent).map(normalizeEvent);
+
+    // If backend responded, prune any locally-cached/shared events that are no longer present on server.
+    if (organiserBackendLoaded && email) {
+      try {
+        // Build set of server event keys for quick lookup
+        const serverIds = new Set(serverOwnedEvents.map(e => eventKey(e)).filter(Boolean));
+        const pruneLocalKey = (key) => {
+          try {
+            const rows = safeJson(localStorage.getItem(key), []);
+            if (!Array.isArray(rows)) return;
+            const kept = rows.filter(r => {
+              const k = eventKey(r) || clean(r && r.event_id);
+              // keep rows that are not host events (defensive) or that exist on server
+              if (!k) return true;
+              // If this is an organiser-specific store, ensure owner matches current host
+              const owner = (r && (r.host_email || r.organiser_email || r.organizer_email)) || '';
+              if (owner && !sameValue(owner, email)) return true;
+              return serverIds.has(k);
+            });
+            safeSetJson(key, kept, compactEventForStorage);
+          } catch (e) { /* ignore */ }
+        };
+        pruneLocalKey(organiserHistoryKey(email));
+        pruneLocalKey('orbitSharedEvents');
+        pruneLocalKey('orbitOrganiserEvents_' + email);
+      } catch (e) { console.warn('Prune local events failed:', e); }
+    }
+
+    state.events = mergeEventRows(loadedEvents.filter(e => isCurrentHostEvent(e, { allowOwnerless: false })));
+    applyEventStatusFromNotifications(organiserBackendLoaded ? serverNotifications : [...serverNotifications, ...readSharedRowsForHost('orbitSharedNotifications')]);
+    
+    // Clean browser-cache pollution from ALL other organizers to prevent data leakage
+    if (organiserBackendLoaded && email) {
+      try { 
+        // Remove cached events for this organizer
+        localStorage.removeItem(organiserHistoryKey(email)); 
+        localStorage.removeItem('orbitOrganiserEvents_' + email); 
+      } catch {}
+      
+      // Also clear any stale organizer sessions to prevent account switching confusion
+      try {
+        const allKeys = Object.keys(localStorage);
+        for (const key of allKeys) {
+          // Clear any organizer history or cache keys that don't belong to current organizer
+          if ((key.startsWith('orbitOrganiserEvents_') || key.startsWith('orbitOrganiserAttendees_') || 
+               key.startsWith('orbitOrganiserNotifications_') || key.includes('organiser_')) && 
+              !key.includes(email)) {
+            localStorage.removeItem(key);
+          }
+        }
+      } catch {}
+    }
+    rememberEvents(state.events);
+
+    const attendeeUrls = [
+      '/api/host/attendees',
+      '/api/host/registrations',
+      '/api/organiser/registrations',
+      '/api/organizer/registrations'
+    ];
+    if (email) {
+      attendeeUrls.push(
+        '/api/host/attendees?host_email=' + encodeURIComponent(email),
+        '/api/organiser/attendees?host_email=' + encodeURIComponent(email),
+        '/api/host/registrations?host_email=' + encodeURIComponent(email),
+        '/api/organiser/registrations?host_email=' + encodeURIComponent(email),
+        '/api/organizer/registrations?host_email=' + encodeURIComponent(email),
+        '/api/registrations?host_email=' + encodeURIComponent(email),
+        '/api/registrations?organiser_email=' + encodeURIComponent(email),
+        '/api/registrations?organizer_email=' + encodeURIComponent(email),
+        '/api/attendees?host_email=' + encodeURIComponent(email),
+        '/api/bookings?host_email=' + encodeURIComponent(email),
+        '/api/payments?host_email=' + encodeURIComponent(email),
+        '/api/payments?organiser_email=' + encodeURIComponent(email),
+        '/api/payments?organizer_email=' + encodeURIComponent(email)
+      );
+    }
+    const extraAttendees = await tryLoadArray(attendeeUrls, ['attendees', 'registrations', 'bookings', 'payments', 'registered_events', 'registeredEvents', 'data', 'items']);
+
+    const cachedAttendees = organiserBackendLoaded ? [] : readAttendeeHistory(email);
+    const sharedAttendees = organiserBackendLoaded ? [] : [
+      ...readSharedRowsForHost('orbitSharedRegistrations'),
+      ...readSharedRowsForHost('orbitSharedPayments')
+    ];
+    state.attendees = mergeAttendees([...serverAttendees, ...extraAttendees, ...cachedAttendees, ...sharedAttendees]);
+    rememberAttendees(state.attendees, email);
+    console.log('[Orbit organiser] registrations loaded:', state.attendees.length, 'host:', email || '(session)');
+
+    const extraNotifications = await tryLoadArray([
+      '/api/host/notifications?host_email=' + encodeURIComponent(email),
+      '/api/organiser/notifications?host_email=' + encodeURIComponent(email),
+      '/api/notifications?recipient_type=host&email=' + encodeURIComponent(email)
+    ], ['notifications', 'alerts', 'data', 'items']);
+
+    const cachedNotifications = organiserBackendLoaded ? [] : readNotificationHistory(email);
+    const sharedNotifications = organiserBackendLoaded ? [] : readSharedRowsForHost('orbitSharedNotifications');
+    state.notifications = mergeByKey([...serverNotifications, ...extraNotifications, ...cachedNotifications, ...sharedNotifications], n => notificationDedupeKey(normalizeAllowedNotification(n) || n));
+    const upiReminder = organiserUpiReminderNotification();
+    if (upiReminder) {
+      state.notifications = mergeByKey([upiReminder, ...state.notifications], n => notificationDedupeKey(normalizeAllowedNotification(n) || n));
+    }
+    applyEventStatusFromNotifications(state.notifications);
+    rememberEvents(state.events);
+    syncProfileVisibleEvents(state.events);
+    if (organiserBackendLoaded) {
+      // Remove old public fallback rows before rewriting only approved active events.
+      try { localStorage.removeItem('orbitSharedEvents'); } catch {}
+      syncProfileVisibleEvents(state.events);
+    }
+    rememberNotifications(state.notifications, email);
+
+    renderStats(serverStats);
+    renderCityFilter(); renderDashboardEvents(); renderCalendar(); renderEvents(); renderAttendees(); renderNotifications(); updatePreview();
+  }
+
+  async function collectEventPayload() {
+    const banner = await filesToBase64('banner_image');
+    const refs = await filesToBase64('reference_photos');
+    const existing = state.editingEventId ? (state.events.find(e => e.event_id === state.editingEventId) || {}) : {};
+    if (state.editingEventId && !canEditEvent(existing)) throw new Error('Completed or cancelled events cannot be edited.');
+    const payload = {
+      event_id: state.editingEventId || undefined,
+      host_email: hostEmail(), organiser_email: hostEmail(), owner_email: hostEmail(), created_by_email: hostEmail(),
+      title: $('title')?.value || '', location: $('location')?.value || '', exact_address: $('exact_address')?.value || '', venue_address: $('exact_address')?.value || '',
+      start_date: $('start_date')?.value || '', end_date: $('end_date')?.value || $('start_date')?.value || '', start_time: $('start_time')?.value || '', end_time: $('end_time')?.value || '',
+      price: Number($('price')?.value || 0), total_slots: Number($('total_slots')?.value || 0),
+      organiser_name: $('organiser_name')?.value || state.host.name || '', organization: $('organization')?.value || state.host.organization || '', contact_email: $('contact_email')?.value || hostEmail(), contact_phone: $('contact_phone')?.value || '',
+      benefits: $('benefits')?.value || '', description: $('description')?.value || '',
+      interest_tags: getSelectedValues('interestBox'), age_groups: getSelectedValues('ageBox'), personality_tags: getSelectedValues('personalityBox'), improvement_areas: getSelectedValues('improvementBox'), focus_area: getSelectedValues('improvementBox'), challenge_types: getSelectedValues('challengeBox'), professional_types: getSelectedValues('professionalBox'),
+      banner_image: banner[0] || (state.editingEventId ? (state.events.find(e => e.event_id === state.editingEventId) || {}).banner_image : ''), reference_photos: refs.length ? refs : (state.editingEventId ? normalizeList((state.events.find(e => e.event_id === state.editingEventId) || {}).reference_photos) : []), event_photos: refs.length ? refs : undefined
+    };
+    const completedAtCreation = !state.editingEventId && shouldSaveAsCompleted(payload);
+    if (!state.editingEventId) {
+      if (completedAtCreation) {
+        payload.status = 'Completed';
+        payload.event_status = 'Completed';
+        payload.approval_status = 'Completed';
+        payload.completed_at = new Date().toISOString();
+        payload.already_completed = true;
+        payload.skip_admin_approval = true;
+        payload.history_only = true;
+      } else {
+        // New future/current events must wait for admin approval. Do not send Approved from organiser side.
+        payload.status = 'Pending';
+        payload.approval_status = 'Pending';
+      }
+    }
+    if (state.editingEventId) {
+      // Never allow editing protected event details after posting.
+      payload.location = existing.location || payload.location;
+      payload.exact_address = existing.exact_address || existing.venue_address || existing.address || payload.exact_address;
+      payload.venue_address = existing.venue_address || existing.exact_address || existing.address || payload.venue_address;
+      payload.start_date = existing.start_date || existing.event_date || payload.start_date;
+      payload.end_date = existing.end_date || existing.start_date || existing.event_date || payload.end_date;
+      payload.start_time = existing.start_time || existing.event_time || payload.start_time;
+      payload.end_time = existing.end_time || existing.start_time || existing.event_time || payload.end_time;
+    }
+    if (!payload.title || !payload.description || !payload.total_slots) throw new Error('Please fill title, description and total slots.');
+    
+    // Validate that start_date is not in the past (only for new events)
+    if (!state.editingEventId && payload.start_date) {
+      const eventDate = new Date(payload.start_date + 'T00:00:00');
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      if (eventDate < today) {
+        throw new Error('Event date cannot be in the past. Please select today or a future date.');
+      }
+    }
+    
+    return payload;
+  }
+
+  async function submitEvent(e) {
+    if (e) e.preventDefault();
+    const btn = $('submitEventBtn');
+    try {
+      if (btn) btn.disabled = true;
+      toast(state.editingEventId ? 'Updating event…' : 'Creating event…');
+      const payload = await collectEventPayload();
+      const completedAtCreation = !state.editingEventId && shouldSaveAsCompleted(payload);
+      const url = state.editingEventId ? '/api/events/' + encodeURIComponent(state.editingEventId) + '/update' : '/api/host/events';
+      const data = await api(url, { method: 'POST', body: JSON.stringify(payload) });
+      let savedEvent = normalizeEvent(data.event || data.data || data.item || payload);
+      if (completedAtCreation) savedEvent = forceCompletedEvent({ ...savedEvent, ...payload, event_id: savedEvent.event_id || payload.event_id });
+      // Keep organiser fallback stores updated instantly, while backend remains the source of truth.
+      // Do not write Pending/Rejected/Completed events into orbitSharedEvents, because profile.html may display that store.
+      rememberEvents([savedEvent]);
+      syncProfileVisibleEvents(state.events.concat([savedEvent]));
+      if (!completedAtCreation) {
+        sharedWrite('orbitSharedNotifications', [...sharedRead('orbitSharedNotifications'), {
+          notification_id: 'admin-event-created-' + savedEvent.event_id,
+          recipient_type: 'admin',
+          recipient_email: 'admin',
+          type: 'Approval',
+          category: 'Approval',
+          title: state.editingEventId ? 'Event updated' : 'Event created',
+          message: `${savedEvent.title || 'An event'} was ${state.editingEventId ? 'updated' : 'created'} by ${state.host.name || 'an organiser'}.`,
+          event_id: savedEvent.event_id,
+          related_event_id: savedEvent.event_id,
+          created_at: new Date().toISOString(),
+          status: 'Unread',
+          unread: true
+        }], n => n.notification_id || notificationDedupeKey(n));
+      }
+      if (!state.editingEventId) {
+        if (completedAtCreation) {
+          upsertLocalOrganiserNotification({
+            notification_id: 'organiser-event-completed-' + savedEvent.event_id,
+            type: 'Completed',
+            category: 'Completed',
+            title: 'Event Completed',
+            message: `${savedEvent.title || 'Your event'} is already completed, so it was saved in your completed event history and was not sent for admin approval.`,
+            related_event_id: savedEvent.event_id
+          });
+        } else {
+          upsertLocalOrganiserNotification({
+            notification_id: 'organiser-event-created-' + savedEvent.event_id,
+            type: 'Approval',
+            category: 'Approval',
+            title: 'Event Created',
+            message: `${savedEvent.title || 'Your event'} has been created and sent to admin for approval. It will be visible to users only after approval.`,
+            related_event_id: savedEvent.event_id
+          });
+        }
+      }
+      state.events = mergeEventRows([...state.events, savedEvent]);
+      toast(completedAtCreation ? 'Completed event saved in history' : (data.message || (state.editingEventId ? 'Event updated' : 'Event created')), 'success');
+      resetEventForm();
+      await loadData();
+      showView('events', $$('.nav-btn').find(b => b.dataset.view === 'events'));
+    } catch (err) {
+      toast(err.message || 'Could not save event', 'error');
+    } finally { if (btn) btn.disabled = false; }
+  }
+
+  function resetEventForm() {
+    state.editingEventId = null; state.referencePhotos = [];
+    $('createEventForm')?.reset();
+    if ($('banner_image')) $('banner_image').value = '';
+    if ($('reference_photos')) $('reference_photos').value = '';
+    $$('input[type="checkbox"]', $('createEventForm') || document).forEach(i => { i.checked = false; });
+    $$('.multi-chip', $('createEventForm') || document).forEach(c => c.classList.remove('selected'));
+    // Clear all text/select inputs in the form explicitly
+    $$('input, textarea, select', $('createEventForm') || document).forEach(el => {
+      if (el.type === 'checkbox' || el.type === 'radio') return;
+      el.value = '';
+    });
+    // Re-populate organiser name and contact from host profile (not email)
+    const name = clean(state.host.full_name || state.host.fullName || state.host.name || state.host.hostName || state.host.organiserName || state.host.organizerName || ((state.host.first_name || state.host.firstName) ? clean(state.host.first_name || state.host.firstName) + (state.host.last_name || state.host.lastName ? ' ' + clean(state.host.last_name || state.host.lastName) : '') : '') || '');
+    if ($('organiser_name')) $('organiser_name').value = name;
+    if ($('organization')) $('organization').value = state.host.organization || state.host.organisation || '';
+    if ($('contact_email')) $('contact_email').value = state.host.email || '';
+    if ($('contact_phone')) $('contact_phone').value = state.host.phone || '';
+    if ($('submitEventBtn')) $('submitEventBtn').textContent = 'Post Event';
+    if ($('cancelEditBtn')) $('cancelEditBtn').style.display = 'none';
+    if ($('editLockNote')) $('editLockNote').classList.remove('show');
+    setEditLocks(false);
+    updateImagePreviews(); updatePreview();
+  }
+
+  function collectEventDraftData() {
+    return {
+      updated_at: new Date().toISOString(),
+      title: $('title')?.value || '',
+      location: $('location')?.value || '',
+      exact_address: $('exact_address')?.value || '',
+      start_date: $('start_date')?.value || '',
+      end_date: $('end_date')?.value || '',
+      start_time: $('start_time')?.value || '',
+      end_time: $('end_time')?.value || '',
+      price: $('price')?.value || '',
+      total_slots: $('total_slots')?.value || '',
+      organiser_name: $('organiser_name')?.value || '',
+      organization: $('organization')?.value || '',
+      contact_email: $('contact_email')?.value || '',
+      contact_phone: $('contact_phone')?.value || '',
+      benefits: $('benefits')?.value || '',
+      description: $('description')?.value || '',
+      interest_tags: getSelectedValues('interestBox'),
+      age_groups: getSelectedValues('ageBox'),
+      personality_tags: getSelectedValues('personalityBox'),
+      improvement_areas: getSelectedValues('improvementBox'),
+      challenge_types: getSelectedValues('challengeBox'),
+      professional_types: getSelectedValues('professionalBox')
+    };
+  }
+
+  function restoreEventDraft() {
+    const raw = localStorage.getItem('organiserEventDraft');
+    if (!raw) return null;
+    let draft;
+    try { draft = JSON.parse(raw); } catch (err) { localStorage.removeItem('organiserEventDraft'); return null; }
+    if (!draft) return null;
+    const mapping = ['title','location','exact_address','start_date','end_date','start_time','end_time','price','total_slots','organiser_name','organization','contact_email','contact_phone','benefits','description'];
+    mapping.forEach(id => { if ($(id) && draft[id] !== undefined) $(id).value = draft[id]; });
+    setSelectedValues('interestBox', draft.interest_tags || []);
+    setSelectedValues('ageBox', draft.age_groups || []);
+    setSelectedValues('personalityBox', draft.personality_tags || []);
+    setSelectedValues('improvementBox', draft.improvement_areas || draft.focus_area || []);
+    setSelectedValues('challengeBox', draft.challenge_types || []);
+    setSelectedValues('professionalBox', draft.professional_types || []);
+    updatePreview();
+    return draft;
+  }
+
+  function saveEventDraft() {
+    try {
+      localStorage.setItem('organiserEventDraft', JSON.stringify(collectEventDraftData()));
+      toast('Event draft saved temporarily.', 'success');
+    } catch (err) {
+      toast('Could not save draft.', 'error');
+    }
+  }
+
+  function clearEventDraft() {
+    localStorage.removeItem('organiserEventDraft');
+    resetEventForm();
+    toast('Event draft cleared.', 'success');
+  }
+
+  function editEvent(eventId) {
+    const e = state.events.find(x => x.event_id === eventId);
+    if (!e) return alert('Event not found. Refresh and try again.');
+    if (!canEditEvent(e)) return alert('This event is completed/cancelled, so it cannot be edited.');
+    state.editingEventId = eventId;
+    const values = { title:e.title, location:e.location, start_date:e.start_date || e.event_date, end_date:e.end_date || e.start_date || e.event_date, start_time:e.start_time || e.event_time, end_time:e.end_time || e.start_time || e.event_time, exact_address:e.exact_address || e.venue_address || e.address, price:e.price, total_slots:e.total_slots, organiser_name:e.organiser_name, organization:e.organization, contact_email:e.contact_email || e.organiser_email, contact_phone:e.contact_phone, benefits:e.benefits || e.inclusions, description:e.description };
+    Object.entries(values).forEach(([id, value]) => { if ($(id)) $(id).value = value || ''; });
+    setSelectedValues('interestBox', e.interest_tags); setSelectedValues('ageBox', e.age_groups); setSelectedValues('personalityBox', e.personality_tags); setSelectedValues('improvementBox', e.improvement_areas || e.focus_area); setSelectedValues('challengeBox', e.challenge_types); setSelectedValues('professionalBox', e.professional_types);
+    if ($('submitEventBtn')) $('submitEventBtn').textContent = 'Update Event';
+    if ($('cancelEditBtn')) $('cancelEditBtn').style.display = 'block';
+    if ($('editLockNote')) $('editLockNote').classList.add('show');
+    setEditLocks(true);
+    updatePreview(e); updateImagePreviews(e);
+    showView('create', $$('.nav-btn').find(b => b.dataset.view === 'create'));
+  }
+
+  async function cancelEvent(eventId) {
+    const e = state.events.find(x => x.event_id === eventId);
+    if (!canCancelEvent(e)) return alert('This event is completed/cancelled, so it cannot be cancelled.');
+
+    // Show inline cancel dialog with preset reasons
+    const presets = [
+      'Venue not available',
+      'Insufficient registrations',
+      'Organiser unavailable',
+      'Technical issues',
+      'Weather / force majeure',
+      'Schedule conflict'
+    ];
+
+    const overlay = document.createElement('div');
+    overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.72);display:flex;align-items:center;justify-content:center;z-index:9999;padding:20px;';
+    overlay.innerHTML = `<div style="background:linear-gradient(145deg,rgba(13,9,28,.98),rgba(6,4,14,.98));border:1px solid rgba(255,255,255,.14);border-radius:24px;padding:28px;max-width:480px;width:100%;box-shadow:0 30px 80px rgba(0,0,0,.6);">
+      <h3 style="font-size:1.2rem;font-weight:800;color:#fff;margin-bottom:6px;">Cancel Event</h3>
+      <p style="color:#E8E1FF;font-size:.88rem;margin-bottom:18px;">Select a reason or type your own.</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:14px;">
+        ${presets.map(r => `<button type="button" onclick="document.getElementById('cancelEventReasonText').value='${r}'" style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);border-radius:14px;padding:10px 12px;color:#E8E1FF;font-size:.82rem;font-weight:700;cursor:pointer;text-align:left;transition:.2s ease;" onmouseover="this.style.borderColor='rgba(140,114,255,.5)'" onmouseout="this.style.borderColor='rgba(255,255,255,.14)'">${r}</button>`).join('')}
+      </div>
+      <textarea id="cancelEventReasonText" rows="3" placeholder="Or describe your reason..." style="width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);border-radius:14px;padding:12px 14px;color:#fff;font-size:.9rem;outline:none;resize:vertical;font-family:inherit;"></textarea>
+      <div style="display:flex;gap:12px;margin-top:16px;flex-wrap:wrap;">
+        <button type="button" id="cancelEventConfirmBtn" style="flex:1;background:linear-gradient(135deg,#A995FF,#6E4CFF);border:none;border-radius:14px;padding:13px;color:#fff;font-weight:800;cursor:pointer;">Confirm Cancel</button>
+        <button type="button" id="cancelEventDismissBtn" style="flex:1;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:14px;padding:13px;color:#E8E1FF;font-weight:800;cursor:pointer;">Keep Event</button>
+      </div>
+    </div>`;
+    document.body.appendChild(overlay);
+
+    await new Promise((resolve, reject) => {
+      overlay.querySelector('#cancelEventConfirmBtn').addEventListener('click', async () => {
+        const reason = (document.getElementById('cancelEventReasonText')?.value || '').trim();
+        if (!reason) { alert('Please select or enter a reason.'); return; }
+        overlay.remove();
+        try {
+          await api('/api/events/' + encodeURIComponent(eventId) + '/cancel', { method: 'POST', body: JSON.stringify({ event_id: eventId, host_email: hostEmail(), reason, refund_all_requested: true }) });
+          const cancelledEvent = normalizeEvent({ ...e, status: 'Cancelled', cancellation_reason: reason, cancelled_at: new Date().toISOString() });
+          rememberEvents([cancelledEvent]);
+          upsertLocalOrganiserNotification({
+            notification_id: 'organiser-event-cancelled-' + eventId,
+            type: 'Cancellation',
+            category: 'Cancellation',
+            title: 'You have cancelled your event',
+            message: `${cancelledEvent.title || 'Your event'} has been cancelled. Registered users will be notified by Orbit.`,
+            related_event_id: eventId
+          });
+          state.events = mergeEventRows([...state.events, cancelledEvent]);
+          toast('Event cancelled. Users will be notified by Orbit.', 'success');
+          await loadData();
+        } catch (err) { alert(err.message || 'Could not cancel event.'); }
+        resolve();
+      });
+      overlay.querySelector('#cancelEventDismissBtn').addEventListener('click', () => { overlay.remove(); resolve(); });
+    });
+  }
+
+  async function deleteEvent(eventId) {
+    const e = state.events.find(x => eventKey(x) === clean(eventId) || clean(x.event_id) === clean(eventId));
+    if (!e) return alert('Event not found. Refresh and try again.');
+    if (isEventCompleted(e) || isEventCancelled(e)) return alert('Completed/cancelled events are kept for history and cannot be deleted.');
+    const count = Number(e.registered_count || e.total_registrations || e.registration_count || 0);
+    const warning = count > 0
+      ? `This event shows ${count} registration(s). Backend will not permanently delete events with history. Use Cancel instead. Still try delete?`
+      : 'Delete this event permanently from MongoDB? This is only allowed for events with no registration/payment/refund history.';
+    if (!confirm(warning)) return;
+    try {
+      const data = await api('/api/organiser/event/delete/' + encodeURIComponent(eventId), {
+        method: 'DELETE',
+        body: JSON.stringify({ event_id: eventId, host_email: hostEmail() })
+      });
+      forgetEventEverywhere(eventId);
+      renderAll();
+      alert(data.message || 'Event permanently deleted.');
+      await loadData();
+    } catch (err) {
+      alert(err.message || 'Could not delete event. If it has registrations, cancel it instead.');
+    }
+  }
+
+  function validateUpiId(upi) {
+    if (!upi || !upi.trim()) return false;
+    const upiPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9]{3,}$/;
+    return upiPattern.test(upi.trim());
+  }
+
+  async function saveHostProfile() {
+    const status = $('hostProfileStatus');
+    const upiInput = $('hostProfileUpi');
+    try {
+      if (status) { status.textContent = 'Saving profile…'; status.className = 'inline-status'; }
+      const upiId = upiInput?.value?.trim() || '';
+      if (!upiId) {
+        if (status) { status.textContent = 'UPI ID is required. Please enter a valid UPI ID.'; status.className = 'inline-status error'; }
+        if (upiInput) upiInput.focus();
+        return;
+      }
+      if (!validateUpiId(upiId)) {
+        if (status) { status.textContent = 'Invalid UPI ID format. Use format like: yourname@bankname'; status.className = 'inline-status error'; }
+        if (upiInput) upiInput.focus();
+        return;
+      }
+      const payload = { old_email: hostEmail(), name: $('hostProfileName')?.value || '', organization: $('hostProfileOrganization')?.value || '', email: $('hostProfileEmail')?.value || hostEmail(), phone: $('hostProfilePhone')?.value || '', upi_id: upiId, upi_upi_image: state.host.upi_upi_image || '' };
+      const data = await api('/api/host/update-profile', { method: 'POST', body: JSON.stringify(payload) });
+      updateHostUi(data.host || payload);
+      if (status) { status.textContent = 'Profile saved successfully.'; status.className = 'inline-status success'; }
+      await loadData();
+    } catch (err) { if (status) { status.textContent = err.message || 'Could not save profile.'; status.className = 'inline-status error'; } }
+  }
+
+  async function markNotificationsRead() {
+    state.notifications = state.notifications.map(n => ({ ...n, unread:false, status:'Read' }));
+    rememberNotifications(state.notifications);
+    renderNotifications();
+    try { await api('/api/notifications/read', { method:'POST', body: JSON.stringify({ email:hostEmail(), recipient_type:'host' }) }); } catch {}
+  }
+
+  async function loadReviews() {
+    const summary = $('reviewsSummary'), list = $('reviewsList'), breakdown = $('eventReviewBreakdown');
+    if (summary) summary.innerHTML = '<div class="empty-state">Loading reviews…</div>';
+    try {
+      const data = await api('/api/host/reviews?host_email=' + encodeURIComponent(hostEmail()));
+      const reviews = data.reviews || [];
+      rememberReviews(reviews);
+      const overall = data.overall_summary || {};
+      if (summary) summary.innerHTML = `<div class="stat-card"><h3>${esc(overall.average_rating || 0)} / 5</h3><p>Average Rating</p></div><div class="stat-card"><h3>${esc(overall.total_reviews || reviews.length)}</h3><p>Total Reviews</p></div>`;
+      if (breakdown) breakdown.innerHTML = (data.event_summaries || []).map(s => `<div class="review-breakdown-card"><h3>${esc(s.title || s.event_title || 'Event')}</h3><p>${esc(s.average_rating || 0)} / 5 from ${esc(s.total_reviews || s.total_ratings || 0)} reviews</p><div class="review-meter"><span style="width:${Math.min(100, Number(s.average_rating || 0) * 20)}%"></span></div></div>`).join('') || '<div class="empty-state">No event-wise review summary yet.</div>';
+      if (list) list.innerHTML = reviews.map(r => `<div class="notification-card"><div class="notification-card__title">${esc(r.event_title || 'Event review')} — ${esc(r.rating || 0)}★</div><p class="notification-card__text">${esc(r.review || r.comment || '')}</p></div>`).join('') || '<div class="empty-state">No reviews yet.</div>';
+    } catch (err) {
+      const cached = readReviewHistory();
+      if (cached.length) {
+        if (summary) summary.innerHTML = `<div class="stat-card"><h3>${esc((cached.reduce((s,r)=>s+Number(r.rating||0),0)/cached.length).toFixed(1))} / 5</h3><p>Average Rating</p></div><div class="stat-card"><h3>${esc(cached.length)}</h3><p>Total Reviews</p></div>`;
+        if (list) list.innerHTML = cached.map(r => `<div class="notification-card"><div class="notification-card__title">${esc(r.event_title || 'Event review')} — ${esc(r.rating || 0)}★</div><p class="notification-card__text">${esc(r.review || r.comment || '')}</p></div>`).join('');
+        if (breakdown) breakdown.innerHTML = '<div class="empty-state">Event-wise review summary will refresh when backend is available.</div>';
+      } else {
+        if (summary) summary.innerHTML = '<div class="empty-state">No reviews loaded yet. Ratings will appear after users review completed events.</div>';
+        if (list) list.innerHTML = '';
+        if (breakdown) breakdown.innerHTML = '';
+      }
+    }
+  }
+
+  function updatePreview(existing = {}) {
+    const selected = (boxId) => getSelectedValues(boxId).join(', ');
+    const title = $('title')?.value || existing.title || 'Your event title';
+    const city = $('location')?.value || existing.location || 'City';
+    const price = Number($('price')?.value || existing.price || 0);
+    const benefits = $('benefits')?.value || selected('benefitsBox') || existing.benefits || existing.inclusions || '';
+    const matches = [
+      selected('interestBox'),
+      selected('ageBox'),
+      selected('personalityBox'),
+      selected('improvementBox'),
+      selected('professionalBox')
+    ].filter(Boolean);
+
+    if ($('previewTitle')) $('previewTitle').textContent = title;
+    if ($('previewMeta')) $('previewMeta').textContent = city + ' - ' + dateLabel($('start_date')?.value || existing.start_date || '') + ' - ' + ($('start_time')?.value || existing.start_time || 'Time') + ' - ' + (price ? money(price) : 'Free');
+    if ($('previewVenue')) $('previewVenue').textContent = $('exact_address')?.value || existing.exact_address || existing.venue_address || 'Add detailed venue address.';
+    if ($('previewBenefits')) $('previewBenefits').textContent = benefits || 'Add benefits users will receive.';
+    if ($('previewDesc')) $('previewDesc').textContent = $('description')?.value || existing.description || 'Your full event description will appear here.';
+    if ($('previewBadges')) {
+      $('previewBadges').innerHTML = [
+        '<span class="small-badge">' + esc($('total_slots')?.value || existing.total_slots || 0) + ' slots</span>',
+        ...matches.slice(0, 4).map(value => '<span class="small-badge">' + esc(value) + '</span>')
+      ].join('');
+    }
+
+    const bg = $('previewBanner');
+    const img = existing.banner_image || '';
+    if (bg && img) bg.style.backgroundImage = "url('" + String(img).replace(/'/g, '%27') + "')";
+  }
+
+  function updateImagePreviews(existing = {}) {
+    const bannerInput = $('banner_image');
+    const previewBanner = $('previewBanner');
+    if (bannerInput?.files?.[0] && previewBanner) {
+      fileToBase64(bannerInput.files[0]).then(src => { previewBanner.style.backgroundImage = `url('${src}')`; });
+    } else if (previewBanner) {
+      const existingBanner = existing.banner_image || existing.poster_image || '';
+      previewBanner.style.backgroundImage = existingBanner ? `url('${String(existingBanner).replace(/'/g, '%27')}')` : '';
+    }
+
+    const refsBox = $('previewReferences');
+    if (!refsBox) return;
+    const existingRefs = normalizeList(existing.reference_photos || existing.event_photos);
+    if (state.referencePhotos.length) {
+      Promise.all(state.referencePhotos.map(fileToBase64)).then(urls => { refsBox.innerHTML = urls.map(u => `<img src="${esc(u)}" alt="Event photo">`).join(''); });
+    } else if (existingRefs.length) {
+      refsBox.innerHTML = existingRefs.map(u => `<img src="${esc(u)}" alt="Event photo">`).join('');
+    } else {
+      refsBox.innerHTML = '<div class="empty-state" style="grid-column:1/-1;padding:12px;">No event photos selected.</div>';
+    }
+  }
+
+  function handleReferencePhotoSelection(event) {
+    const files = Array.from(event?.target?.files || []);
+    const seen = new Set(state.referencePhotos.map(f => `${f.name}-${f.size}-${f.lastModified}`));
+    files.forEach(file => { const key = `${file.name}-${file.size}-${file.lastModified}`; if (!seen.has(key)) { state.referencePhotos.push(file); seen.add(key); } });
+    updateImagePreviews();
+  }
+
+  function clearReferencePhotos() {
+    state.referencePhotos = [];
+    if ($('reference_photos')) $('reference_photos').value = '';
+    updateImagePreviews();
+  }
+
+  function logout() {
+    clearHostLocalData();
+    fetch('/logout', { method:'POST', credentials:'include' }).finally(() => { location.href = '/hlog.html'; });
+  }
+
+  async function deleteHostAccount() {
+    const email = hostEmail();
+    if (!confirm('Delete organiser account permanently? This will remove the organiser account, events, registrations, payments, refunds, settlements, reviews and notifications.')) return;
+    try {
+      await api('/api/host/delete-account', { method:'POST', body: JSON.stringify({ email, role:'host' }) });
+      clearHostLocalData(email);
+      alert('Organiser account and all related data deleted permanently.');
+      location.replace('/hsign.html');
+    } catch (err) {
+      clearHostLocalData(email);
+      alert(err.message || 'Could not delete account. If you deleted it from MongoDB manually, local cached data has been cleared.');
+      location.replace('/hlog.html');
+    }
+  }
+
+  function setupAllCheckboxes() {
+    const allValues = ['all', 'all types', 'everyone', 'anyone'];
+    const boxes = ['benefitsBox', 'interestBox', 'ageBox', 'personalityBox', 'improvementBox', 'challengeBox', 'professionalBox'];
+
+    const syncBox = (box) => {
+      if (!box) return;
+      $$('label.multi-chip', box).forEach(chip => {
+        const input = chip.querySelector('input[type="checkbox"]');
+        chip.classList.toggle('selected', !!input?.checked);
+      });
+    };
+
+    boxes.forEach(id => {
+      const box = $(id);
+      if (!box || box.dataset.optionFixReady === '1') return;
+      box.dataset.optionFixReady = '1';
+
+      box.addEventListener('click', (e) => {
+        const chip = e.target.closest('label.multi-chip');
+        if (!chip || !box.contains(chip)) return;
+
+        e.preventDefault();
+        e.stopPropagation();
+        if (typeof e.stopImmediatePropagation === 'function') e.stopImmediatePropagation();
+
+        if (box.classList.contains('is-locked')) return;
+        const input = chip.querySelector('input[type="checkbox"]');
+        if (!input || input.disabled) return;
+
+        input.checked = !input.checked;
+
+        const inputs = $$('input[type="checkbox"]', box);
+        const isAll = allValues.includes(lower(input.value));
+        const allInput = inputs.find(i => allValues.includes(lower(i.value)));
+        const normalInputs = inputs.filter(i => !allValues.includes(lower(i.value)));
+
+        // If the organiser clicks "All" / "All Types", select or unselect EVERY option in that same group.
+        if (isAll) {
+          inputs.forEach(i => { i.checked = input.checked; });
+        } else if (allInput) {
+          // If one normal option is removed, "All" should also turn off.
+          if (!input.checked) allInput.checked = false;
+
+          // If all normal options are manually selected, turn "All" on too.
+          if (normalInputs.length && normalInputs.every(i => i.checked)) {
+            allInput.checked = true;
+          }
+        }
+
+        syncBox(box);
+        if (id === 'benefitsBox' && $('benefits')) {
+          $('benefits').value = getSelectedValues('benefitsBox').join(', ');
+        }
+        input.dispatchEvent(new Event('input', { bubbles: true }));
+        updatePreview();
+      }, true);
+
+      box.addEventListener('change', () => {
+        syncBox(box);
+        if (id === 'benefitsBox' && $('benefits')) {
+          $('benefits').value = getSelectedValues('benefitsBox').join(', ');
+        }
+        updatePreview();
+      });
+
+      syncBox(box);
+    });
+  }
+
+  function attachEvents() {
+    const navViews = ['dashboard','create','events','attendees','notifications','reviews','settings'];
+    $$('.sidebar__nav .nav-btn').forEach((btn, i) => { btn.dataset.view = navViews[i] || lower(btn.textContent).split(' ')[0]; btn.removeAttribute('onclick'); });
+    $$('[onclick]').forEach(el => el.removeAttribute('onclick'));
+
+    document.addEventListener('click', (e) => {
+      const btn = e.target.closest('button, [data-view], [data-action]');
+      if (!btn) return;
+      const text = lower(btn.textContent);
+      const view = btn.dataset.view || (btn.classList.contains('nav-btn') ? btn.dataset.view : '');
+      const action = btn.dataset.action;
+      if (view) { e.preventDefault(); showView(view, btn.classList.contains('nav-btn') ? btn : $$('.nav-btn').find(b => b.dataset.view === view)); return; }
+      if (action === 'edit-event') { e.preventDefault(); editEvent(btn.dataset.eventId); return; }
+      if (action === 'cancel-event') { e.preventDefault(); cancelEvent(btn.dataset.eventId); return; }
+      if (btn.id === 'cancelEditBtn' || text.includes('cancel edit')) { e.preventDefault(); resetEventForm(); return; }
+      if (text.includes('add photos')) { e.preventDefault(); $('reference_photos')?.click(); return; }
+      if (text.includes('clear photos')) { e.preventDefault(); clearReferencePhotos(); return; }
+      if (action === 'save-draft') { e.preventDefault(); saveEventDraft(); return; }
+      if (action === 'clear-draft') { e.preventDefault(); clearEventDraft(); return; }
+      if (text.includes('mark all read')) { e.preventDefault(); markNotificationsRead(); return; }
+      if (text.includes('save profile')) { e.preventDefault(); saveHostProfile(); return; }
+      if (text.includes('logout')) { e.preventDefault(); logout(); return; }
+      if (text.includes('delete account')) { e.preventDefault(); deleteHostAccount(); return; }
+    }, true);
+
+    $('createEventForm')?.addEventListener('submit', submitEvent);
+    $('reference_photos')?.addEventListener('change', handleReferencePhotoSelection);
+    $('banner_image')?.addEventListener('change', () => { updateImagePreviews(); updatePreview(); });
+    $('eventSearchInput')?.addEventListener('input', renderEvents);
+    $('eventFilterCity')?.addEventListener('change', renderEvents);
+    $('attendeesSearchInput')?.addEventListener('input', renderAttendees);
+    $('attendeesFilterStatus')?.addEventListener('change', renderAttendees);
+    $('notificationFilter')?.addEventListener('change', renderNotifications);
+    $$('input, textarea, select', $('createEventForm') || document).forEach(el => { el.addEventListener('input', () => updatePreview()); el.addEventListener('change', () => updatePreview()); });
+    setupAllCheckboxes();
+  }
+
+  window.showView = showView;
+  window.refreshOrganiserData = loadData;
+  window.openReferencePhotoPicker = () => $('reference_photos')?.click();
+  window.clearReferencePhotos = clearReferencePhotos;
+  window.handleReferencePhotoSelection = handleReferencePhotoSelection;
+  window.markOrganiserNotificationsRead = markNotificationsRead;
+  window.saveHostProfile = saveHostProfile;
+  window.handleHostLogout = logout;
+  window.deleteHostAccount = deleteHostAccount;
+  window.cancelEditEvent = resetEventForm;
+  window.loadHostReviews = loadReviews;
+  window.editEvent = editEvent;
+  window.cancelEvent = cancelEvent;
+  window.renderEvents = renderEvents;
+  window.renderAttendees = renderAttendees;
+  window.renderNotifications = renderNotifications;
+
+
+
+  // If profile.html logs in/out in another tab, keep this organiser tab pinned to its organiser email.
+  window.addEventListener('storage', (e) => {
+    if (['user','orbitUserProfile','orbitSignupEmail'].includes(e.key || '')) {
+      if (hostEmail()) rememberHostSession({ ...(state.host || {}), email: hostEmail(), role: 'host', user_type: 'host' });
+    }
+  });
+
+  document.addEventListener('DOMContentLoaded', () => {
+    attachEvents();
+    if (hostEmail()) rememberHostSession({ ...(state.host || {}), email: hostEmail(), role: 'host', user_type: 'host' });
+    loadData();
+    // Keep organiser registrations in sync with user/admin actions without letting profile.html's user session kick out this organiser tab.
+    // Cancelled rows stay in the table with Cancelled status instead of disappearing.
+    if (!window.__orbitOrganiserAutoRefresh) {
+      window.__orbitOrganiserAutoRefresh = setInterval(() => {
+        if (document.visibilityState === 'visible') loadData({ silent: true });
+      }, 10000);
+    }
+
+  // Also periodically re-render UI from existing state so events flip to
+  // Completed when local time passes the event end datetime without
+  // needing a backend change.
+  if (!window.__orbitOrganiserAutoRender) {
+    window.__orbitOrganiserAutoRender = setInterval(() => {
+      try {
+        if (document.visibilityState !== 'visible') return;
+        if (typeof renderEvents === 'function') renderEvents();
+        if (typeof renderCalendar === 'function') renderCalendar();
+        if (typeof renderStats === 'function') renderStats();
+      } catch (e) { console.warn('Organiser auto-render failed:', e); }
+    }, 30000);
+  }
+  });
+
+  window.addEventListener('pageshow', () => {
+    if (hostEmail()) rememberHostSession({ ...(state.host || {}), email: hostEmail(), role: 'host', user_type: 'host' });
+  });
+})();
+</script></body>
+</html>

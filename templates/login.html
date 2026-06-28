@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Log In - Orbit</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --accent: #8C72FF;
+      --accent-d: #6C47FF;
+      --accent-l: rgba(238, 233, 255, 0.92);
+      --text: #F7F4FF;
+      --text2: #E4DDF8;
+      --muted: #C9C1E4;
+      --dark-text: #241B35;
+      --dark-muted: #625A78;
+      --danger: #ff8b8b;
+      --success: #74e4a3;
+      --glass: rgba(255, 255, 255, 0.12);
+      --glass-strong: rgba(255, 255, 255, 0.18);
+      --glass-border: rgba(255, 255, 255, 0.20);
+      --shadow: 0 28px 80px rgba(0, 0, 0, 0.34);
+      --ease: cubic-bezier(.22, 1, .36, 1);
+      --spring: cubic-bezier(.34, 1.56, .64, 1);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      min-height: 100%;
+    }
+
+    body {
+      font-family: "Plus Jakarta Sans", sans-serif;
+      color: var(--text);
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at 12% 16%, rgba(140, 114, 255, 0.22), transparent 28%),
+        radial-gradient(circle at 88% 12%, rgba(226, 161, 255, 0.12), transparent 30%),
+        radial-gradient(circle at 70% 82%, rgba(108, 71, 255, 0.16), transparent 32%),
+        linear-gradient(135deg, #070511 0%, #110b20 42%, #1b1230 100%);
+      display: flex;
+      align-items: stretch;
+      justify-content: center;
+      -webkit-font-smoothing: antialiased;
+      overflow: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.045) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.045) 1px, transparent 1px);
+      background-size: 34px 34px;
+      mask-image: radial-gradient(circle at center, black 26%, transparent 78%);
+      pointer-events: none;
+      opacity: .7;
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 22px;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 32px;
+      pointer-events: none;
+    }
+
+    .shell {
+      position: relative;
+      z-index: 1;
+      width: min(1180px, calc(100% - 48px));
+      min-height: calc(100vh - 48px);
+      margin: 24px auto;
+      display: grid;
+      grid-template-columns: .95fr 1.05fr;
+      overflow: hidden;
+      border: 1px solid var(--glass-border);
+      border-radius: 34px;
+      background: rgba(255,255,255,0.08);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(22px) saturate(145%);
+      animation: shellIn .9s var(--ease) both;
+    }
+
+    @keyframes shellIn {
+      from { opacity: 0; transform: scale(0.99); }
+      to { opacity: 1; transform: none; }
+    }
+
+    .visual {
+      background:
+        radial-gradient(circle at 18% 18%, rgba(140, 114, 255, 0.30), transparent 30%),
+        radial-gradient(circle at 82% 28%, rgba(226, 161, 255, 0.14), transparent 26%),
+        linear-gradient(180deg, rgba(20, 13, 36, 0.94) 0%, rgba(31, 21, 54, 0.90) 100%);
+      padding: 52px 56px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      overflow: hidden;
+      border-right: 1px solid rgba(255,255,255,0.14);
+    }
+
+    .visual::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image: radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+      background-size: 28px 28px;
+      pointer-events: none;
+    }
+
+    .visual::after {
+      content: "";
+      position: absolute;
+      width: 480px;
+      height: 480px;
+      top: -160px;
+      left: -120px;
+      border-radius: 50%;
+      background: rgba(108, 71, 255, 0.22);
+      filter: blur(90px);
+      pointer-events: none;
+      animation: orbDrift1 8s ease-in-out infinite alternate;
+    }
+
+    @keyframes orbDrift1 {
+      from { transform: translate(0, 0); }
+      to { transform: translate(30px, 24px); }
+    }
+
+    @keyframes orbDrift2 {
+      from { transform: translate(0, 0); }
+      to { transform: translate(-20px, -18px); }
+    }
+
+    .v-orb2 {
+      position: absolute;
+      width: 320px;
+      height: 320px;
+      bottom: -80px;
+      right: -60px;
+      border-radius: 50%;
+      background: rgba(185, 127, 255, 0.14);
+      filter: blur(70px);
+      pointer-events: none;
+      animation: orbDrift2 10s ease-in-out infinite alternate;
+    }
+
+    .v-orb3 {
+      position: absolute;
+      width: 200px;
+      height: 200px;
+      bottom: 30%;
+      left: 50%;
+      border-radius: 50%;
+      background: rgba(108, 71, 255, 0.10);
+      filter: blur(50px);
+      pointer-events: none;
+      animation: orbDrift1 12s ease-in-out infinite alternate;
+    }
+
+    .v-content {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    .v-logo {
+      display: flex;
+      align-items: center;
+      text-decoration: none;
+      animation: logoIn 1s .15s var(--ease) both;
+    }
+
+    @keyframes logoIn {
+      from { opacity: 0; transform: translateX(-16px); }
+      to { opacity: 1; transform: none; }
+    }
+
+    .v-logo-svg {
+      width: 148px;
+      height: auto;
+      display: block;
+      transition: transform .4s var(--spring), filter .4s;
+    }
+
+    .v-logo:hover .v-logo-svg {
+      transform: translateY(-2px) scale(1.03);
+      filter: drop-shadow(0 4px 12px rgba(180, 130, 255, 0.35));
+    }
+
+    .v-middle {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px 0;
+    }
+
+    .v-text {
+      width: 100%;
+      max-width: 420px;
+    }
+
+    .v-headline {
+      font-size: clamp(2.2rem, 3vw, 3.4rem);
+      font-weight: 800;
+      color: #fff;
+      line-height: 1.06;
+      letter-spacing: -0.04em;
+      margin-bottom: 20px;
+      animation: headIn 1s .28s var(--ease) both;
+    }
+
+    @keyframes headIn {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: none; }
+    }
+
+    .v-headline em {
+      font-style: normal;
+      background: linear-gradient(135deg, #e2a1ff, #8c72ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .v-desc {
+      color: rgba(255, 255, 255, 0.78);
+      font-size: 1rem;
+      line-height: 1.75;
+      max-width: 340px;
+      animation: headIn 1s .38s var(--ease) both;
+    }
+
+    .form-side {
+      background:
+        linear-gradient(145deg, rgba(255,255,255,0.18), rgba(255,255,255,0.08));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 48px 56px;
+      overflow-y: auto;
+      backdrop-filter: blur(24px) saturate(150%);
+    }
+
+    .card {
+      width: 100%;
+      max-width: 410px;
+      padding: 34px;
+      border-radius: 28px;
+      background: rgba(255,255,255,0.88);
+      border: 1px solid rgba(255,255,255,0.58);
+      box-shadow: 0 24px 70px rgba(0,0,0,0.24);
+      backdrop-filter: blur(18px) saturate(150%);
+      animation: cardIn 1s .22s var(--ease) both;
+    }
+
+    @keyframes cardIn {
+      from { opacity: 0; transform: translateX(20px); }
+      to { opacity: 1; transform: none; }
+    }
+
+    .card-title {
+      font-size: 2.4rem;
+      font-weight: 800;
+      line-height: 1.02;
+      letter-spacing: -0.05em;
+      color: var(--dark-text);
+      margin-bottom: 8px;
+    }
+
+    .card-title span {
+      color: var(--accent);
+    }
+
+    .card-sub {
+      font-size: 0.9rem;
+      color: var(--dark-muted);
+      margin-bottom: 24px;
+      line-height: 1.6;
+    }
+
+    .field {
+      margin-bottom: 14px;
+      opacity: 0;
+      transform: translateY(10px);
+      animation: fieldIn .6s var(--ease) forwards;
+    }
+
+    .field:nth-child(1) { animation-delay: .45s; }
+    .field:nth-child(2) { animation-delay: .52s; }
+    .field:nth-child(3) { animation-delay: .59s; }
+
+    @keyframes fieldIn {
+      to { opacity: 1; transform: none; }
+    }
+
+    .field label {
+      display: block;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #473D63;
+      margin-bottom: 7px;
+      transition: color .25s var(--ease);
+    }
+
+    .field:focus-within label {
+      color: var(--accent);
+    }
+
+    .field-wrap {
+      position: relative;
+    }
+
+    .field input {
+      width: 100%;
+      padding: 15px 16px;
+      border: 1.5px solid rgba(108, 71, 255, 0.16);
+      border-radius: 16px;
+      background: rgba(255,255,255,0.82);
+      font-family: inherit;
+      font-size: 0.95rem;
+      color: var(--dark-text);
+      outline: none;
+      transition:
+        border-color .28s var(--ease),
+        box-shadow .28s var(--ease),
+        background .28s var(--ease),
+        transform .25s var(--spring);
+    }
+
+    .field input::placeholder {
+      color: #9087A8;
+    }
+
+    .field input:focus {
+      border-color: var(--accent);
+      background: #fff;
+      box-shadow: 0 0 0 4px rgba(108, 71, 255, 0.13), 0 10px 24px rgba(108, 71, 255, 0.10);
+      transform: translateY(-1px);
+    }
+
+    .eye-btn {
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #8f8aae;
+      font-size: 0.88rem;
+      padding: 2px 4px;
+      line-height: 1;
+      transition: color .2s var(--ease), transform .25s var(--spring);
+    }
+
+    .eye-btn:hover {
+      color: var(--accent);
+      transform: translateY(-50%) scale(1.08);
+    }
+
+    .password-note {
+      display: block;
+      margin-top: 8px;
+      font-size: 0.74rem;
+      line-height: 1.45;
+      color: var(--muted);
+    }
+
+
+
+    .forgot-row {
+      display: flex;
+      justify-content: flex-end;
+      margin: -4px 0 18px;
+      opacity: 0;
+      animation: fieldIn .6s .66s var(--ease) forwards;
+    }
+
+    .forgot-link {
+      color: var(--accent);
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-decoration: none;
+      transition: color .25s var(--ease), transform .25s var(--ease);
+    }
+
+    .forgot-link:hover {
+      color: #ffffff;
+      transform: translateY(-1px);
+    }
+
+    .btn-submit {
+      width: 100%;
+      padding: 16px;
+      border: none;
+      border-radius: 15px;
+      background: linear-gradient(135deg, var(--accent), #7f5cff);
+      color: #fff;
+      font-family: inherit;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 14px 34px rgba(108, 71, 255, 0.22);
+      position: relative;
+      overflow: hidden;
+      transition:
+        transform .35s var(--spring),
+        box-shadow .35s var(--ease),
+        background .35s var(--ease);
+      opacity: 0;
+      transform: translateY(8px);
+      animation: fieldIn .6s .7s var(--ease) forwards;
+    }
+
+    .btn-submit::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 60%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.18), transparent);
+      transform: skewX(-20deg);
+      transition: left .55s var(--ease);
+    }
+
+    .btn-submit:hover::before {
+      left: 160%;
+    }
+
+    .btn-submit:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 20px 44px rgba(108, 71, 255, 0.30);
+      background: linear-gradient(135deg, var(--accent-d), var(--accent));
+    }
+
+    .btn-submit:active {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 24px rgba(108, 71, 255, 0.20);
+      transition-duration: .1s;
+    }
+
+    .btn-submit:disabled {
+      cursor: wait;
+      opacity: .9;
+    }
+
+    .status {
+      min-height: 22px;
+      font-size: 0.86rem;
+      margin-top: 12px;
+      color: var(--dark-muted);
+    }
+
+    .status.error { color: var(--danger); }
+    .status.success { color: var(--success); }
+
+    .card-foot {
+      text-align: center;
+      margin-top: 22px;
+      font-size: 0.84rem;
+      color: var(--dark-muted);
+      opacity: 0;
+      animation: fieldIn .6s .88s var(--ease) forwards;
+    }
+
+    .card-foot a {
+      color: var(--accent);
+      font-weight: 700;
+      text-decoration: none;
+      position: relative;
+      transition: color .25s;
+    }
+
+    .card-foot a::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: -1px;
+      width: 0;
+      height: 1.5px;
+      background: var(--accent);
+      border-radius: 999px;
+      transition: width .3s var(--ease);
+    }
+
+    .card-foot a:hover::after {
+      width: 100%;
+    }
+
+
+
+    .error-text {
+      min-height: 22px;
+      font-size: 0.86rem;
+      margin-top: 12px;
+      color: #d64545;
+      font-weight: 700;
+    }
+
+    @keyframes shake {
+      0%,100% { transform: translateX(0); }
+      15% { transform: translateX(-8px); }
+      30% { transform: translateX(7px); }
+      45% { transform: translateX(-5px); }
+      60% { transform: translateX(4px); }
+      75% { transform: translateX(-2px); }
+    }
+
+    .shake { animation: shake .5s var(--ease) !important; }
+
+    @media (max-width: 900px) {
+      body {
+        overflow: auto;
+        height: auto;
+      }
+
+      .shell {
+        grid-template-columns: 1fr;
+        height: auto;
+        width: min(100% - 28px, 760px);
+        margin: 14px auto;
+        min-height: auto;
+      }
+
+      .visual {
+        padding: 44px 36px 36px;
+        min-height: 280px;
+      }
+
+      .v-middle {
+        justify-content: flex-start;
+        align-items: center;
+      }
+
+      .v-text {
+        max-width: 100%;
+      }
+    }
+
+    @media (max-width: 560px) {
+      body {
+        padding: 0;
+      }
+
+      .visual {
+        padding: 32px 22px 28px;
+      }
+
+      .form-side {
+        padding: 30px 20px 34px;
+      }
+
+      .card {
+        padding: 26px 22px;
+        border-radius: 24px;
+      }
+
+      .card-title {
+        font-size: 2rem;
+      }
+
+      .v-headline {
+        font-size: clamp(1.9rem, 8vw, 2.6rem);
+      }
+    }
+  
+  
+/* ===== Orbit Ultra Dark Theme Override ===== */
+:root {
+  --accent: #6E4CFF !important;
+  --accent-d: #3F22D8 !important;
+  --accent-dark: #3F22D8 !important;
+  --accent-soft: #A995FF !important;
+  --accent-l: #DCD4F8 !important;
+  --accent-glow: rgba(98, 67, 255, 0.24) !important;
+  --text: #FFFFFF !important;
+  --text2: #E8E1FF !important;
+  --muted: #BEB3E6 !important;
+  --muted-strong: #DCD4F8 !important;
+  --dark-text: #FFFFFF !important;
+  --dark-muted: #BEB3E6 !important;
+  --bg: #020106 !important;
+  --card: rgba(255,255,255,0.045) !important;
+  --card-strong: rgba(255,255,255,0.075) !important;
+  --glass: rgba(255,255,255,0.045) !important;
+  --glass-strong: rgba(255,255,255,0.075) !important;
+  --glass-border: rgba(255,255,255,0.115) !important;
+  --surface: rgba(255,255,255,0.045) !important;
+  --surface-2: rgba(255,255,255,0.075) !important;
+  --surface-strong: rgba(5,3,13,0.88) !important;
+  --surface-deep: rgba(5,3,13,0.90) !important;
+  --border: rgba(255,255,255,0.115) !important;
+  --border-strong: rgba(180,160,255,0.28) !important;
+  --border-bright: rgba(180,160,255,0.28) !important;
+  --shadow: 0 30px 84px rgba(0,0,0,0.68) !important;
+  --shadow-sm: 0 20px 55px rgba(0,0,0,0.56) !important;
+  --shadow-md: 0 30px 84px rgba(0,0,0,0.68) !important;
+  --shadow-soft: 0 18px 46px rgba(0,0,0,0.48) !important;
+  --g-primary: linear-gradient(135deg, #A995FF 0%, #6E4CFF 44%, #3F22D8 100%) !important;
+  --g-card: linear-gradient(145deg, rgba(255,255,255,0.07), rgba(255,255,255,0.025)) !important;
+}
+
+html, body {
+  color-scheme: dark;
+}
+
+body {
+  font-family: 'Plus Jakarta Sans', sans-serif !important;
+  color: var(--text) !important;
+  background:
+    radial-gradient(circle at 12% 15%, rgba(98, 67, 255, 0.16), transparent 30%),
+    radial-gradient(circle at 82% 22%, rgba(77, 45, 210, 0.12), transparent 28%),
+    radial-gradient(circle at 50% 88%, rgba(120, 80, 220, 0.07), transparent 34%),
+    linear-gradient(135deg, #020106 0%, #05030D 38%, #080512 68%, #020105 100%) !important;
+  background-attachment: fixed !important;
+}
+
+body::before {
+  background:
+    linear-gradient(120deg, rgba(255,255,255,0.018), transparent 30%, rgba(255,255,255,0.012) 58%, transparent 80%),
+    radial-gradient(circle at 50% 0%, rgba(130,100,255,0.035), transparent 38%) !important;
+  opacity: .45 !important;
+}
+
+body::after {
+  opacity: .018 !important;
+  border-color: rgba(255,255,255,0.055) !important;
+  background-color: transparent !important;
+}
+
+nav, .nav, .sidebar, .topbar {
+  background: rgba(5,3,14,0.84) !important;
+  border-color: rgba(255,255,255,0.10) !important;
+  box-shadow: 0 24px 70px rgba(0,0,0,0.62), inset 0 1px 0 rgba(255,255,255,0.07) !important;
+}
+
+nav.scrolled, .nav.scrolled {
+  background: rgba(4,2,11,0.93) !important;
+  border-color: rgba(164,142,255,0.22) !important;
+  box-shadow: 0 26px 78px rgba(0,0,0,0.72), inset 0 1px 0 rgba(255,255,255,0.08) !important;
+}
+
+.shell, .visual, .form-side, .hero-inner::before, .feature-card, .step, .cta-card,
+.panel, .event-card, .dashboard-tile, .detail-card, .orbit-modal, .settings-card,
+.login-card, .card, .stat-card, .preview-card, .sidebar__host, .sidebar__admin,
+.dropdown, .empty-state, .chart-panel, .calendar-panel, .notif-item, .modal, .box,
+.payment-card, .refund-card, .approval-card, .table-wrap, .admin-card, .settings-panel {
+  background: linear-gradient(145deg, rgba(255,255,255,0.065), rgba(255,255,255,0.022)) !important;
+  border-color: rgba(255,255,255,0.105) !important;
+  color: var(--text) !important;
+  box-shadow: 0 22px 64px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.055) !important;
+}
+
+.visual, .hero, .cta-card {
+  background:
+    radial-gradient(circle at 18% 20%, rgba(98,67,255,0.16), transparent 32%),
+    radial-gradient(circle at 82% 30%, rgba(150,115,255,0.09), transparent 34%),
+    linear-gradient(145deg, rgba(255,255,255,0.055), rgba(255,255,255,0.018)) !important;
+}
+
+.hero, .hero-inner::before {
+  background:
+    radial-gradient(circle at 18% 20%, rgba(98,67,255,0.15), transparent 32%),
+    radial-gradient(circle at 82% 30%, rgba(130,100,255,0.08), transparent 34%),
+    rgba(255,255,255,0.035) !important;
+  border-color: rgba(255,255,255,0.10) !important;
+}
+
+.bg-blob, .blob-one, .blob-two, .blob-tl, .blob-br {
+  opacity: .42 !important;
+  filter: blur(86px) !important;
+}
+
+.bg-blob.v1, .blob-one, .blob-tl { background: rgba(98,67,255,0.22) !important; }
+.bg-blob.v2, .blob-two { background: rgba(125,92,255,0.14) !important; }
+.bg-blob.v3, .blob-br { background: rgba(77,45,210,0.16) !important; }
+
+.bg-grid, .hero::before {
+  opacity: .055 !important;
+}
+
+h1, h2, h3, h4, h5, h6, .title h1, .hero__title, .htitle, .section-title {
+  color: #FFFFFF !important;
+}
+
+p, .hero-sub, .hero__text, .section-header p, .feature-card p, .step p,
+.event-card__meta, .preview-text, .settings-subtitle, .notif-item__text,
+.sidebar__host-meta, .sidebar__admin-meta, .text-muted, label, .field label {
+  color: var(--text2) !important;
+}
+
+.nav-links a, .nav__links a, .nav-btn, .muted, .small, .help, .meta {
+  color: var(--muted-strong) !important;
+}
+
+.nav-links a:hover, .nav-links a.active, .nav__links a:hover, .nav__links a.active,
+.nav-btn:hover, .nav-btn.active {
+  color: #FFFFFF !important;
+  background: rgba(110,76,255,0.14) !important;
+  border-color: rgba(180,160,255,0.22) !important;
+}
+
+input, textarea, select, .input, .location-select {
+  background: rgba(255,255,255,0.045) !important;
+  border-color: rgba(255,255,255,0.12) !important;
+  color: #FFFFFF !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.035) !important;
+}
+
+input::placeholder, textarea::placeholder, .input::placeholder {
+  color: rgba(220,212,248,0.56) !important;
+}
+
+input:focus, textarea:focus, select:focus, .input:focus, .location-select:focus {
+  border-color: rgba(169,149,255,0.38) !important;
+  background: rgba(255,255,255,0.065) !important;
+  box-shadow: 0 0 0 4px rgba(98,67,255,0.14) !important;
+}
+
+select option {
+  background: #07040F !important;
+  color: #FFFFFF !important;
+}
+
+.btn-primary, .btn-hero, .primary-btn, .btn--primary, .snum, .avatar,
+button[type="submit"], .submit-btn {
+  background: linear-gradient(135deg, #6E4CFF, #9F86FF) !important;
+  color: #FFFFFF !important;
+  border-color: rgba(255,255,255,0.14) !important;
+  box-shadow: 0 16px 36px rgba(70,40,220,0.32), inset 0 1px 0 rgba(255,255,255,0.16) !important;
+}
+
+.btn-ghost, .btn-outline, .btn-sec, .ghost-btn, .btn--secondary,
+.category-btn, .multi-chip, .option-chip, .chip, .small-badge, .btn-cw {
+  background: rgba(255,255,255,0.045) !important;
+  color: #F4F0FF !important;
+  border-color: rgba(255,255,255,0.12) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.045) !important;
+}
+
+.btn-ghost:hover, .btn-outline:hover, .btn-sec:hover, .ghost-btn:hover,
+.btn--secondary:hover, .category-btn:hover, .category-btn.active,
+.multi-chip:hover, .option-chip:hover, .btn-cw:hover {
+  background: rgba(110,76,255,0.16) !important;
+  border-color: rgba(180,160,255,0.26) !important;
+  color: #FFFFFF !important;
+}
+
+.event-card {
+  background:
+    linear-gradient(to top, rgba(2,1,6,.98), rgba(2,1,6,.62)),
+    radial-gradient(circle at top right, rgba(98,67,255,.16), transparent 38%),
+    linear-gradient(145deg, rgba(255,255,255,0.05), rgba(255,255,255,0.018)) !important;
+}
+
+.event-card::before {
+  background: linear-gradient(to top, rgba(2,1,6,.96), rgba(2,1,6,.40)) !important;
+}
+
+table, th, td {
+  border-color: rgba(255,255,255,0.10) !important;
+}
+
+th {
+  background: rgba(255,255,255,0.045) !important;
+  color: var(--muted-strong) !important;
+}
+
+td {
+  color: var(--text2) !important;
+}
+
+footer {
+  background: rgba(3,2,8,0.62) !important;
+  border-color: rgba(255,255,255,0.07) !important;
+  color: var(--muted-strong) !important;
+}
+
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <section class="visual">
+      <div class="v-orb2"></div>
+      <div class="v-orb3"></div>
+
+      <div class="v-content">
+        <a class="v-logo" href="index.html" aria-label="Orbit home">
+          <svg class="v-logo-svg" viewBox="0 0 220 60" xmlns="http://www.w3.org/2000/svg" aria-label="Orbit logo" role="img">
+            <defs>
+              <linearGradient id="orbitGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#E2A1FF"/>
+                <stop offset="45%" stop-color="#7A4DFF"/>
+                <stop offset="100%" stop-color="#4A28D9"/>
+              </linearGradient>
+            </defs>
+            <g transform="translate(4,4)">
+              <circle cx="26" cy="26" r="18" fill="none" stroke="url(#orbitGrad)" stroke-width="8" stroke-linecap="round" stroke-dasharray="74 24" transform="rotate(-16 26 26)"/>
+              <circle cx="26" cy="26" r="18" fill="none" stroke="url(#orbitGrad)" stroke-width="5.5" stroke-linecap="round" stroke-dasharray="44 56" opacity=".55" transform="rotate(35 26 26)"/>
+              <circle cx="26" cy="26" r="5.5" fill="#ffffff"/>
+            </g>
+            <text x="72" y="42" font-size="35" font-weight="800" font-family="Plus Jakarta Sans, sans-serif" fill="#F4F1FF">Or</text>
+            <text x="116" y="42" font-size="35" font-weight="800" font-family="Plus Jakarta Sans, sans-serif" fill="#8C72FF">bit</text>
+          </svg>
+        </a>
+
+        <div class="v-middle">
+          <div class="v-text">
+            <h2 class="v-headline">Your next<br>event is <em>waiting<br>for you.</em></h2>
+            <p class="v-desc">Log back in and pick up right where you left off. Your saved events, matches, and upcoming plans are all here.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="form-side">
+      <div class="card">
+        <h1 class="card-title">Welcome<span> back</span></h1>
+        <p class="card-sub">Good to see you again. Your events are waiting.</p>
+
+        <form id="loginForm" novalidate>
+          <div class="field">
+            <label for="email">Email Address</label>
+            <input id="email" name="email" type="email" placeholder="you@example.com" autocomplete="email" required />
+          </div>
+
+          <div class="field">
+            <label for="pass">Password</label>
+            <div class="field-wrap">
+              <input id="pass" name="password" type="password" placeholder="Your password" autocomplete="current-password" required />
+              <button class="eye-btn" type="button" aria-label="Toggle password visibility">Show</button>
+            </div>
+          </div>
+
+          <div class="forgot-row">
+            <a href="forgot.html" class="forgot-link">Forgot password?</a>
+          </div>
+
+          <button class="btn-submit" type="submit">Log in</button>
+          <p class="error-text" id="errorText" aria-live="polite"></p>
+        </form>
+
+        <p class="card-foot">Don't have an account? <a href="signup.html">Sign up</a></p>
+      </div>
+    </section>
+  </div>
+
+  <script>
+  const API_BASE = window.location.origin.includes("5000")
+    ? window.location.origin
+    : "https://orbit-persoanlised-event-discovery.onrender.com";
+
+  const form = document.getElementById('loginForm');
+  const emailInput = document.getElementById('email');
+  const passwordInput = document.getElementById('pass');
+  const toggleButton = document.querySelector('.eye-btn');
+  const submitButton = document.querySelector('.btn-submit');
+  const card = document.querySelector('.card');
+  const errorText = document.getElementById('errorText');
+
+  function shakeCard() {
+    card.classList.remove('shake');
+    void card.offsetWidth;
+    card.classList.add('shake');
+  }
+
+  function setError(message) {
+    errorText.textContent = message;
+  }
+  /**
+   * CRITICAL: Clear old localStorage data for the email being logged in.
+   * This ensures that when logging into an account, stale data from previous sessions
+   * or deleted accounts with the same email won't contaminate the new session.
+   */
+  function clearOldDataBeforeLogin(email) {
+    if (!email) return;
+    const target = email.toLowerCase();
+    
+    const knownKeys = [
+      'user', 'orbitUserProfile', 'orbitSignupEmail', 'orbitUserEmail', 'orbitUserName',
+      'orbitJustSignedUp', 'orbitSharedEvents', 'orbitSharedNotifications', 'orbitSharedRegistrations',
+      'orbitSharedPayments', 'orbitSharedRefunds', 'orbitEventMetricOverrides',
+      'orbitReadNotificationKeys', 'orbitUserNotifications', 'orbitCancellationDetails',
+      'orbitEventRegistrationState', 'orbitUserEventHistory', 'orbitUserRatings', 'orbitEventMetricState'
+    ];
+    
+    knownKeys.forEach(k => {
+      try {
+        localStorage.removeItem(k);
+        localStorage.removeItem(`${k}_${target}`);
+      } catch (e) {}
+    });
+    
+    try {
+      const keysToDelete = [];
+      for (let i = localStorage.length - 1; i >= 0; i--) {
+        const key = localStorage.key(i) || '';
+        if (!key) continue;
+        
+        const keyLower = key.toLowerCase();
+        const hasEmail = keyLower.includes(target);
+        
+        const isUserScoped =
+          keyLower.startsWith('orbitsavedevents_') ||
+          keyLower.startsWith('orbitregistrationrecords_') ||
+          keyLower.startsWith('orbitusereventregistrationstate_') ||
+          keyLower.startsWith('orbitusereventhistory_') ||
+          keyLower.startsWith('orbitusernotifications_') ||
+          keyLower.startsWith('orbitreadnotificationkeys_') ||
+          keyLower.startsWith('orbitnotificationreadcutoff_') ||
+          keyLower.startsWith('orbituserratings_') ||
+          keyLower.startsWith('orbiteventmetricstate_') ||
+          keyLower.startsWith('orbitsharedevents_') ||
+          keyLower.startsWith('orbitsharedregistrations_') ||
+          keyLower.startsWith('orbitsharedpayments_') ||
+          keyLower.startsWith('orbitsharedrefunds_') ||
+          keyLower.startsWith('orbitsharednotifications_') ||
+          keyLower.startsWith('orbiteventmetricoverrides_') ||
+          keyLower.startsWith('orbitcancellationdetails_');
+        
+        if ((isUserScoped && hasEmail) || hasEmail) {
+          keysToDelete.push(key);
+        }
+      }
+      
+      keysToDelete.forEach(key => {
+        try {
+          localStorage.removeItem(key);
+        } catch (e) {}
+      });
+    } catch (e) {
+      console.warn('Error during pre-login cleanup:', e);
+    }
+  }
+  toggleButton.addEventListener('click', () => {
+    const showingPassword = passwordInput.type === 'text';
+    passwordInput.type = showingPassword ? 'password' : 'text';
+    toggleButton.textContent = showingPassword ? 'Show' : 'Hide';
+  });
+
+  form.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    setError('');
+
+    const email = emailInput.value.trim().toLowerCase();
+    const password = passwordInput.value;
+
+    if (!email || !password) {
+      shakeCard();
+      setError('Please enter both email and password.');
+      return;
+    }
+
+    submitButton.disabled = true;
+    submitButton.textContent = 'Logging in...';
+
+    try {
+      const response = await fetch(`${API_BASE}/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ email, password })
+      });
+
+      const result = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        shakeCard();
+        setError(result.error || 'Login failed. Please try again.');
+        submitButton.disabled = false;
+        submitButton.textContent = 'Log in';
+        return;
+      }
+
+      const userData = {
+        ...(result.user || {}),
+        email: (result.user?.email || email).toLowerCase(),
+        role: result.role || 'user',
+        onboarding_complete: result.redirect === '/profile.html'
+      };
+
+      // CRITICAL: Clear old localStorage data BEFORE setting new session data
+      clearOldDataBeforeLogin(userData.email);
+
+      localStorage.setItem('user', JSON.stringify(userData));
+      localStorage.setItem('orbitSignupEmail', userData.email);
+
+      submitButton.style.background = 'linear-gradient(135deg,#22c55e,#16a34a)';
+      submitButton.style.boxShadow = '0 14px 34px rgba(34,197,94,0.28)';
+      submitButton.textContent = 'Welcome back!';
+
+      setTimeout(() => {
+        window.location.href = `${API_BASE}/profile.html?email=${encodeURIComponent(userData.email)}`;
+      }, 1200);
+    } catch (error) {
+      console.error(error);
+      shakeCard();
+      setError('Unable to reach the backend. Make sure app.py is running.');
+      submitButton.disabled = false;
+      submitButton.textContent = 'Log in';
+    }
+  });
+</script>
+</body>
+</html>

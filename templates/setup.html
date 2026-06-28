@@ -1,0 +1,1616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Setup · Orbit</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --accent: #7C5CFF;
+      --accent-d: #4E2BEF;
+      --accent-soft: #BBAAFF;
+      --accent-glow: rgba(124, 92, 255, 0.42);
+      --text: #FFFFFF;
+      --text2: #F0ECFF;
+      --muted: #D8D0F5;
+      --muted-strong: #EEE9FF;
+      --surface: rgba(255, 255, 255, 0.085);
+      --surface-2: rgba(255, 255, 255, 0.125);
+      --surface-deep: rgba(12, 8, 26, 0.74);
+      --border: rgba(255, 255, 255, 0.20);
+      --border-bright: rgba(255, 255, 255, 0.38);
+      --danger: #ff8a8a;
+      --success: #8fffc0;
+      --shadow-sm: 0 18px 48px rgba(0, 0, 0, 0.28);
+      --shadow-md: 0 26px 72px rgba(0, 0, 0, 0.34);
+      --glass-blur: blur(24px) saturate(155%);
+      --ease: cubic-bezier(.22, 1, .36, 1);
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 12% 15%, rgba(124, 92, 255, 0.26), transparent 28%),
+        radial-gradient(circle at 82% 22%, rgba(108, 71, 255, 0.20), transparent 26%),
+        radial-gradient(circle at 50% 88%, rgba(165, 118, 255, 0.12), transparent 32%),
+        linear-gradient(135deg, #070410 0%, #100B20 42%, #19102F 72%, #090514 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 34px 16px;
+      overflow-x: hidden;
+      position: relative;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background:
+        linear-gradient(120deg, rgba(255,255,255,0.045), transparent 28%, rgba(255,255,255,0.025) 55%, transparent 78%),
+        radial-gradient(circle at 50% 0%, rgba(255,255,255,0.06), transparent 35%);
+      z-index: -2;
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: .025;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.9'/%3E%3C/svg%3E");
+      z-index: -1;
+    }
+
+    a, button, [tabindex] {
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    a:focus-visible, button:focus-visible {
+      outline: 3px solid rgba(187, 170, 255, 0.46);
+      outline-offset: 4px;
+    }
+
+    .bg-blob {
+      position: fixed;
+      border-radius: 50%;
+      pointer-events: none;
+      opacity: .74;
+      z-index: 0;
+      filter: blur(72px);
+      animation: floatBlob 10s ease-in-out infinite;
+    }
+
+    .blob-tl {
+      width: 340px;
+      height: 340px;
+      top: 4%;
+      left: 3%;
+      background: rgba(124, 92, 255, 0.34);
+    }
+
+    .blob-br {
+      width: 310px;
+      height: 310px;
+      bottom: 5%;
+      right: 4%;
+      background: rgba(204, 156, 255, 0.24);
+      animation-delay: -4s;
+    }
+
+    .shell {
+      position: relative;
+      z-index: 1;
+      width: min(660px, 100%);
+      background: linear-gradient(135deg, rgba(255,255,255,0.15), rgba(255,255,255,0.055));
+      border: 1px solid rgba(255,255,255,0.18);
+      border-radius: 38px;
+      backdrop-filter: var(--glass-blur);
+      -webkit-backdrop-filter: var(--glass-blur);
+      padding: 38px 34px 32px;
+      box-shadow: 0 30px 90px rgba(0,0,0,0.34), inset 0 1px 0 rgba(255,255,255,0.20);
+      animation: fadeUp .65s var(--ease) both;
+      transition: opacity .25s ease, transform .25s ease;
+      overflow: hidden;
+    }
+
+    .shell::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(circle at 16% 8%, rgba(255,255,255,0.10), transparent 30%),
+        radial-gradient(circle at 92% 18%, rgba(187,170,255,0.12), transparent 34%);
+      opacity: .72;
+    }
+
+    .shell > * {
+      position: relative;
+      z-index: 1;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      margin-bottom: 26px;
+      line-height: 0;
+      text-decoration: none;
+    }
+
+    .brand svg {
+      width: 142px;
+      height: auto;
+      display: block;
+      filter: drop-shadow(0 10px 22px rgba(0,0,0,.22));
+    }
+
+    .progress-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 30px;
+      padding: 12px 14px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.13);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.10);
+    }
+
+    .progress-bar {
+      flex: 1;
+      height: 7px;
+      background: rgba(255,255,255,.12);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 14.28%;
+      background: linear-gradient(90deg, #5C38FF, #A084FF);
+      border-radius: 999px;
+      box-shadow: 0 0 24px rgba(124,92,255,.55);
+      transition: width .5s var(--ease);
+    }
+
+    .step-count {
+      font-size: .78rem;
+      font-weight: 800;
+      color: #EFEAFF;
+      min-width: 38px;
+      text-align: right;
+      letter-spacing: .02em;
+    }
+
+    .q-screen {
+      display: none;
+    }
+
+    .q-screen.active {
+      display: block;
+      animation: fadeUp .35s var(--ease) forwards;
+    }
+
+    h2 {
+      font-size: clamp(1.65rem, 4vw, 2.1rem);
+      font-weight: 800;
+      letter-spacing: -0.045em;
+      line-height: 1.12;
+      margin-bottom: 10px;
+      color: #fff;
+      text-shadow: 0 8px 28px rgba(0,0,0,.28);
+    }
+
+    .subtext {
+      color: #E7E0FF;
+      font-size: .96rem;
+      font-weight: 700;
+      line-height: 1.75;
+      margin-bottom: 20px;
+    }
+
+    .option-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 11px;
+      max-height: 365px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .option-grid::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .option-grid::-webkit-scrollbar-track {
+      background: rgba(255,255,255,.06);
+      border-radius: 999px;
+    }
+
+    .option-grid::-webkit-scrollbar-thumb {
+      background: rgba(187,170,255,.55);
+      border-radius: 999px;
+    }
+
+    .choice-card {
+      min-height:58px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding: 14px 12px;
+      background: rgba(255,255,255,.065);
+      border: 1px solid rgba(255,255,255,.15);
+      border-radius: 18px;
+      cursor: pointer;
+      text-align: center;
+      font-size: .86rem;
+      font-weight: 800;
+      color: #EFEAFF;
+      user-select: none;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.10);
+      transition: transform .22s var(--ease), background .22s var(--ease), border-color .22s var(--ease), box-shadow .22s var(--ease), color .22s var(--ease);
+    }
+
+    .choice-card:hover {
+      border-color: rgba(255,255,255,.35);
+      background: rgba(255,255,255,.12);
+      color: #fff;
+      transform: translateY(-2px);
+      box-shadow: 0 12px 28px rgba(0,0,0,.20), inset 0 1px 0 rgba(255,255,255,.16);
+    }
+
+    .choice-card.selected {
+      background: linear-gradient(135deg, #5C38FF, #A084FF);
+      border-color: rgba(255,255,255,.28);
+      color: white;
+      box-shadow: 0 16px 34px rgba(124,92,255,.34), inset 0 1px 0 rgba(255,255,255,.25);
+    }
+
+    .nav-btns {
+      display: flex;
+      gap: 11px;
+      margin-top: 22px;
+    }
+
+    .btn {
+      flex: 1;
+      padding: 14px 18px;
+      border-radius: 17px;
+      font-weight: 800;
+      font-size: .92rem;
+      cursor: pointer;
+      border: none;
+      font-family: inherit;
+      transition: transform .25s var(--ease), box-shadow .25s var(--ease), background .25s var(--ease), color .25s var(--ease), border-color .25s var(--ease);
+    }
+
+    .btn:hover {
+      transform: translateY(-3px);
+    }
+
+    .btn:disabled {
+      opacity: .62;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #5C38FF, #A084FF);
+      color: white;
+      border: 1px solid rgba(255,255,255,.24);
+      box-shadow: 0 18px 42px rgba(124,92,255,.34), inset 0 1px 0 rgba(255,255,255,.25);
+    }
+
+    .btn-primary:hover {
+      box-shadow: 0 22px 52px rgba(124,92,255,.44), inset 0 1px 0 rgba(255,255,255,.28);
+    }
+
+    .btn-secondary {
+      background: rgba(255,255,255,.08);
+      color: #fff;
+      border: 1.5px solid rgba(255,255,255,.22);
+      box-shadow: 0 12px 30px rgba(0,0,0,.16), inset 0 1px 0 rgba(255,255,255,.12);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255,255,255,.15);
+      border-color: rgba(255,255,255,.36);
+    }
+
+    .helper {
+      font-size: .84rem;
+      font-weight: 700;
+      min-height: 20px;
+      margin-top: 10px;
+      line-height: 1.5;
+      color: transparent;
+    }
+
+    .helper.error {
+      color: var(--danger);
+      text-shadow: 0 0 16px rgba(255, 138, 138, .18);
+    }
+
+    .helper.success {
+      color: var(--success);
+      text-shadow: 0 0 16px rgba(143, 255, 192, .16);
+    }
+
+    #successOverlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(circle at 20% 20%, rgba(124, 92, 255, 0.28), transparent 34%),
+        radial-gradient(circle at 80% 80%, rgba(187,170,255,0.20), transparent 32%),
+        rgba(7,4,16,.94);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+      padding: 24px;
+      animation: fadeUp .5s var(--ease) forwards;
+    }
+
+    .success-card {
+      max-width: 430px;
+      width: 100%;
+      padding: 54px 40px;
+      border-radius: 34px;
+      background: linear-gradient(135deg, rgba(66,40,190,0.72), rgba(94,68,218,0.52), rgba(255,255,255,0.09));
+      backdrop-filter: var(--glass-blur);
+      -webkit-backdrop-filter: var(--glass-blur);
+      border: 1px solid rgba(255,255,255,.28);
+      text-align: center;
+      box-shadow: 0 32px 86px rgba(0,0,0,.34), inset 0 1px 0 rgba(255,255,255,.24);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .success-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 18% 18%, rgba(255,255,255,0.22), transparent 35%),
+        radial-gradient(circle at 82% 30%, rgba(255,255,255,0.14), transparent 34%);
+      pointer-events: none;
+    }
+
+    .success-card h2,
+    .success-card p,
+    .success-card button {
+      position: relative;
+      z-index: 1;
+    }
+
+    .success-card h2 {
+      font-size: 2.05rem;
+      color: #fff;
+      margin-bottom: 12px;
+      letter-spacing: -.04em;
+    }
+
+    .success-card p {
+      color: rgba(255,255,255,.9);
+      font-size: .98rem;
+      font-weight: 600;
+      line-height: 1.75;
+      margin-bottom: 28px;
+    }
+
+    .btn-cw {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 13px 30px;
+      border-radius: 16px;
+      font-size: .96rem;
+      font-weight: 800;
+      background: rgba(255,255,255,.92);
+      color: var(--accent-d);
+      border: 1px solid rgba(255,255,255,.32);
+      cursor: pointer;
+      font-family: inherit;
+      box-shadow: 0 14px 30px rgba(0,0,0,.18), inset 0 1px 0 rgba(255,255,255,.5);
+      transition: transform .25s var(--ease), background .25s var(--ease);
+    }
+
+    .btn-cw:hover {
+      transform: translateY(-3px);
+      background: #fff;
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(24px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes floatBlob {
+      0%, 100% { transform: translateY(0) scale(1); }
+      50% { transform: translateY(-14px) scale(1.04); }
+    }
+
+    @media (max-width: 560px) {
+      body {
+        padding: 22px 12px;
+      }
+
+      .shell {
+        padding: 28px 18px 24px;
+        border-radius: 28px;
+      }
+
+      .brand svg {
+        width: 124px;
+      }
+
+      .option-grid {
+        grid-template-columns: 1fr;
+        max-height: 385px;
+      }
+
+      .nav-btns {
+        flex-direction: column;
+      }
+
+      .btn,
+      #cityNextBtn {
+        width: 100%;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html {
+        scroll-behavior: auto;
+      }
+
+      *, *::before, *::after {
+        animation: none !important;
+        transition: none !important;
+      }
+    }
+  
+/* ===== Orbit Ultra Dark Theme Override ===== */
+:root {
+  --accent: #6E4CFF !important;
+  --accent-d: #3F22D8 !important;
+  --accent-dark: #3F22D8 !important;
+  --accent-soft: #A995FF !important;
+  --accent-l: #DCD4F8 !important;
+  --accent-glow: rgba(98, 67, 255, 0.24) !important;
+  --text: #FFFFFF !important;
+  --text2: #E8E1FF !important;
+  --muted: #BEB3E6 !important;
+  --muted-strong: #DCD4F8 !important;
+  --dark-text: #FFFFFF !important;
+  --dark-muted: #BEB3E6 !important;
+  --bg: #020106 !important;
+  --card: rgba(255,255,255,0.045) !important;
+  --card-strong: rgba(255,255,255,0.075) !important;
+  --glass: rgba(255,255,255,0.045) !important;
+  --glass-strong: rgba(255,255,255,0.075) !important;
+  --glass-border: rgba(255,255,255,0.115) !important;
+  --surface: rgba(255,255,255,0.045) !important;
+  --surface-2: rgba(255,255,255,0.075) !important;
+  --surface-strong: rgba(5,3,13,0.88) !important;
+  --surface-deep: rgba(5,3,13,0.90) !important;
+  --border: rgba(255,255,255,0.115) !important;
+  --border-strong: rgba(180,160,255,0.28) !important;
+  --border-bright: rgba(180,160,255,0.28) !important;
+  --shadow: 0 30px 84px rgba(0,0,0,0.68) !important;
+  --shadow-sm: 0 20px 55px rgba(0,0,0,0.56) !important;
+  --shadow-md: 0 30px 84px rgba(0,0,0,0.68) !important;
+  --shadow-soft: 0 18px 46px rgba(0,0,0,0.48) !important;
+  --g-primary: linear-gradient(135deg, #A995FF 0%, #6E4CFF 44%, #3F22D8 100%) !important;
+  --g-card: linear-gradient(145deg, rgba(255,255,255,0.07), rgba(255,255,255,0.025)) !important;
+}
+
+html, body {
+  color-scheme: dark;
+}
+
+body {
+  font-family: 'Plus Jakarta Sans', sans-serif !important;
+  color: var(--text) !important;
+  background:
+    radial-gradient(circle at 12% 15%, rgba(98, 67, 255, 0.16), transparent 30%),
+    radial-gradient(circle at 82% 22%, rgba(77, 45, 210, 0.12), transparent 28%),
+    radial-gradient(circle at 50% 88%, rgba(120, 80, 220, 0.07), transparent 34%),
+    linear-gradient(135deg, #020106 0%, #05030D 38%, #080512 68%, #020105 100%) !important;
+  background-attachment: fixed !important;
+}
+
+body::before {
+  background:
+    linear-gradient(120deg, rgba(255,255,255,0.018), transparent 30%, rgba(255,255,255,0.012) 58%, transparent 80%),
+    radial-gradient(circle at 50% 0%, rgba(130,100,255,0.035), transparent 38%) !important;
+  opacity: .45 !important;
+}
+
+body::after {
+  opacity: .018 !important;
+  border-color: rgba(255,255,255,0.055) !important;
+  background-color: transparent !important;
+}
+
+nav, .nav, .sidebar, .topbar {
+  background: rgba(5,3,14,0.84) !important;
+  border-color: rgba(255,255,255,0.10) !important;
+  box-shadow: 0 24px 70px rgba(0,0,0,0.62), inset 0 1px 0 rgba(255,255,255,0.07) !important;
+}
+
+nav.scrolled, .nav.scrolled {
+  background: rgba(4,2,11,0.93) !important;
+  border-color: rgba(164,142,255,0.22) !important;
+  box-shadow: 0 26px 78px rgba(0,0,0,0.72), inset 0 1px 0 rgba(255,255,255,0.08) !important;
+}
+
+.shell, .visual, .form-side, .hero-inner::before, .feature-card, .step, .cta-card,
+.panel, .event-card, .dashboard-tile, .detail-card, .orbit-modal, .settings-card,
+.login-card, .card, .stat-card, .preview-card, .sidebar__host, .sidebar__admin,
+.dropdown, .empty-state, .chart-panel, .calendar-panel, .notif-item, .modal, .box,
+.payment-card, .refund-card, .approval-card, .table-wrap, .admin-card, .settings-panel {
+  background: linear-gradient(145deg, rgba(255,255,255,0.065), rgba(255,255,255,0.022)) !important;
+  border-color: rgba(255,255,255,0.105) !important;
+  color: var(--text) !important;
+  box-shadow: 0 22px 64px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.055) !important;
+}
+
+.visual, .hero, .cta-card {
+  background:
+    radial-gradient(circle at 18% 20%, rgba(98,67,255,0.16), transparent 32%),
+    radial-gradient(circle at 82% 30%, rgba(150,115,255,0.09), transparent 34%),
+    linear-gradient(145deg, rgba(255,255,255,0.055), rgba(255,255,255,0.018)) !important;
+}
+
+.hero, .hero-inner::before {
+  background:
+    radial-gradient(circle at 18% 20%, rgba(98,67,255,0.15), transparent 32%),
+    radial-gradient(circle at 82% 30%, rgba(130,100,255,0.08), transparent 34%),
+    rgba(255,255,255,0.035) !important;
+  border-color: rgba(255,255,255,0.10) !important;
+}
+
+.bg-blob, .blob-one, .blob-two, .blob-tl, .blob-br {
+  opacity: .42 !important;
+  filter: blur(86px) !important;
+}
+
+.bg-blob.v1, .blob-one, .blob-tl { background: rgba(98,67,255,0.22) !important; }
+.bg-blob.v2, .blob-two { background: rgba(125,92,255,0.14) !important; }
+.bg-blob.v3, .blob-br { background: rgba(77,45,210,0.16) !important; }
+
+.bg-grid, .hero::before {
+  opacity: .055 !important;
+}
+
+h1, h2, h3, h4, h5, h6, .title h1, .hero__title, .htitle, .section-title {
+  color: #FFFFFF !important;
+}
+
+p, .hero-sub, .hero__text, .section-header p, .feature-card p, .step p,
+.event-card__meta, .preview-text, .settings-subtitle, .notif-item__text,
+.sidebar__host-meta, .sidebar__admin-meta, .text-muted, label, .field label {
+  color: var(--text2) !important;
+}
+
+.nav-links a, .nav__links a, .nav-btn, .muted, .small, .help, .meta {
+  color: var(--muted-strong) !important;
+}
+
+.nav-links a:hover, .nav-links a.active, .nav__links a:hover, .nav__links a.active,
+.nav-btn:hover, .nav-btn.active {
+  color: #FFFFFF !important;
+  background: rgba(110,76,255,0.14) !important;
+  border-color: rgba(180,160,255,0.22) !important;
+}
+
+input, textarea, select, .input, .location-select {
+  background: rgba(255,255,255,0.045) !important;
+  border-color: rgba(255,255,255,0.12) !important;
+  color: #FFFFFF !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.035) !important;
+}
+
+input::placeholder, textarea::placeholder, .input::placeholder {
+  color: rgba(220,212,248,0.56) !important;
+}
+
+input:focus, textarea:focus, select:focus, .input:focus, .location-select:focus {
+  border-color: rgba(169,149,255,0.38) !important;
+  background: rgba(255,255,255,0.065) !important;
+  box-shadow: 0 0 0 4px rgba(98,67,255,0.14) !important;
+}
+
+select option {
+  background: #07040F !important;
+  color: #FFFFFF !important;
+}
+
+.btn-primary, .btn-hero, .primary-btn, .btn--primary, .snum, .avatar,
+button[type="submit"], .submit-btn {
+  background: linear-gradient(135deg, #6E4CFF, #9F86FF) !important;
+  color: #FFFFFF !important;
+  border-color: rgba(255,255,255,0.14) !important;
+  box-shadow: 0 16px 36px rgba(70,40,220,0.32), inset 0 1px 0 rgba(255,255,255,0.16) !important;
+}
+
+.btn-ghost, .btn-outline, .btn-sec, .ghost-btn, .btn--secondary,
+.category-btn, .multi-chip, .option-chip, .chip, .small-badge, .btn-cw {
+  background: rgba(255,255,255,0.045) !important;
+  color: #F4F0FF !important;
+  border-color: rgba(255,255,255,0.12) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.045) !important;
+}
+
+.btn-ghost:hover, .btn-outline:hover, .btn-sec:hover, .ghost-btn:hover,
+.btn--secondary:hover, .category-btn:hover, .category-btn.active,
+.multi-chip:hover, .option-chip:hover, .btn-cw:hover {
+  background: rgba(110,76,255,0.16) !important;
+  border-color: rgba(180,160,255,0.26) !important;
+  color: #FFFFFF !important;
+}
+
+.event-card {
+  background:
+    linear-gradient(to top, rgba(2,1,6,.98), rgba(2,1,6,.62)),
+    radial-gradient(circle at top right, rgba(98,67,255,.16), transparent 38%),
+    linear-gradient(145deg, rgba(255,255,255,0.05), rgba(255,255,255,0.018)) !important;
+}
+
+.event-card::before {
+  background: linear-gradient(to top, rgba(2,1,6,.96), rgba(2,1,6,.40)) !important;
+}
+
+table, th, td {
+  border-color: rgba(255,255,255,0.10) !important;
+}
+
+th {
+  background: rgba(255,255,255,0.045) !important;
+  color: var(--muted-strong) !important;
+}
+
+td {
+  color: var(--text2) !important;
+}
+
+footer {
+  background: rgba(3,2,8,0.62) !important;
+  border-color: rgba(255,255,255,0.07) !important;
+  color: var(--muted-strong) !important;
+}
+
+
+/* ===== Final setup visibility polish: ultra dark + clearer selected options ===== */
+body {
+  background:
+    radial-gradient(circle at 10% 12%, rgba(98, 67, 255, 0.13), transparent 28%),
+    radial-gradient(circle at 86% 18%, rgba(63, 34, 216, 0.10), transparent 30%),
+    radial-gradient(circle at 50% 92%, rgba(169, 149, 255, 0.06), transparent 34%),
+    linear-gradient(135deg, #010104 0%, #030208 38%, #05030D 72%, #010104 100%) !important;
+}
+
+.shell {
+  background: linear-gradient(145deg, rgba(255,255,255,0.055), rgba(255,255,255,0.018)) !important;
+  border-color: rgba(255,255,255,0.13) !important;
+  box-shadow: 0 34px 96px rgba(0,0,0,0.76), inset 0 1px 0 rgba(255,255,255,0.07) !important;
+}
+
+.progress-row {
+  background: rgba(255,255,255,0.045) !important;
+  border-color: rgba(255,255,255,0.12) !important;
+}
+
+.choice-card {
+      min-height:58px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+  position: relative;
+  background: rgba(255,255,255,0.075) !important;
+  border: 1.5px solid rgba(255,255,255,0.18) !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 12px 26px rgba(0,0,0,0.28), inset 0 1px 0 rgba(255,255,255,0.08) !important;
+}
+
+.choice-card:hover {
+  background: rgba(110,76,255,0.18) !important;
+  border-color: rgba(169,149,255,0.52) !important;
+  box-shadow: 0 16px 34px rgba(0,0,0,0.34), 0 0 0 1px rgba(169,149,255,0.18), inset 0 1px 0 rgba(255,255,255,0.13) !important;
+}
+
+.choice-card.selected {
+  background: linear-gradient(135deg, #8F79FF 0%, #6E4CFF 48%, #3F22D8 100%) !important;
+  border: 2px solid rgba(255,255,255,0.82) !important;
+  color: #FFFFFF !important;
+  box-shadow:
+    0 18px 44px rgba(78,43,239,0.52),
+    0 0 0 4px rgba(169,149,255,0.22),
+    inset 0 1px 0 rgba(255,255,255,0.26) !important;
+  transform: translateY(-2px) scale(1.015);
+}
+
+.choice-card.selected::after {
+  content: "✓";
+  position: absolute;
+  top: 9px;
+  right: 10px;
+  width: 24px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: #FFFFFF;
+  color: #3F22D8;
+  font-size: .8rem;
+  font-weight: 900;
+  box-shadow: 0 8px 18px rgba(0,0,0,.26);
+}
+
+.btn-secondary {
+  background: rgba(255,255,255,.055) !important;
+  border-color: rgba(255,255,255,.16) !important;
+}
+
+.subtext, .step-count, .helper {
+  color: #EEE9FF !important;
+}
+
+  
+
+
+
+
+
+
+
+
+
+/* ===== Setup buttons only: match organiser option chips ===== */
+.choice-card:hover {
+  background: rgba(140,114,255,0.20) !important;
+  border-color: rgba(180,160,255,0.42) !important;
+  color: #FFFFFF !important;
+}
+
+.choice-card.selected {
+  background: linear-gradient(135deg, #6C47FF, #8C72FF) !important;
+  border: 1px solid rgba(180,160,255,0.42) !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 12px 28px rgba(70,40,220,.28), inset 0 1px 0 rgba(255,255,255,.12) !important;
+  transform: translateY(-1px) !important;
+}
+
+.choice-card.selected::after {
+  content: none !important;
+  display: none !important;
+}
+
+.btn-primary,
+#cityNextBtn {
+  background: linear-gradient(135deg, #9e87ff, #6E4CFF) !important;
+  color: #FFFFFF !important;
+  border: 1px solid rgba(255,255,255,0.14) !important;
+  box-shadow: 0 12px 26px rgba(108,71,255,.30), inset 0 1px 0 rgba(255,255,255,.16) !important;
+}
+
+.btn-primary:hover,
+#cityNextBtn:hover {
+  box-shadow: 0 18px 40px rgba(108,71,255,.38), inset 0 1px 0 rgba(255,255,255,.20) !important;
+}
+
+.btn-secondary {
+  background: rgba(255,255,255,.10) !important;
+  border: 1px solid rgba(255,255,255,.16) !important;
+  color: #FFFFFF !important;
+}
+
+/* ===== TOAST NOTIFICATION SYSTEM ===== */
+.toast-container {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 420px;
+  pointer-events: none;
+}
+
+.toast {
+  padding: 16px 20px;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.16);
+  background: rgba(255, 255, 255, 0.15);
+  color: #FFFFFF;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  animation: slideIn 0.3s ease-out forwards;
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.32);
+  pointer-events: auto;
+  min-height: 48px;
+}
+
+.toast.success {
+  border-color: rgba(116, 228, 163, 0.34);
+  background: rgba(116, 228, 163, 0.12);
+  color: #a8ffcc;
+}
+
+.toast.error {
+  border-color: rgba(255, 139, 139, 0.34);
+  background: rgba(255, 139, 139, 0.12);
+  color: #ffb4b4;
+}
+
+.toast.info {
+  border-color: rgba(140, 114, 255, 0.34);
+  background: rgba(140, 114, 255, 0.12);
+  color: #d4c5ff;
+}
+
+.toast.warning {
+  border-color: rgba(249, 115, 22, 0.34);
+  background: rgba(249, 115, 22, 0.12);
+  color: #ffcfa5;
+}
+
+.toast-icon {
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+.toast.success .toast-icon { color: #74E4A3; }
+.toast.error .toast-icon { color: #FF8B8B; }
+.toast.info .toast-icon { color: #8C72FF; }
+.toast.warning .toast-icon { color: #F97316; }
+
+.toast-close {
+  margin-left: auto;
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  color: inherit;
+  font-size: 1.2rem;
+  cursor: pointer;
+  opacity: 0.6;
+  transition: opacity 0.2s;
+}
+
+.toast-close:hover { opacity: 1; }
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(400px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes slideOut {
+  from { opacity: 1; transform: translateX(0); }
+  to { opacity: 0; transform: translateX(400px); }
+}
+
+.toast.removing { animation: slideOut 0.3s ease-out forwards; }
+
+/* ===== LOADING INDICATORS ===== */
+.spinner {
+  width: 24px;
+  height: 24px;
+  border: 3px solid rgba(140, 114, 255, 0.2);
+  border-top-color: #8C72FF;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.loading-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(5, 3, 12, 0.88);
+  backdrop-filter: blur(12px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 8000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease-out;
+}
+
+.loading-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.loading-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 32px;
+  background: rgba(24, 17, 40, 0.82);
+  border: 1px solid rgba(255,255,255,0.16);
+  border-radius: 24px;
+  text-align: center;
+}
+
+.loading-box p {
+  color: #E3DCF8;
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+/* ===== IMPROVED BUTTON STATES ===== */
+button {
+  transition: all 0.2s ease-out !important;
+}
+
+button:active { transform: scale(0.98) !important; }
+
+button:disabled {
+  opacity: 0.5 !important;
+  cursor: not-allowed !important;
+}
+
+/* ===== MOBILE IMPROVEMENTS ===== */
+@media (max-width: 768px) {
+  .toast-container {
+    top: 16px;
+    right: 16px;
+    left: 16px;
+    max-width: none;
+  }
+
+  .toast {
+    font-size: 0.9rem;
+    padding: 14px 16px;
+  }
+
+  .loading-box {
+    width: 90%;
+    padding: 24px;
+  }
+
+  input[type="text"],
+  input[type="email"],
+  select {
+    padding: 10px 14px;
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .toast-container {
+    top: 12px;
+    right: 12px;
+    left: 12px;
+  }
+
+  .toast {
+    padding: 12px 14px;
+    font-size: 0.85rem;
+  }
+
+  button {
+    min-height: 44px;
+  }
+}
+
+</style>
+</head>
+
+<body>
+  <div class="bg-blob blob-tl"></div>
+  <div class="bg-blob blob-br"></div>
+
+  <div class="shell" id="mainShell">
+
+    <a href="/" class="brand" aria-label="Orbit">
+      <svg viewBox="0 0 220 60" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="orbitGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#FFFFFF"/>
+            <stop offset="45%" stop-color="#BBAAFF"/>
+            <stop offset="100%" stop-color="#7C5CFF"/>
+          </linearGradient>
+        </defs>
+        <g transform="translate(4,4)">
+          <circle cx="26" cy="26" r="18" fill="none" stroke="url(#orbitGrad)" stroke-width="8" stroke-linecap="round" stroke-dasharray="74 24" transform="rotate(-16 26 26)"/>
+          <circle cx="26" cy="26" r="18" fill="none" stroke="url(#orbitGrad)" stroke-width="5.5" stroke-linecap="round" stroke-dasharray="44 56" opacity=".55" transform="rotate(35 26 26)"/>
+          <circle cx="26" cy="26" r="5.5" fill="#ffffff"/>
+        </g>
+        <text x="72" y="42" font-size="35" font-weight="800" font-family="Plus Jakarta Sans, sans-serif" fill="#FFFFFF">Or</text>
+        <text x="116" y="42" font-size="35" font-weight="800" font-family="Plus Jakarta Sans, sans-serif" fill="#BBAAFF">bit</text>
+      </svg>
+    </a>
+
+    <div class="progress-row">
+      <div class="progress-bar">
+        <div class="progress-fill" id="bar"></div>
+      </div>
+      <div class="step-count" id="stepText">1/6</div>
+    </div>
+
+    <div class="q-screen active" id="q1">
+      <h2>Select your city.</h2>
+      <p class="subtext">Choose your city to get personalized events.</p>
+
+      <div class="option-grid">
+        <div class="choice-card" data-key="city" data-value="Bangalore">Bangalore</div>
+        <div class="choice-card" data-key="city" data-value="Mumbai">Mumbai</div>
+        <div class="choice-card" data-key="city" data-value="Delhi">Delhi</div>
+        <div class="choice-card" data-key="city" data-value="Goa">Goa</div>
+        <div class="choice-card" data-key="city" data-value="Pune">Pune</div>
+        <div class="choice-card" data-key="city" data-value="Hyderabad">Hyderabad</div>
+        <div class="choice-card" data-key="city" data-value="Chennai">Chennai</div>
+        <div class="choice-card" data-key="city" data-value="Jaipur">Jaipur</div>
+        <div class="choice-card" data-key="city" data-value="Kolkata">Kolkata</div>
+        <div class="choice-card" data-key="city" data-value="Ahmedabad">Ahmedabad</div>
+      </div>
+
+      <p class="helper" id="message-q1"></p>
+
+      <button class="btn btn-primary" style="width:100%;border-radius:14px;margin-top:20px;" id="cityNextBtn">Continue</button>
+    </div>
+
+    <div class="q-screen" id="q2">
+      <h2>What is your profession type?</h2>
+      <p class="subtext">Choose the option that best describes you right now.</p>
+
+      <div class="option-grid">
+        <div class="choice-card" data-key="profession" data-value="Student">Student</div>
+        <div class="choice-card" data-key="profession" data-value="Working Professional">Working Professional</div>
+        <div class="choice-card" data-key="profession" data-value="Freelancer">Freelancer</div>
+        <div class="choice-card" data-key="profession" data-value="Entrepreneur">Entrepreneur</div>
+        <div class="choice-card" data-key="profession" data-value="Homemaker">Homemaker</div>
+        <div class="choice-card" data-key="profession" data-value="Job Seeker">Job Seeker</div>
+        <div class="choice-card" data-key="profession" data-value="Creator / Artist">Creator / Artist</div>
+      </div>
+
+      <p class="helper" id="message-q2"></p>
+
+      <div class="nav-btns">
+        <button class="btn btn-secondary" data-back="1">Back</button>
+        <button class="btn btn-primary" data-save-single="profession" data-next="3">Next</button>
+      </div>
+    </div>
+
+    <div class="q-screen" id="q3">
+      <h2>Choose your interests.</h2>
+      <p class="subtext">Pick everything that feels like your vibe.</p>
+
+      <div class="option-grid">
+        <div class="choice-card" data-key="interests" data-value="Career & Networking">Career & Networking</div>
+        <div class="choice-card" data-key="interests" data-value="Public Speaking">Public Speaking</div>
+        <div class="choice-card" data-key="interests" data-value="Entrepreneurship">Entrepreneurship</div>
+        <div class="choice-card" data-key="interests" data-value="Technology & Coding">Technology & Coding</div>
+        <div class="choice-card" data-key="interests" data-value="Digital Marketing">Digital Marketing</div>
+        <div class="choice-card" data-key="interests" data-value="Creative Arts">Creative Arts</div>
+        <div class="choice-card" data-key="interests" data-value="Music & Dance">Music & Dance</div>
+        <div class="choice-card" data-key="interests" data-value="Writing & Content Creation">Writing & Content</div>
+        <div class="choice-card" data-key="interests" data-value="Photography & Videography">Photography</div>
+        <div class="choice-card" data-key="interests" data-value="Fitness & Gym">Fitness & Gym</div>
+        <div class="choice-card" data-key="interests" data-value="Yoga & Meditation">Yoga & Meditation</div>
+        <div class="choice-card" data-key="interests" data-value="Mental Health & Self-growth">Mental Health</div>
+        <div class="choice-card" data-key="interests" data-value="Learning & Workshops">Learning & Workshops</div>
+        <div class="choice-card" data-key="interests" data-value="Social Events & Meetups">Social Events</div>
+        <div class="choice-card" data-key="interests" data-value="Volunteering & Social Impact">Volunteering</div>
+      </div>
+
+      <p class="helper" id="message-q3"></p>
+
+      <div class="nav-btns">
+        <button class="btn btn-secondary" data-back="2">Back</button>
+        <button class="btn btn-primary" data-save-multi="interests" data-next="4">Next</button>
+      </div>
+    </div>
+
+    <div class="q-screen" id="q4">
+      <h2>What is your age group?</h2>
+      <p class="subtext">This helps Orbit understand your stage better.</p>
+
+      <div class="option-grid">
+        <div class="choice-card" data-key="age_group" data-value="Below 18">Below 18</div>
+        <div class="choice-card" data-key="age_group" data-value="18-25">18–25</div>
+        <div class="choice-card" data-key="age_group" data-value="26-30">26–30</div>
+        <div class="choice-card" data-key="age_group" data-value="30-35">30–35</div>
+        <div class="choice-card" data-key="age_group" data-value="35+">35+</div>
+      </div>
+
+      <p class="helper" id="message-q4"></p>
+
+      <div class="nav-btns">
+        <button class="btn btn-secondary" data-back="3">Back</button>
+        <button class="btn btn-primary" data-save-single="age_group" data-next="5">Next</button>
+      </div>
+    </div>
+
+    <div class="q-screen" id="q5">
+      <h2>Your personality type?</h2>
+      <p class="subtext">Choose the option that feels closest to you.</p>
+
+      <div class="option-grid">
+        <div class="choice-card" data-key="personality" data-value="Introvert">Introvert</div>
+        <div class="choice-card" data-key="personality" data-value="Extrovert">Extrovert</div>
+        <div class="choice-card" data-key="personality" data-value="Ambivert">Ambivert</div>
+        <div class="choice-card" data-key="personality" data-value="Depends on my mood">Depends on my mood</div>
+      </div>
+
+      <p class="helper" id="message-q5"></p>
+
+      <div class="nav-btns">
+        <button class="btn btn-secondary" data-back="4">Back</button>
+        <button class="btn btn-primary" data-save-single="personality" data-next="7">Next</button>
+      </div>
+    </div>
+
+    
+
+    <div class="q-screen" id="q7">
+      <h2>What do you want to improve right now?</h2>
+      <p class="subtext">Pick the areas where you want Orbit to support you.</p>
+
+      <div class="option-grid">
+        <div class="choice-card" data-key="improvement" data-value="Confidence">Confidence</div>
+        <div class="choice-card" data-key="improvement" data-value="Communication">Communication</div>
+        <div class="choice-card" data-key="improvement" data-value="Career Clarity">Career Clarity</div>
+        <div class="choice-card" data-key="improvement" data-value="Focus">Focus</div>
+        <div class="choice-card" data-key="improvement" data-value="Mental Wellness">Mental Wellness</div>
+        <div class="choice-card" data-key="improvement" data-value="Fitness">Fitness</div>
+        <div class="choice-card" data-key="improvement" data-value="Creativity">Creativity</div>
+        <div class="choice-card" data-key="improvement" data-value="Social life">Social life</div>
+      </div>
+
+      <p class="helper" id="saveMessage"></p>
+
+      <div class="nav-btns">
+        <button class="btn btn-secondary" data-back="5">Back</button>
+        <button class="btn btn-primary" id="finishBtn">Finish</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="successOverlay">
+    <div class="success-card">
+      <h2>Welcome to Orbit!</h2>
+      <p>Your setup is saved. Personalizing your feed now.</p>
+      <button class="btn-cw" id="goProfileBtn">Start Exploring</button>
+    </div>
+  </div>
+
+  <script>
+    const API_BASE = window.location.origin.includes("5000")
+      ? window.location.origin
+      : "https://orbit-persoanlised-event-discovery.onrender.com";
+    const SETUP_SAVE_URL = `${API_BASE}/save-setup`;
+    const PROFILE_URL = `${API_BASE}/profile.html`;
+    const totalSteps = 6;
+    const stepOrder = [1, 2, 3, 4, 5, 7];
+
+    const finishBtn = document.getElementById("finishBtn");
+    const shell = document.getElementById("mainShell");
+
+    /* ===== TOAST NOTIFICATION SYSTEM ===== */
+    function createToastContainer() {
+      if (document.getElementById('toast-container')) return;
+      const container = document.createElement('div');
+      container.id = 'toast-container';
+      container.className = 'toast-container';
+      document.body.appendChild(container);
+    }
+
+    function showToast(message, type = 'info', duration = 4000) {
+      createToastContainer();
+      const container = document.getElementById('toast-container');
+      
+      const icons = {
+        success: '✓',
+        error: '✕',
+        info: 'ℹ',
+        warning: '⚠'
+      };
+
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      toast.innerHTML = `
+        <span class="toast-icon">${icons[type] || icons.info}</span>
+        <span>${message}</span>
+        <button class="toast-close" onclick="this.parentElement.classList.add('removing'); setTimeout(() => this.parentElement.remove(), 300)">×</button>
+      `;
+      
+      container.appendChild(toast);
+      
+      if (duration > 0) {
+        setTimeout(() => {
+          if (toast.parentElement) {
+            toast.classList.add('removing');
+            setTimeout(() => toast.remove(), 300);
+          }
+        }, duration);
+      }
+    }
+
+    /* ===== LOADING OVERLAY SYSTEM ===== */
+    function createLoadingOverlay() {
+      if (document.getElementById('loading-overlay')) return;
+      const overlay = document.createElement('div');
+      overlay.id = 'loading-overlay';
+      overlay.className = 'loading-overlay';
+      overlay.innerHTML = `
+        <div class="loading-box">
+          <div class="spinner"></div>
+          <p id="loading-text">Saving setup...</p>
+        </div>
+      `;
+      document.body.appendChild(overlay);
+    }
+
+    function showLoading(message = 'Loading...') {
+      createLoadingOverlay();
+      const overlay = document.getElementById('loading-overlay');
+      document.getElementById('loading-text').textContent = message;
+      overlay.classList.add('active');
+    }
+
+    function hideLoading() {
+      const overlay = document.getElementById('loading-overlay');
+      if (overlay) overlay.classList.remove('active');
+    }
+
+    const formData = {
+      city: "",
+      location: "",
+      interests: [],
+      age_group: "",
+      personality: "",
+      improvement: [],
+      profession: ""
+    };
+
+    // Clear all previous selections on page load
+    function clearAllFormSelections() {
+      // Reset formData to defaults
+      formData.city = "";
+      formData.location = "";
+      formData.interests = [];
+      formData.age_group = "";
+      formData.personality = "";
+      formData.improvement = [];
+      formData.profession = "";
+
+      // Remove all selected classes from choice-cards
+      document.querySelectorAll(".choice-card.selected").forEach(card => {
+        card.classList.remove("selected");
+      });
+
+      // Clear all helper messages
+      document.querySelectorAll(".helper").forEach(helper => {
+        helper.textContent = "";
+        helper.className = "helper";
+      });
+    }
+
+    // Call on page load to ensure fresh state
+    document.addEventListener("DOMContentLoaded", () => {
+      clearAllFormSelections();
+      showStep(1);
+    });
+
+    function getStoredUser() {
+      try {
+        return JSON.parse(localStorage.getItem("user") || "null");
+      } catch {
+        return null;
+      }
+    }
+
+    function currentEmail() {
+      const urlEmail = new URLSearchParams(window.location.search).get("email");
+
+      if (urlEmail && urlEmail.trim()) {
+        return urlEmail.trim().toLowerCase();
+      }
+
+      const user = getStoredUser();
+
+      if (user && user.email) {
+        return String(user.email).trim().toLowerCase();
+      }
+
+      const signupEmail = localStorage.getItem("orbitSignupEmail");
+
+      if (signupEmail && signupEmail.trim()) {
+        return signupEmail.trim().toLowerCase();
+      }
+
+      return "";
+    }
+
+    function updateProgress(stepId) {
+      const index = stepOrder.indexOf(stepId) + 1;
+      document.getElementById("bar").style.width = ((index / totalSteps) * 100) + "%";
+      document.getElementById("stepText").textContent = `${index}/${totalSteps}`;
+    }
+
+    function showStep(step) {
+      document.querySelectorAll(".q-screen").forEach(screen => {
+        screen.classList.remove("active");
+      });
+
+      const current = document.getElementById(`q${step}`);
+
+      if (current) {
+        current.classList.add("active");
+      }
+
+      updateProgress(step);
+    }
+
+    function setMessage(id, text = "", type = "") {
+      const el = document.getElementById(id);
+
+      if (!el) return;
+
+      el.textContent = text;
+      el.className = "helper" + (type ? ` ${type}` : "");
+    }
+
+    function selectSingle(card) {
+      const key = card.dataset.key;
+
+      document.querySelectorAll(`.choice-card[data-key="${key}"]`).forEach(item => {
+        item.classList.remove("selected");
+      });
+
+      card.classList.add("selected");
+      formData[key] = card.dataset.value;
+
+      if (key === "city") {
+        formData.location = card.dataset.value;
+      }
+    }
+
+    function selectMulti(card) {
+      const key = card.dataset.key;
+
+      card.classList.toggle("selected");
+
+      formData[key] = Array.from(
+        document.querySelectorAll(`.choice-card.selected[data-key="${key}"]`)
+      ).map(item => item.dataset.value);
+    }
+
+    document.querySelectorAll(".choice-card").forEach(card => {
+      card.addEventListener("click", () => {
+        const key = card.dataset.key;
+
+        if (key === "interests" || key === "improvement") {
+          selectMulti(card);
+        } else {
+          selectSingle(card);
+        }
+      });
+    });
+
+    document.querySelectorAll("[data-back]").forEach(button => {
+      button.addEventListener("click", () => {
+        showStep(Number(button.dataset.back));
+      });
+    });
+
+    document.getElementById("cityNextBtn").addEventListener("click", () => {
+      if (!formData.city) {
+        setMessage("message-q1", "Please select your city.", "error");
+        return;
+      }
+
+      setMessage("message-q1");
+      showStep(2);
+    });
+
+    document.querySelectorAll("[data-save-single]").forEach(button => {
+      button.addEventListener("click", () => {
+        const key = button.dataset.saveSingle;
+        const nextStep = Number(button.dataset.next);
+        const messageId = `message-q${nextStep - 1}`;
+
+        if (!formData[key]) {
+          setMessage(messageId, "Please choose an option.", "error");
+          return;
+        }
+
+        setMessage(messageId);
+        showStep(nextStep);
+      });
+    });
+
+    document.querySelectorAll("[data-save-multi]").forEach(button => {
+      button.addEventListener("click", () => {
+        const key = button.dataset.saveMulti;
+        const nextStep = Number(button.dataset.next);
+        const messageId = `message-q${nextStep - 1}`;
+
+        if (!formData[key] || !formData[key].length) {
+          setMessage(messageId, "Select at least one option.", "error");
+          return;
+        }
+
+        setMessage(messageId);
+        showStep(nextStep);
+      });
+    });
+
+    async function finishSetup() {
+      if (!formData.improvement || !formData.improvement.length) {
+        setMessage("saveMessage", "Select at least one improvement area.", "error");
+        return;
+      }
+
+      const email = currentEmail();
+
+      if (!email) {
+        setMessage("saveMessage", "Session expired. Please login again.", "error");
+        return;
+      }
+
+      finishBtn.disabled = true;
+      finishBtn.textContent = "Saving...";
+      setMessage("saveMessage", "Saving...", "success");
+
+      try {
+        const response = await fetch(SETUP_SAVE_URL, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            email,
+            profile: formData
+          })
+        });
+
+        const result = await response.json().catch(() => ({}));
+
+        if (!response.ok) {
+          throw new Error(result.error || "Could not save setup.");
+        }
+
+        const existingUser = getStoredUser() || {};
+
+        const mergedUser = {
+          ...existingUser,
+          email,
+          profile: formData,
+          onboarding_complete: true
+        };
+
+        localStorage.setItem("user", JSON.stringify(mergedUser));
+        localStorage.setItem("orbitSignupEmail", email);
+        localStorage.setItem("orbitSetupEmail", email); // Track which user this setup belongs to
+        localStorage.setItem("orbitUserProfile", JSON.stringify(formData));
+
+        shell.style.opacity = "0";
+
+        setTimeout(() => {
+          shell.style.display = "none";
+          document.getElementById("successOverlay").style.display = "flex";
+        }, 300);
+
+        setTimeout(() => {
+          window.location.href = `${PROFILE_URL}?email=${encodeURIComponent(email)}`;
+        }, 1600);
+
+      } catch (error) {
+        setMessage("saveMessage", error.message || "Server error.", "error");
+        finishBtn.disabled = false;
+        finishBtn.textContent = "Finish";
+      }
+    }
+
+    finishBtn.addEventListener("click", finishSetup);
+
+    document.getElementById("goProfileBtn").addEventListener("click", () => {
+      const email = currentEmail();
+
+      if (email) {
+        window.location.href = `${PROFILE_URL}?email=${encodeURIComponent(email)}`;
+      } else {
+        window.location.href = PROFILE_URL;
+      }
+    });
+
+    // Auto-load saved setup preferences from localStorage (only for same user)
+    function loadSavedSetup() {
+      try {
+        const currentUserEmail = currentEmail();
+        const storedSetupEmail = localStorage.getItem('orbitSetupEmail'); // Track which user this setup is for
+
+        // Only restore saved setup for the same user and only when we have both an email and a matching saved email.
+        if (!currentUserEmail || !storedSetupEmail || currentUserEmail !== storedSetupEmail) {
+          if (storedSetupEmail || localStorage.getItem('orbitUserProfile')) {
+            clearAllFormSelections();
+            localStorage.removeItem('orbitUserProfile');
+            localStorage.removeItem('orbitSetupEmail');
+          }
+          return;
+        }
+
+        const stored = JSON.parse(localStorage.getItem('orbitUserProfile') || 'null') || {};
+        if (!stored || !Object.keys(stored).length) {
+          clearAllFormSelections();
+          return;
+        }
+
+        // Store the email this setup belongs to
+        localStorage.setItem('orbitSetupEmail', currentUserEmail);
+
+        // map simple keys
+        const keys = ['city','location','age_group','personality','profession'];
+        keys.forEach(k => { if (stored[k]) { formData[k]=stored[k]; } });
+        // multi keys
+        if (Array.isArray(stored.interests) && stored.interests.length) formData.interests = stored.interests.slice();
+        if (Array.isArray(stored.improvement) && stored.improvement.length) formData.improvement = stored.improvement.slice();
+
+        // Reflect UI selection
+        // single selects
+        ['city','age_group','personality','profession'].forEach(key => {
+          const val = formData[key];
+          if (!val) return;
+          const el = document.querySelector(`.choice-card[data-key="${key}"][data-value="${CSS.escape(val)}"]`);
+          if (el) el.classList.add('selected');
+        });
+        // multi selects
+        ['interests','improvement'].forEach(key => {
+          (formData[key]||[]).forEach(v=>{
+            const el=document.querySelector(`.choice-card[data-key="${key}"][data-value="${CSS.escape(v)}"]`);
+            if(el) el.classList.add('selected');
+          });
+        });
+
+        // If city present, show next step
+        if (formData.city) showStep(2);
+      } catch (e) { console.warn('loadSavedSetup failed', e); }
+    }
+
+    // Run loader shortly after DOM ready
+    setTimeout(loadSavedSetup, 80);
+
+    updateProgress(1);
+  </script>
+</body>
+</html>

@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Orbit – Admin Control Center</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root{
+      --accent:#8C72FF;--accent-d:#6C47FF;--accent-soft:#E2A1FF;--text:#F8F5FF;--text2:#E3DCF8;--muted:#BDB4DB;--bg:#090611;--border:rgba(255,255,255,.16);--border-strong:rgba(196,170,255,.32);--success:#74E4A3;--danger:#FF8B8B;--warning:#FFD36F;--info:#7DD8FF;--shadow:0 28px 80px rgba(0,0,0,.34);--shadow-soft:0 14px 34px rgba(0,0,0,.22);--g-primary:linear-gradient(135deg,#E2A1FF 0%,#8C72FF 42%,#6C47FF 100%);--g-card:linear-gradient(145deg,rgba(255,255,255,.16),rgba(255,255,255,.07));--radius-sm:16px;--radius-lg:28px;--sidebar-w:286px;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}button,input,select,textarea{font-family:inherit}button{cursor:pointer}body{font-family:'Plus Jakarta Sans',sans-serif;color:var(--text);min-height:100vh;display:flex;overflow:hidden;background:radial-gradient(circle at 12% 12%,rgba(140,114,255,.24),transparent 28%),radial-gradient(circle at 88% 10%,rgba(226,161,255,.13),transparent 30%),radial-gradient(circle at 70% 86%,rgba(108,71,255,.16),transparent 34%),linear-gradient(135deg,#070511 0%,#100A1D 42%,#1B1230 100%);background-attachment:fixed;-webkit-font-smoothing:antialiased}body::before{content:'';position:fixed;inset:0;pointer-events:none;opacity:.52;background-image:linear-gradient(rgba(255,255,255,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.045) 1px,transparent 1px);background-size:34px 34px;mask-image:radial-gradient(circle at center,black 24%,transparent 78%);z-index:-2}body::after{content:'';position:fixed;width:380px;height:380px;right:-120px;top:18%;border-radius:50%;background:rgba(140,114,255,.16);filter:blur(90px);pointer-events:none;z-index:-1}
+    .sidebar{width:var(--sidebar-w);flex-shrink:0;margin:18px 0 18px 18px;height:calc(100vh - 36px);border:1px solid var(--border);border-radius:24px;background:rgba(15,10,26,.72);backdrop-filter:blur(22px) saturate(145%);box-shadow:0 18px 50px rgba(0,0,0,.24);padding:24px 18px;display:flex;flex-direction:column;gap:20px;position:sticky;top:18px;overflow-y:auto}.brand{display:flex;align-items:center;padding:6px 8px}.sidebar__admin{border:1px solid var(--border);background:rgba(255,255,255,.08);border-radius:22px;padding:16px;box-shadow:var(--shadow-soft)}.sidebar__admin-name{font-size:1rem;font-weight:800;margin-bottom:4px}.sidebar__admin-meta{color:var(--text2);font-size:.82rem;line-height:1.6}.sidebar__nav{display:flex;flex-direction:column;gap:8px;flex:1}.nav-btn{border:1px solid transparent;background:transparent;color:var(--text2);border-radius:999px;padding:13px 15px;font-weight:800;font-size:.9rem;text-align:left;transition:.25s cubic-bezier(.22,1,.36,1)}.nav-btn:hover,.nav-btn.active{color:#fff;background:rgba(255,255,255,.10);box-shadow:inset 0 0 0 1px rgba(255,255,255,.10);border-color:rgba(255,255,255,.10)}.nav-btn.active{background:rgba(140,114,255,.20);border-color:var(--border-strong);box-shadow:0 12px 24px rgba(108,71,255,.16)}.nav-dot{float:right;min-width:22px;height:22px;border-radius:999px;background:rgba(255,139,139,.16);color:#ffcaca;border:1px solid rgba(255,139,139,.3);display:inline-flex;align-items:center;justify-content:center;font-size:.72rem}.sidebar__bottom{display:flex;flex-direction:column;gap:10px}
+    .main{flex:1;height:100vh;overflow-y:auto;padding:28px}.view{display:none;animation:fadeIn .25s ease}.view.active{display:block}@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+    .hero{position:relative;margin:12px 0 22px;padding:34px;border:1px solid var(--border);border-radius:34px;overflow:hidden;background:radial-gradient(circle at 18% 20%,rgba(226,161,255,.18),transparent 30%),radial-gradient(circle at 82% 30%,rgba(108,71,255,.24),transparent 34%),rgba(255,255,255,.08);backdrop-filter:blur(22px) saturate(145%);box-shadow:var(--shadow)}.hero::before{content:'';position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,.08) 1px,transparent 1px);background-size:28px 28px;pointer-events:none;opacity:.55}.hero>*{position:relative;z-index:1}.hero__title{font-size:clamp(2rem,4vw,3.1rem);line-height:1.05;letter-spacing:-.06em;font-weight:800;margin-bottom:10px;max-width:860px}.hero__title span{background:linear-gradient(135deg,#fff 0%,#E2A1FF 45%,#8C72FF 100%);-webkit-background-clip:text;background-clip:text;color:transparent}.hero__text{color:var(--text2);font-size:.98rem;line-height:1.75;max-width:850px}.hero-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:22px}.section-title{font-size:1rem;font-weight:800;margin:28px 0 18px;text-transform:uppercase;letter-spacing:.08em;display:flex;align-items:center;gap:12px}.section-title::after{content:'';flex:1;height:1px;background:rgba(255,255,255,.14)}
+    .btn,.ghost-btn,.danger-btn,.primary-btn,.small-btn{border:none;border-radius:16px;padding:13px 16px;font-weight:800;transition:.25s cubic-bezier(.22,1,.36,1)}.ghost-btn{background:rgba(255,255,255,.10);border:1px solid var(--border);color:var(--text)}.danger-btn,.small-btn.reject,.small-btn.ban{background:rgba(255,139,139,.12);border:1px solid rgba(255,139,139,.30);color:#ffb4b4}.primary-btn,.small-btn.approve{background:var(--g-primary);color:#fff;box-shadow:0 12px 26px rgba(108,71,255,.30)}.small-btn{padding:9px 11px;border-radius:12px;background:rgba(255,255,255,.08);border:1px solid var(--border);color:var(--text);font-size:.78rem}.small-btn.view{background:rgba(125,216,255,.12);border-color:rgba(125,216,255,.30);color:var(--info)}.small-btn.warn,.small-btn.settle{background:rgba(255,211,111,.12);border-color:rgba(255,211,111,.30);color:var(--warning)}.btn:hover,.primary-btn:hover,.ghost-btn:hover,.danger-btn:hover,.small-btn:hover{transform:translateY(-1px)}
+    .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}.stat-card,.panel,.mini-card,.preview-card{border:1px solid var(--border);background:var(--g-card);backdrop-filter:blur(22px) saturate(150%);box-shadow:var(--shadow-soft)}.stat-card{border-radius:22px;padding:18px;min-height:126px}.stat-card h3{font-size:1.62rem;font-weight:800;margin-bottom:6px;color:#fff;letter-spacing:-.04em}.stat-card p{color:var(--muted);font-size:.76rem;text-transform:uppercase;letter-spacing:.08em;font-weight:800;line-height:1.55}.stat-card small{display:block;color:var(--text2);margin-top:10px;font-size:.76rem;line-height:1.5}.panel{border-radius:var(--radius-lg);padding:22px;margin-bottom:22px}.panel-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:18px}.panel-head h2{font-size:1.12rem;letter-spacing:-.03em;margin-bottom:6px}.panel-head p{color:var(--text2);font-size:.88rem;line-height:1.65}.toolbar{display:flex;flex-wrap:wrap;gap:10px;justify-content:flex-end;align-items:center}.input,.select{background:rgba(255,255,255,.08);border:1px solid var(--border);color:#fff;border-radius:999px;padding:12px 15px;outline:none;min-width:190px}.select option{background:#1A1230;color:#fff}.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:18px}.mini-card{border-radius:22px;padding:18px}.mini-card h3{font-size:1rem;margin-bottom:10px}.mini-card p{color:var(--text2);font-size:.86rem;line-height:1.6}.quick-list{display:grid;gap:10px}.quick-item{display:flex;justify-content:space-between;gap:12px;align-items:center;border:1px solid var(--border);border-radius:16px;background:rgba(255,255,255,.06);padding:12px}.quick-item span{color:var(--text2);font-size:.84rem}.quick-item strong{font-size:.9rem}.table-wrap{overflow:auto}.data-table{width:100%;border-collapse:collapse;min-width:1020px}.data-table th{text-align:left;font-size:.68rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);padding:13px 10px;border-bottom:1px solid var(--border);white-space:nowrap}.data-table td{padding:15px 10px;font-size:.88rem;border-bottom:1px solid rgba(255,255,255,.10);color:var(--text2);vertical-align:top;line-height:1.55}.data-table td strong{color:#fff}.actions{display:flex;flex-wrap:wrap;gap:8px;min-width:210px}.badge{display:inline-flex;align-items:center;justify-content:center;border-radius:999px;padding:7px 11px;font-size:.74rem;font-weight:800;color:#e7ddff;background:rgba(140,114,255,.18);border:1px solid rgba(255,255,255,.16);white-space:nowrap}.badge.pending,.badge.requested,.badge.held,.badge.held-by-orbit,.badge.settlement-pending,.badge.refund-initiated,.badge.flagged,.badge.warning{color:var(--warning);border-color:rgba(255,211,111,.32);background:rgba(255,211,111,.10)}.badge.approved,.badge.active,.badge.paid,.badge.paid-to-orbit,.badge.settled,.badge.completed,.badge.settlement-ready,.badge.ready,.badge.read,.badge.refunded{color:var(--success);border-color:rgba(116,228,163,.32);background:rgba(116,228,163,.10)}.badge.rejected,.badge.cancelled,.badge.refund-requested,.badge.banned,.badge.blocked,.badge.unread,.badge.bad{color:#ffb4b4;border-color:rgba(255,139,139,.32);background:rgba(255,139,139,.10)}.empty-state{padding:25px;border-radius:20px;border:1px dashed var(--border);color:var(--text2);background:rgba(255,255,255,.06);text-align:center;line-height:1.7;margin-top:12px}.review-score{font-weight:900}.review-score.bad{color:#ffb4b4}.review-score.good{color:#caffdd}.modal{position:fixed;inset:0;background:rgba(0,0,0,.66);display:none;align-items:center;justify-content:center;padding:22px;z-index:80}.modal.show{display:flex}.modal-card{width:min(1040px,100%);max-height:88vh;overflow-y:auto;border:1px solid var(--border);border-radius:30px;background:radial-gradient(circle at 18% 20%,rgba(226,161,255,.14),transparent 30%),radial-gradient(circle at 82% 30%,rgba(108,71,255,.18),transparent 34%),rgba(15,10,26,.96);backdrop-filter:blur(22px) saturate(145%);box-shadow:var(--shadow)}.modal-head{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:22px;border-bottom:1px solid var(--border)}.modal-body{padding:22px}.preview-card{border-radius:28px;overflow:hidden}.preview-banner{min-height:230px;background:linear-gradient(to top,rgba(9,6,17,.92),rgba(9,6,17,.18)),radial-gradient(circle at top right,rgba(140,114,255,.30),transparent 38%),rgba(255,255,255,.08);background-size:cover;background-position:center;padding:22px;display:flex;align-items:flex-end;border-bottom:1px solid var(--border)}.preview-body{padding:22px}.preview-title{font-size:2rem;line-height:1.1;font-weight:800;letter-spacing:-.04em;margin:10px 0}.preview-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin:16px 0}.preview-detail{padding:14px;border:1px solid var(--border);border-radius:18px;background:rgba(255,255,255,.08)}.preview-detail span{display:block;color:var(--muted);font-size:.7rem;font-weight:900;text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px}.preview-detail p{color:var(--text2);line-height:1.6}.images{display:flex;gap:10px;overflow-x:auto;padding-bottom:4px}.images img{width:140px;height:94px;object-fit:cover;border-radius:14px;border:1px solid var(--border);background:rgba(255,255,255,.08)}.toast{position:fixed;right:22px;bottom:22px;z-index:100;max-width:410px;padding:15px 16px;border-radius:16px;border:1px solid var(--border);background:rgba(15,10,26,.92);backdrop-filter:blur(18px);box-shadow:var(--shadow);color:var(--text);font-size:.88rem;font-weight:800;transform:translateY(20px);opacity:0;pointer-events:none;transition:.3s cubic-bezier(.22,1,.36,1)}.toast.show{transform:translateY(0);opacity:1}
+    @media(max-width:1120px){.stats-grid{grid-template-columns:repeat(2,1fr)}.grid-2,.preview-grid{grid-template-columns:1fr}}@media(max-width:920px){body{flex-direction:column;overflow:auto}.sidebar{margin:12px;width:calc(100% - 24px);height:auto;position:relative;top:auto}.sidebar__nav{flex-direction:row;flex-wrap:wrap}.nav-btn{flex:1 1 180px}.main{height:auto;overflow:visible;padding:18px 12px 28px}.hero{padding:26px 22px}}@media(max-width:640px){.stats-grid{grid-template-columns:1fr}.panel-head{flex-direction:column}.toolbar{justify-content:flex-start}.input,.select{width:100%}}
+  
+/* ===== Orbit Ultra Dark Theme Override ===== */
+:root {
+  --accent: #6E4CFF !important;
+  --accent-d: #3F22D8 !important;
+  --accent-dark: #3F22D8 !important;
+  --accent-soft: #A995FF !important;
+  --accent-l: #DCD4F8 !important;
+  --accent-glow: rgba(98, 67, 255, 0.24) !important;
+  --text: #FFFFFF !important;
+  --text2: #E8E1FF !important;
+  --muted: #BEB3E6 !important;
+  --muted-strong: #DCD4F8 !important;
+  --dark-text: #FFFFFF !important;
+  --dark-muted: #BEB3E6 !important;
+  --bg: #020106 !important;
+  --card: rgba(255,255,255,0.045) !important;
+  --card-strong: rgba(255,255,255,0.075) !important;
+  --glass: rgba(255,255,255,0.045) !important;
+  --glass-strong: rgba(255,255,255,0.075) !important;
+  --glass-border: rgba(255,255,255,0.115) !important;
+  --surface: rgba(255,255,255,0.045) !important;
+  --surface-2: rgba(255,255,255,0.075) !important;
+  --surface-strong: rgba(5,3,13,0.88) !important;
+  --surface-deep: rgba(5,3,13,0.90) !important;
+  --border: rgba(255,255,255,0.115) !important;
+  --border-strong: rgba(180,160,255,0.28) !important;
+  --border-bright: rgba(180,160,255,0.28) !important;
+  --shadow: 0 30px 84px rgba(0,0,0,0.68) !important;
+  --shadow-sm: 0 20px 55px rgba(0,0,0,0.56) !important;
+  --shadow-md: 0 30px 84px rgba(0,0,0,0.68) !important;
+  --shadow-soft: 0 18px 46px rgba(0,0,0,0.48) !important;
+  --g-primary: linear-gradient(135deg, #A995FF 0%, #6E4CFF 44%, #3F22D8 100%) !important;
+  --g-card: linear-gradient(145deg, rgba(255,255,255,0.07), rgba(255,255,255,0.025)) !important;
+}
+
+html, body {
+  color-scheme: dark;
+}
+
+body {
+  font-family: 'Plus Jakarta Sans', sans-serif !important;
+  color: var(--text) !important;
+  background:
+    radial-gradient(circle at 12% 15%, rgba(98, 67, 255, 0.16), transparent 30%),
+    radial-gradient(circle at 82% 22%, rgba(77, 45, 210, 0.12), transparent 28%),
+    radial-gradient(circle at 50% 88%, rgba(120, 80, 220, 0.07), transparent 34%),
+    linear-gradient(135deg, #020106 0%, #05030D 38%, #080512 68%, #020105 100%) !important;
+  background-attachment: fixed !important;
+}
+
+body::before {
+  background:
+    linear-gradient(120deg, rgba(255,255,255,0.018), transparent 30%, rgba(255,255,255,0.012) 58%, transparent 80%),
+    radial-gradient(circle at 50% 0%, rgba(130,100,255,0.035), transparent 38%) !important;
+  opacity: .45 !important;
+}
+
+body::after {
+  opacity: .018 !important;
+  border-color: rgba(255,255,255,0.055) !important;
+  background-color: transparent !important;
+}
+
+nav, .nav, .sidebar, .topbar {
+  background: rgba(5,3,14,0.84) !important;
+  border-color: rgba(255,255,255,0.10) !important;
+  box-shadow: 0 24px 70px rgba(0,0,0,0.62), inset 0 1px 0 rgba(255,255,255,0.07) !important;
+}
+
+nav.scrolled, .nav.scrolled {
+  background: rgba(4,2,11,0.93) !important;
+  border-color: rgba(164,142,255,0.22) !important;
+  box-shadow: 0 26px 78px rgba(0,0,0,0.72), inset 0 1px 0 rgba(255,255,255,0.08) !important;
+}
+
+.shell, .visual, .form-side, .hero-inner::before, .feature-card, .step, .cta-card,
+.panel, .event-card, .dashboard-tile, .detail-card, .orbit-modal, .settings-card,
+.login-card, .card, .stat-card, .preview-card, .sidebar__host, .sidebar__admin,
+.dropdown, .empty-state, .chart-panel, .calendar-panel, .notif-item, .modal, .box,
+.payment-card, .refund-card, .approval-card, .table-wrap, .admin-card, .settings-panel {
+  background: linear-gradient(145deg, rgba(255,255,255,0.065), rgba(255,255,255,0.022)) !important;
+  border-color: rgba(255,255,255,0.105) !important;
+  color: var(--text) !important;
+  box-shadow: 0 22px 64px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.055) !important;
+}
+
+.visual, .hero, .cta-card {
+  background:
+    radial-gradient(circle at 18% 20%, rgba(98,67,255,0.16), transparent 32%),
+    radial-gradient(circle at 82% 30%, rgba(150,115,255,0.09), transparent 34%),
+    linear-gradient(145deg, rgba(255,255,255,0.055), rgba(255,255,255,0.018)) !important;
+}
+
+.hero, .hero-inner::before {
+  background:
+    radial-gradient(circle at 18% 20%, rgba(98,67,255,0.15), transparent 32%),
+    radial-gradient(circle at 82% 30%, rgba(130,100,255,0.08), transparent 34%),
+    rgba(255,255,255,0.035) !important;
+  border-color: rgba(255,255,255,0.10) !important;
+}
+
+.bg-blob, .blob-one, .blob-two, .blob-tl, .blob-br {
+  opacity: .42 !important;
+  filter: blur(86px) !important;
+}
+
+.bg-blob.v1, .blob-one, .blob-tl { background: rgba(98,67,255,0.22) !important; }
+.bg-blob.v2, .blob-two { background: rgba(125,92,255,0.14) !important; }
+.bg-blob.v3, .blob-br { background: rgba(77,45,210,0.16) !important; }
+
+.bg-grid, .hero::before {
+  opacity: .055 !important;
+}
+
+h1, h2, h3, h4, h5, h6, .title h1, .hero__title, .htitle, .section-title {
+  color: #FFFFFF !important;
+}
+
+p, .hero-sub, .hero__text, .section-header p, .feature-card p, .step p,
+.event-card__meta, .preview-text, .settings-subtitle, .notif-item__text,
+.sidebar__host-meta, .sidebar__admin-meta, .text-muted, label, .field label {
+  color: var(--text2) !important;
+}
+
+.nav-links a, .nav__links a, .nav-btn, .muted, .small, .help, .meta {
+  color: var(--muted-strong) !important;
+}
+
+.nav-links a:hover, .nav-links a.active, .nav__links a:hover, .nav__links a.active,
+.nav-btn:hover, .nav-btn.active {
+  color: #FFFFFF !important;
+  background: rgba(110,76,255,0.14) !important;
+  border-color: rgba(180,160,255,0.22) !important;
+}
+
+input, textarea, select, .input, .location-select {
+  background: rgba(255,255,255,0.045) !important;
+  border-color: rgba(255,255,255,0.12) !important;
+  color: #FFFFFF !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.035) !important;
+}
+
+input::placeholder, textarea::placeholder, .input::placeholder {
+  color: rgba(220,212,248,0.56) !important;
+}
+
+input:focus, textarea:focus, select:focus, .input:focus, .location-select:focus {
+  border-color: rgba(169,149,255,0.38) !important;
+  background: rgba(255,255,255,0.065) !important;
+  box-shadow: 0 0 0 4px rgba(98,67,255,0.14) !important;
+}
+
+select option {
+  background: #07040F !important;
+  color: #FFFFFF !important;
+}
+
+.btn-primary, .btn-hero, .primary-btn, .btn--primary, .snum, .avatar,
+button[type="submit"], .submit-btn {
+  background: linear-gradient(135deg, #6E4CFF, #9F86FF) !important;
+  color: #FFFFFF !important;
+  border-color: rgba(255,255,255,0.14) !important;
+  box-shadow: 0 16px 36px rgba(70,40,220,0.32), inset 0 1px 0 rgba(255,255,255,0.16) !important;
+}
+
+.btn-ghost, .btn-outline, .btn-sec, .ghost-btn, .btn--secondary,
+.category-btn, .multi-chip, .option-chip, .chip, .small-badge, .btn-cw {
+  background: rgba(255,255,255,0.045) !important;
+  color: #F4F0FF !important;
+  border-color: rgba(255,255,255,0.12) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.045) !important;
+}
+
+.btn-ghost:hover, .btn-outline:hover, .btn-sec:hover, .ghost-btn:hover,
+.btn--secondary:hover, .category-btn:hover, .category-btn.active,
+.multi-chip:hover, .option-chip:hover, .btn-cw:hover {
+  background: rgba(110,76,255,0.16) !important;
+  border-color: rgba(180,160,255,0.26) !important;
+  color: #FFFFFF !important;
+}
+
+.event-card {
+  background:
+    linear-gradient(to top, rgba(2,1,6,.98), rgba(2,1,6,.62)),
+    radial-gradient(circle at top right, rgba(98,67,255,.16), transparent 38%),
+    linear-gradient(145deg, rgba(255,255,255,0.05), rgba(255,255,255,0.018)) !important;
+}
+
+.event-card::before {
+  background: linear-gradient(to top, rgba(2,1,6,.96), rgba(2,1,6,.40)) !important;
+}
+
+table, th, td {
+  border-color: rgba(255,255,255,0.10) !important;
+}
+
+th {
+  background: rgba(255,255,255,0.045) !important;
+  color: var(--muted-strong) !important;
+}
+
+td {
+  color: var(--text2) !important;
+}
+
+footer {
+  background: rgba(3,2,8,0.62) !important;
+  border-color: rgba(255,255,255,0.07) !important;
+  color: var(--muted-strong) !important;
+}
+
+  </style>
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="brand"><svg viewBox="0 0 220 60" style="width:102px;flex-shrink:0;"><defs><linearGradient id="orbitGradAdmin" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#E2A1FF"/><stop offset="100%" style="stop-color:#6C47FF"/></linearGradient></defs><circle cx="26" cy="26" r="18" fill="none" stroke="url(#orbitGradAdmin)" stroke-width="8" stroke-dasharray="74 24" transform="rotate(-16 26 26)"/><circle cx="26" cy="26" r="5.5" fill="#fff"/><text x="72" y="42" font-family="Plus Jakarta Sans" font-size="35" font-weight="800" fill="#F4F1FF">Or<tspan fill="#8C72FF">bit</tspan></text></svg></div>
+    <div class="sidebar__admin"><div class="sidebar__admin-name">Admin Control</div><div class="sidebar__admin-meta">Approvals • payments • refunds • users • organisers • reviews</div></div>
+    <nav class="sidebar__nav">
+      <button class="nav-btn active" onclick="showView('dashboard', this)">Dashboard</button>
+      <button class="nav-btn" onclick="showView('events', this)">Events <span class="nav-dot" id="pendingDot">0</span></button>
+      <button class="nav-btn" onclick="showView('people', this)">People</button>
+      <button class="nav-btn" onclick="showView('registrations', this)">Registrations</button>
+      <button class="nav-btn" onclick="showView('orbit-payment', this)">Orbit Payment</button>
+      <button class="nav-btn" onclick="showView('payments', this)">Payments</button>
+      <button class="nav-btn" onclick="showView('refunds', this)">Refunds</button>
+      <button class="nav-btn" onclick="showView('reviews', this)">Reviews</button>
+    </nav>
+    <div class="sidebar__bottom"><button class="danger-btn" onclick="logoutAdmin()">Logout</button></div>
+  </aside>
+
+  <main class="main">
+    <section id="view-dashboard" class="view active">
+      <div class="hero"><h1 class="hero__title"><span>Welcome back, Admin</span></h1><p class="hero__text">A simple control center for Orbit. Track the full system without exposing backend details to users or organisers.</p><div class="hero-actions"><button class="primary-btn" onclick="showView('events', document.querySelectorAll('.nav-btn')[1])">Review Events</button><button class="ghost-btn" onclick="showView('people', document.querySelectorAll('.nav-btn')[2])">Manage People</button></div></div>
+      <h2 class="section-title">System Overview</h2>
+      <div class="stats-grid">
+        <div class="stat-card"><h3 id="totalUsers">0</h3><p>Total Users</p><small>All user accounts</small></div>
+        <div class="stat-card"><h3 id="totalOrganisers">0</h3><p>Total Organisers</p><small>All organiser accounts</small></div>
+        <div class="stat-card"><h3 id="totalEvents">0</h3><p>Total Events</p><small>Created by organisers</small></div>
+        <div class="stat-card"><h3 id="pendingEventsCount">0</h3><p>Pending Approvals</p><small>Needs admin review</small></div>
+        <div class="stat-card"><h3 id="totalRegistrations">0</h3><p>Registrations</p><small>Active + history records</small></div>
+        <div class="stat-card"><h3 id="paymentsHeld">₹0</h3><p>Payments Held</p><small>Orbit-handled amount</small></div>
+        <div class="stat-card"><h3 id="pendingRefunds">0</h3><p>Pending Refunds</p><small>Needs action</small></div>
+        <div class="stat-card"><h3 id="orbitRevenue">₹0</h3><p>Orbit Revenue</p><small>Platform fee earned</small></div>
+      </div>
+      <h2 class="section-title">Needs Attention</h2>
+      <div class="grid-2">
+        <div class="mini-card" style="grid-column:1/-1"><h3>Priority Queue</h3><div class="quick-list" id="priorityQueue"></div></div>
+      </div>
+    </section>
+
+    <section id="view-events" class="view">
+      <div class="hero"><h1 class="hero__title"><span>Events</span></h1><p class="hero__text">Approve, reject, preview and track every organiser event from one clean page.</p></div>
+      <div class="panel"><div class="panel-head"><div><h2>Event Control</h2><p>Pending events appear first. Approved, rejected, cancelled and completed events stay visible for tracking.</p></div><div class="toolbar"><input class="input" id="eventSearch" oninput="renderEvents()" placeholder="Search event or organiser"><select class="select" id="eventFilter" onchange="renderEvents()"><option value="all">All statuses</option><option value="pending">Pending</option><option value="approved">Approved</option><option value="rejected">Rejected</option><option value="cancelled">Cancelled</option><option value="completed">Completed</option></select></div></div><div class="table-wrap"><table class="data-table"><thead><tr><th>Event</th><th>Organiser</th><th>Date & time</th><th>Venue</th><th>Price</th><th>Slots</th><th>Registrations</th><th>Status</th><th>Approval</th><th>Actions</th></tr></thead><tbody id="eventsBody"></tbody></table></div><div class="empty-state" id="eventsEmpty">No events found.</div></div>
+    </section>
+
+    <section id="view-people" class="view">
+      <div class="hero"><h1 class="hero__title"><span>People</span></h1><p class="hero__text">Track users and organisers. Flag suspicious accounts, warn them, or ban accounts when needed.</p></div>
+      <div class="panel"><div class="panel-head"><div><h2>Users</h2><p>User account health, registrations and payment/refund activity.</p></div><div class="toolbar"><input class="input" id="userSearch" oninput="renderUsers()" placeholder="Search users"></div></div><div class="table-wrap"><table class="data-table"><thead><tr><th>User</th><th>City</th><th>Interests</th><th>Registrations</th><th>Payments</th><th>Refunds</th><th>Status</th><th>Actions</th></tr></thead><tbody id="usersBody"></tbody></table></div><div class="empty-state" id="usersEmpty">No users found.</div></div>
+      <div class="panel"><div class="panel-head"><div><h2>Organisers</h2><p>Organiser trust, events, reviews and payout readiness.</p></div><div class="toolbar"><input class="input" id="organiserSearch" oninput="renderOrganisers()" placeholder="Search organisers"></div></div><div class="table-wrap"><table class="data-table"><thead><tr><th>Organiser</th><th>Organisation</th><th>Events</th><th>Registrations</th><th>Avg rating</th><th>Bad reviews</th><th>Status</th><th>Actions</th></tr></thead><tbody id="organisersBody"></tbody></table></div><div class="empty-state" id="organisersEmpty">No organisers found.</div></div>
+    </section>
+
+    <section id="view-registrations" class="view">
+      <div class="hero"><h1 class="hero__title"><span>Registrations</span></h1><p class="hero__text">See which users registered, cancelled, requested refunds, and how every booking is moving.</p></div>
+      <div class="panel"><div class="panel-head"><div><h2>Registration Records</h2><p>Every booking is tracked here for transparency.</p></div><div class="toolbar"><input class="input" id="registrationSearch" oninput="renderRegistrations()" placeholder="Search user or event"></div></div><div class="table-wrap"><table class="data-table"><thead><tr><th>User</th><th>Event</th><th>Tickets</th><th>Amount</th><th>Payment</th><th>Registration status</th><th>Registered at</th><th>Actions</th></tr></thead><tbody id="registrationsBody"></tbody></table></div><div class="empty-state" id="registrationsEmpty">No registrations found.</div></div>
+    </section>
+
+    <section id="view-payments" class="view">
+      <div class="hero"><h1 class="hero__title"><span>Payments & Settlements</span></h1><p class="hero__text">Users pay Orbit first. After event completion, admin can mark organiser settlement as ready and paid.</p></div>
+      <div class="panel"><div class="panel-head"><div><h2>Payments</h2><p>Track amount paid, platform fee and payment status.</p></div><div class="toolbar"><input class="input" id="paymentSearch" oninput="renderPayments()" placeholder="Search payment"></div></div><div class="table-wrap"><table class="data-table"><thead><tr><th>User</th><th>Event</th><th>Amount paid</th><th>Platform fee</th><th>Status</th><th>Paid at</th><th>User UPI ID</th><th>Organiser UPI ID</th><th>UPI/reference</th><th>Actions</th></tr></thead><tbody id="paymentsBody"></tbody></table></div><div class="empty-state" id="paymentsEmpty">No payment records found.</div></div>
+      <div class="panel"><div class="panel-head"><div><h2>Organiser Settlements</h2><p>Payout status after event completion.</p></div></div><div class="table-wrap"><table class="data-table"><thead><tr><th>Event</th><th>Organiser</th><th>Total collected</th><th>Platform fee</th><th>Payout</th><th>UPI ID</th><th>Completion</th><th>Settlement</th><th>Actions</th></tr></thead><tbody id="settlementsBody"></tbody></table></div><div class="empty-state" id="settlementsEmpty">No settlement records found.</div></div>
+    </section>
+
+    <section id="view-orbit-payment" class="view">
+      <div class="hero"><h1 class="hero__title"><span>Orbit Payment</span></h1><p class="hero__text">Upload a clear QR image and set the Orbit UPI ID for attendees during event registration.</p></div>
+      <div class="panel"><div class="panel-head"><div><h2>Orbit Payment Settings</h2><p>Only QR image uploads are accepted now. The URL option has been removed to keep the payment flow secure.</p></div></div>
+        <div class="grid-2" style="gap:18px;"><div><label style="display:block;margin-bottom:10px;font-size:.9rem;color:var(--text2)">Orbit UPI ID</label><input id="orbitUpiId" class="input" type="text" placeholder="orbitadmin@upi" /></div><div><label style="display:block;margin-bottom:10px;font-size:.9rem;color:var(--text2)">Upload Orbit QR Image</label><input id="orbitQrImageUpload" class="input" type="file" accept="image/png,image/jpeg" onchange="renderOrbitPaymentPreview()" /></div></div>
+        <div style="display:flex;flex-wrap:wrap;gap:16px;align-items:flex-start;margin-top:18px;"><div style="min-width:180px;"><div style="font-size:.9rem;color:var(--text2);margin-bottom:8px">QR Preview</div><div id="orbitQrPreview" style="width:160px;height:160px;border:1px solid var(--border);border-radius:18px;overflow:hidden;background:rgba(255,255,255,.03);display:flex;align-items:center;justify-content:center;"><span style="color:var(--text2);font-size:.8rem;text-align:center;padding:12px">Upload or select a QR image to preview</span></div></div><div style="flex:1;display:flex;gap:12px;align-items:flex-end;"><button class="primary-btn" onclick="saveOrbitPaymentSettings()">Save Orbit Payment Settings</button><span id="orbitPaymentStatus" style="color:var(--text2);font-size:.9rem"></span></div></div>
+        <div style="margin-top:14px;color:var(--muted);font-size:.86rem;">Accepted formats: PNG, JPG. Max size: 2MB. Choose a sharp, square QR image for best scan reliability.</div>
+      </div>
+    </section>
+
+    <section id="view-refunds" class="view">
+      <div class="hero"><h1 class="hero__title"><span>Refunds</span></h1><p class="hero__text">Review refund reasons, initiate refund, mark refunded, or reject invalid requests.</p></div>
+      <div class="panel"><div class="panel-head"><div><h2>Refund Requests</h2><p>Cancellation and refund requests from users.</p></div><div class="toolbar"><input class="input" id="refundSearch" oninput="renderRefunds()" placeholder="Search refunds"></div></div><div class="table-wrap"><table class="data-table"><thead><tr><th>User</th><th>Event</th><th>Amount</th><th>Reason</th><th>Status</th><th>Requested</th><th>User UPI</th><th>Actions</th></tr></thead><tbody id="refundsBody"></tbody></table></div><div class="empty-state" id="refundsEmpty">No refunds found.</div></div>
+    </section>
+
+    <section id="view-reviews" class="view">
+      <div class="hero"><h1 class="hero__title"><span>Reviews & Trust</span></h1><p class="hero__text">Check event feedback. If an organiser receives many bad reviews, Orbit can flag or ban them.</p></div>
+      <div class="panel"><div class="panel-head"><div><h2>Review Monitor</h2><p>Low reviews and repeated bad feedback are highlighted automatically.</p></div><div class="toolbar"><input class="input" id="reviewSearch" oninput="renderReviews()" placeholder="Search reviews"></div></div><div class="table-wrap"><table class="data-table"><thead><tr><th>Organiser</th><th>Event</th><th>User</th><th>Rating</th><th>Review</th><th>Status</th><th>Actions</th></tr></thead><tbody id="reviewsBody"></tbody></table></div><div class="empty-state" id="reviewsEmpty">No reviews found.</div></div>
+    </section>
+
+  </main>
+
+  <div class="modal" id="detailsModal"><div class="modal-card"><div class="modal-head"><h3 id="modalTitle">Preview</h3><button class="ghost-btn" type="button" onclick="closeModal()">Close</button></div><div class="modal-body" id="modalBody"></div></div></div>
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const API={
+      dashboard:'/admin/dashboard-data', purge:'/admin/purge-orphan-data', users:'/admin/users', organisers:'/admin/organisers', registrations:'/admin/registrations', reviews:'/admin/reviews', refunds:'/admin/refunds', settlements:'/admin/settlements', notifications:'/admin/notifications', orbitPaymentSettings:'/admin/orbit-payment-settings',
+      approveEvent:id=>`/admin/event/approve/${id}`, rejectEvent:id=>`/admin/event/reject/${id}`, flagUser:id=>`/admin/user/flag/${id}`, banUser:id=>`/admin/user/ban/${id}`, unbanUser:id=>`/admin/user/unban/${id}`, flagOrganiser:id=>`/admin/organiser/flag/${id}`, banOrganiser:id=>`/admin/organiser/ban/${id}`, unbanOrganiser:id=>`/admin/organiser/unban/${id}`, refundApprove:id=>`/admin/refund/approve/${id}`, refundReject:id=>`/admin/refund/reject/${id}`, refundPaid:id=>`/admin/refund/paid/${id}`, settle:id=>`/admin/settle/${id}`, settleReady:id=>`/admin/settle/ready/${id}`, paymentStatus:id=>`/admin/payment/status/${id}`, markRead:id=>`/admin/notifications/read/${id}`, logout:'/admin/logout'
+    };
+    const REAL_ROUTES={
+      registrations:['/admin/registrations','/api/admin/registrations','/admin/bookings','/api/admin/bookings','/api/registrations','/api/bookings'],
+      payments:['/admin/payments','/api/admin/payments','/payments','/api/payments','/api/admin/payment-records'],
+      notifications:[],
+      refunds:['/admin/refunds','/api/admin/refunds','/refunds','/api/refunds','/admin/refund-requests','/api/admin/refund-requests'],
+      reviews:['/admin/reviews','/api/admin/reviews','/reviews','/api/reviews','/api/admin/ratings'],
+      dashboard:['/admin/dashboard-data','/api/admin/dashboard-data','/api/admin/dashboard','/admin/data','/api/admin/data']
+    };
+    const PLATFORM_USER_FEE=5, PLATFORM_ORGANISER_FEE=5;
+    const state={stats:{},events:[],pendingEvents:[],users:[],organisers:[],registrations:[],payments:[],refunds:[],settlements:[],reviews:[],notifications:[]};
+    let orbitPaymentQrPath='';
+    function clearOrbitSharedBrowserCache(){['orbitSharedRegistrations','orbitSharedPayments','orbitSharedRefunds','orbitSharedNotifications'].forEach(k=>{try{localStorage.removeItem(k)}catch(e){}})}
+    function showView(viewName,btn){document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));document.getElementById('view-'+viewName)?.classList.add('active');document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));btn?.classList.add('active')}
+    function money(value){const amount=Number(value||0);return '₹'+amount.toLocaleString('en-IN',{maximumFractionDigits:2})}
+    function safe(v,f='-'){return v===undefined||v===null||v===''?f:v}
+    function escapeHtml(v){return String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[ch]))}
+    function slug(v){return String(v||'pending').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')}
+    function isRefundedOrCancelled(row){const text=['status','registration_status','payment_status','refund_status','settlement_status'].map(k=>String((row||{})[k]||'')).join(' ').toLowerCase();return /(refund|refunded|refund initiated|refund requested|cancelled|canceled)/.test(text)}
+    function paymentKey(p){const reg=String((p||{}).registration_id||(p||{}).booking_id||'').trim();const pay=String((p||{}).payment_id||'').trim();if(reg)return reg;if(pay.startsWith('PAY-'))return pay.slice(4);if(pay)return pay;return `${String((p||{}).user_email||'').toLowerCase()}|${String((p||{}).event_id||p?.event_title||'')}|${String((p||{}).amount_paid||p?.amount||'')}|${String((p||{}).created_at||p?.paid_at||p?.registered_at||'')}`}
+    function badge(v){const t=safe(v);return `<span class="badge ${slug(t)}">${escapeHtml(t)}</span>`}
+    function getId(x){return x?._id||x?.id||x?.event_id||x?.user_id||x?.organiser_id||x?.host_id||x?.registration_id||x?.refund_id||x?.review_id||x?.notification_id||x?.email||''}
+    function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(window.__toastTimer);window.__toastTimer=setTimeout(()=>t.classList.remove('show'),2800)}
+    async function requestJSON(url,options={}){const res=await fetch(url,{credentials:'include',headers:{'Content-Type':'application/json',...(options.headers||{})},...options});const text=await res.text();let data={};if(text){try{data=JSON.parse(text)}catch(e){throw new Error('Server returned non-JSON for '+url)}}if(!res.ok||data.success===false)throw new Error(data.message||data.error||'Request failed');return data}
+    async function tryFetch(url,fallback){try{return await requestJSON(url)}catch(e){console.warn('[ADP fetch failed]',url,e.message);return fallback}}
+    async function loadOrbitPaymentSettings(){const data=await tryFetch(API.orbitPaymentSettings,{orbit_payment:{upi_id:'',qr_image:''}});const settings=data.orbit_payment||{};
+      const upiInput=document.getElementById('orbitUpiId');const fileInput=document.getElementById('orbitQrImageUpload');if(upiInput)upiInput.value=settings.upi_id||'';if(fileInput)fileInput.value='';orbitPaymentQrPath=settings.qr_image||'';renderOrbitPaymentPreview();}
+    function renderOrbitPaymentPreview(){const preview=document.getElementById('orbitQrPreview');if(!preview)return;if(window.__orbitQrPreviewUrl){URL.revokeObjectURL(window.__orbitQrPreviewUrl);window.__orbitQrPreviewUrl=null;}const fileInput=document.getElementById('orbitQrImageUpload');const file=fileInput?.files?.[0];if(file){const url=URL.createObjectURL(file);window.__orbitQrPreviewUrl=url;preview.innerHTML=`<img src="${url}" style="width:100%;height:100%;object-fit:cover" onerror="this.parentElement.innerHTML='<span style=&quot;color:var(--text2);font-size:.8rem;text-align:center;padding:12px&quot;>Image failed to load</span>'" />`;return;}const url=orbitPaymentQrPath.trim();if(!url){preview.innerHTML='<span style="color:var(--text2);font-size:.8rem;text-align:center;padding:12px">Upload or select a QR image to preview</span>';return;}preview.innerHTML=`<img src="${url}" style="width:100%;height:100%;object-fit:cover" onerror="this.parentElement.innerHTML='<span style=&quot;color:var(--text2);font-size:.8rem;text-align:center;padding:12px&quot;>Image failed to load</span>'" />`;}
+    async function saveOrbitPaymentSettings(){const upi=(document.getElementById('orbitUpiId')?.value||'').trim();const fileInput=document.getElementById('orbitQrImageUpload');const file=fileInput?.files?.[0];const status=document.getElementById('orbitPaymentStatus');if(status)status.textContent='Saving...';try{if(file){const allowedTypes=['image/png','image/jpeg'];if(!allowedTypes.includes(file.type)){throw new Error('Upload must be a PNG or JPG image.');}if(file.size>2*1024*1024){throw new Error('QR image must be 2MB or smaller.');}}const formData=new FormData();formData.append('upi_id',upi);if(file){formData.append('qr_image',file);}else{formData.append('qr_image',orbitPaymentQrPath||'');}
+      const res=await fetch(API.orbitPaymentSettings,{method:'POST',credentials:'include',body:formData});const text=await res.text();let data={};if(text){try{data=JSON.parse(text)}catch(e){throw new Error('Server returned non-JSON response')} }if(!res.ok||data.success===false)throw new Error(data.message||data.error||'Request failed');orbitPaymentQrPath=(data.orbit_payment?.qr_image||orbitPaymentQrPath||'');if(status)status.textContent='Saved';toast('Orbit payment settings saved');await loadDashboard(true);}catch(e){console.warn(e.message);if(status)status.textContent='Save failed';toast(e.message||'Could not save orbit payment settings');}}
+    async function fetchFirstWorking(urls,fallback={}){for(const url of urls){try{const data=await requestJSON(url);console.log('[ADP connected]',url,data);return data}catch(e){console.warn('[ADP route failed]',url,e.message)}}return fallback}
+    async function fetchAllWorking(urls){const out=[];for(const url of urls){try{const data=await requestJSON(url);console.log('[ADP connected]',url,data);out.push(data)}catch(e){console.warn('[ADP route failed]',url,e.message)}}return out}
+    function arrayFromPayload(payload,keys){if(Array.isArray(payload))return payload; if(!payload||typeof payload!=='object')return []; for(const k of keys){if(Array.isArray(payload[k]))return payload[k]} for(const wrap of ['data','result','records','payload']){if(payload[wrap]){const arr=arrayFromPayload(payload[wrap],keys); if(arr.length)return arr}} return []}
+    function arraysFromPayloads(payloads,keys){return payloads.flatMap(p=>arrayFromPayload(p,keys)).filter(x=>x&&typeof x==='object')}
+    function uniqueRows(rows,idFn){const seen=new Map();rows.filter(Boolean).forEach((x,i)=>{const key=String(idFn(x)||JSON.stringify(x)||i); if(!seen.has(key))seen.set(key,x)});return [...seen.values()]}
+    function read(key,f=[]){try{return JSON.parse(localStorage.getItem(key)||'')||f}catch(e){return f}}
+    function write(key,val){localStorage.setItem(key,JSON.stringify(val||[]))}
+    function mergeBy(a,b,idFn){const m=new Map();[...(a||[]),...(b||[])].filter(Boolean).forEach(x=>m.set(String(idFn(x)||Math.random()),x));return [...m.values()]}
+    function clearLegacyAdminCache(){const prefixes=['orbitOrganiserEvents_','orbitUserRegistrations_','orbitRegisteredEvents_','orbitSavedEvents_'];const keys=['orbitOrbitPaymentRecords','orbitAdminPaymentRecords','orbitPaymentRecords','orbitRefundRecords','orbitAdminEvents','orbitEvents','orbitSharedRegistrations','orbitSharedPayments','orbitSharedRefunds','orbitSharedNotifications','orbitSharedReviews','orbitEventReviews','orbitSharedRatings'];for(let i=localStorage.length-1;i>=0;i--){const k=localStorage.key(i)||'';if(keys.includes(k)||prefixes.some(p=>k.startsWith(p)))localStorage.removeItem(k)}}
+    function collectLocalOrganiserEvents(){return []}
+    function collectLocalPayments(){return []}
+
+    function collectSharedRows(key){try{return (JSON.parse(localStorage.getItem(key)||'[]')||[]).filter(x=>x&&x.source==='profile_registration_action')}catch(e){return []}}
+    function collectSharedRegistrations(){return []}
+    function collectSharedPayments(){return []}
+    function collectSharedAdminNotifications(){return []}
+    function collectSharedRefunds(){return []}
+    function collectSharedReviews(){return []}
+    function normalizeEvent(e){return {...e,event_id:e.event_id||e.id||e._id,title:e.title||e.event_title||'Untitled Event',organiser_email:e.organiser_email||e.host_email||e.email||'',organiser_name:e.organiser_name||e.host_name||e.organizer_name||'Organiser',organization:e.organization||e.organisation||e.organization_name||'',approval_status:e.approval_status||e.admin_status||e.status||'Pending',status:e.status||e.approval_status||'Pending',registered_count:Number(e.registered_count||e.registrations_count||e.total_registrations||0),price:Number(e.price||0),slots:Number(e.total_slots||e.slots||e.available_slots||0)}}
+    function normalizePayment(p){const ev=p.event||p.event_details||p.eventData||{};const user=p.user||p.user_details||p.userData||{};const pay=p.payment||p.payment_details||{};const amount=Number(p.amount_paid??p.amount??p.total_amount??p.ticket_amount??pay.amount??pay.amount_paid??0);const fee=Number(p.platform_fee??p.admin_fee??p.orbit_fee??p.user_service_fee??pay.platform_fee??0);return {...p,payment_id:p.payment_id||p.id||p._id||p.transaction_id||p.reference_id,registration_id:p.registration_id||p.booking_id||p.id,event_id:p.event_id||ev.event_id||ev.id||ev._id,event_title:p.event_title||p.event_name||p.title||ev.title||ev.event_title||'Event',user_name:p.user_name||p.name||user.name||user.full_name||'User',user_email:p.user_email||p.email||user.email||'',amount_paid:amount,platform_fee:fee,payment_status:p.payment_status||pay.payment_status||pay.status||p.status||'-',paid_at:p.paid_at||p.payment_date||p.created_at||p.registered_at||pay.created_at||'',upi_reference:p.upi_reference||p.transaction_id||p.payment_reference||p.reference_id||p.user_upi_id||pay.upi_reference||'-',organiser_name:p.organiser_name||p.host_name||ev.organiser_name||ev.host_name||'Organiser',organiser_upi_id:p.organiser_upi_id||p.organiser_upi||ev.organiser_upi_id||ev.upi_id||'-'}}
+    function normalizeRefund(r){const st=r.refund_status||r.status||'Refund requested';return {...r,refund_id:r.refund_id||r.id||r._id,user_name:r.user_name||r.name||'User',user_email:r.user_email||r.email||'',event_title:r.event_title||r.title||'Event',amount:Number(r.amount||r.amount_paid||0),reason:r.reason||r.cancellation_reason||r.refund_reason||'-',status:st,refund_status:st,requested_at:r.requested_at||r.created_at||r.cancelled_at||'',user_upi_id:r.user_upi_id||r.upi_id||r.refund_upi||'-'}}
+    function normalizeRegistration(r){const ev=r.event||r.event_details||r.eventData||{};const user=r.user||r.user_details||r.userData||{};const pay=r.payment||r.payment_details||{};return {...r,registration_id:r.registration_id||r.booking_id||r.id||r._id||r.payment_id,user_name:r.user_name||r.name||user.name||user.full_name||'User',user_email:r.user_email||r.email||user.email||'',event_id:r.event_id||ev.event_id||ev.id||ev._id,event_title:r.event_title||r.event_name||r.title||ev.title||ev.event_title||'Event',tickets:Number(r.tickets||r.quantity||r.seats||1),amount:Number(r.amount||r.amount_paid||r.total_amount||r.ticket_amount||pay.amount||pay.amount_paid||0),payment_status:r.payment_status||pay.payment_status||pay.status||'-',status:r.registration_status||r.booking_status||r.status||'Registered',registered_at:r.registered_at||r.booking_date||r.created_at||r.date||''}}
+    function normalizeNotification(n){return {...n,notification_id:n.notification_id||n.id||n._id,title:n.title||n.subject||'Notification',message:n.message||n.text||n.body||n.description||'',type:n.type||n.category||n.notification_type||'Internal',status:n.status||n.read_status||(n.read?'Read':'Unread'),created_at:n.created_at||n.createdAt||n.time||n.date||''}}
+    function normalizeReview(r){return {...r,review_id:r.review_id||r.id||r._id,organiser_email:r.organiser_email||r.host_email||'',organiser_name:r.organiser_name||r.host_name||'Organiser',event_title:r.event_title||r.title||'Event',user_name:r.user_name||r.name||'User',rating:Number(r.rating||0),review:r.review||r.comment||r.message||'',status:r.status||((Number(r.rating||0)<=2)?'Bad':'Active')}}
+    function buildUsersFromData(){const map=new Map();state.users.forEach(u=>map.set(String(u.email||u.user_email||getId(u)),u));state.registrations.forEach(r=>{const key=String(r.user_email||r.user_name||'');if(!key)return;const u=map.get(key)||{name:r.user_name,email:r.user_email,status:'Active'};u.registration_count=(u.registration_count||0)+1;u.payment_total=(u.payment_total||0)+Number(r.amount||0);if(slug(r.status).includes('cancel'))u.refund_count=(u.refund_count||0)+1;map.set(key,u)});state.users=[...map.values()]}
+    function buildOrganisersFromData(){const map=new Map();state.organisers.forEach(o=>map.set(String(o.email||o.organiser_email||getId(o)),o));state.events.forEach(e=>{const key=String(e.organiser_email||e.organiser_name||'');if(!key)return;const o=map.get(key)||{name:e.organiser_name,email:e.organiser_email,organization:e.organization,status:'Active'};o.event_count=(o.event_count||0)+1;o.registration_count=(o.registration_count||0)+Number(e.registered_count||0);map.set(key,o)});state.reviews.forEach(r=>{const key=String(r.organiser_email||r.organiser_name||'');const o=map.get(key)||{name:r.organiser_name,email:r.organiser_email,status:'Active'};o.rating_sum=(o.rating_sum||0)+Number(r.rating||0);o.rating_count=(o.rating_count||0)+1;if(Number(r.rating||0)<=2)o.bad_review_count=(o.bad_review_count||0)+1;if(Number(r.rating||0)===1)o.one_star_review_count=(o.one_star_review_count||0)+1;if((o.one_star_review_count||0)>=50){o.status='Banned'}else if((o.bad_review_count||0)>=10){o.status='Flagged'}map.set(key,o)});state.organisers=[...map.values()]}
+    function buildSettlements(){
+      const map=new Map();
+      state.payments.filter(p=>!isRefundedOrCancelled(p)).forEach(p=>{
+        const key=p.event_id||p.event_title;
+        // find associated event if available
+        const ev = findEvent(p.event_id||p.event_title) || null;
+        const existingStatus = String(p.event_status||p.event_completion_status||p.settlement_status||p.status||'').trim();
+        const eventCompleted = ev && isEventCompleted(ev);
+        const computedCompletion = eventCompleted ? 'Completed' : (existingStatus ? existingStatus : 'Pending completion');
+        const s=map.get(key)||{
+          event_id:p.event_id,
+          event_title:p.event_title,
+          organiser_name:p.organiser_name||'Organiser',
+          organiser_upi_id:p.organiser_upi_id||p.upi_id||'-',
+          total_paid_amount:0,
+          platform_fee:0,
+          organiser_payout_amount:0,
+          event_completion_status: computedCompletion,
+          settlement_status:p.settlement_status||'Held by Orbit'
+        };
+        s.total_paid_amount+=Number(p.amount_paid||0);
+        s.platform_fee+=Number(p.platform_fee||0)+((Number(p.amount_paid||0)>0)?PLATFORM_ORGANISER_FEE:0);
+        s.organiser_payout_amount=Math.max(0,s.total_paid_amount-s.platform_fee);
+        if(eventCompleted) s.event_completion_status='Completed';
+        map.set(key,s);
+      });
+      return [...map.values()];
+    }
+    function parseDateValue(v){if(!v)return 0;const d=new Date(String(v).replace(' ','T'));const t=d.getTime();return Number.isFinite(t)?t:0}
+    // Robust date/time parsing to detect DD/MM/YYYY and MM/DD/YYYY
+    function parseEventDate(value){
+      if(!value) return null;
+      const clean = String(value).trim();
+      const tryParse = dateString => { const d = new Date(dateString); return isNaN(d.getTime())?null:d };
+      let parsed = tryParse(clean);
+      if(parsed) return parsed;
+      parsed = tryParse(clean + 'T00:00:00');
+      if(parsed) return parsed;
+      const dm = clean.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
+      if(dm){
+        const [, first, second, year] = dm;
+        const f = Number(first), s = Number(second);
+        let day, month;
+        if(f>12){ day = f; month = s; }
+        else if(s>12){ month = f; day = s; }
+        else { // ambiguous: try MM/DD first, then DD/MM
+          month = f; day = s;
+          parsed = tryParse(`${year}-${String(month).padStart(2,'0')}-${String(day).padStart(2,'0')}T00:00:00`);
+          if(parsed) return parsed;
+          day = f; month = s;
+        }
+        parsed = tryParse(`${year}-${String(month).padStart(2,'0')}-${String(day).padStart(2,'0')}T00:00:00`);
+        if(parsed) return parsed;
+      }
+      return null;
+    }
+
+    function parseEventTime(value){
+      if(!value) return null;
+      const clean = String(value).trim().toLowerCase();
+      const rangeMatch = clean.match(/(.+?)(?:\s*(?:[-–—]|to)\s*)(.+)$/i);
+      if(rangeMatch) return parseEventTime(rangeMatch[2]);
+      const match = clean.match(/^(\d{1,2})(?::(\d{2}))?\s*(am|pm)?$/i);
+      if(!match) return null;
+      let h = Number(match[1]);
+      const m = Number(match[2]||0);
+      const mer = match[3];
+      if(mer==='pm' && h<12) h+=12;
+      if(mer==='am' && h===12) h=0;
+      if(h>23 || m>59) return null;
+      return {h,m};
+    }
+
+    function isEventCompleted(e){
+      if(!e) return false;
+      // prefer explicit status fields
+      const statusText = String(e.status||e.event_status||e.approval_status||'').toLowerCase();
+      if(statusText.includes('completed')||statusText.includes('past')) return true;
+      // try to compute from end date/time
+      const dateStr = e.end_date||e.start_date||e.event_date||e.date||'';
+      const timeStr = e.end_time||e.start_time||e.event_time||'';
+      const d = parseEventDate(dateStr);
+      if(!d) return false;
+      const t = parseEventTime(timeStr);
+      if(t){ d.setHours(t.h, t.m, 0, 0); }
+      else { d.setHours(23,59,59,999); }
+      return d.getTime() <= Date.now();
+    }
+    function isFinalPaidStatus(v){const st=slug(v);return (st.includes('paid')||st.includes('settled'))&&!st.includes('unpaid')&&!st.includes('refund')}
+    function isPendingRefundStatus(v){const st=slug(v);return st.includes('request')||st.includes('pending')||st.includes('initiated')}
+    function refundKey(r){return r.registration_id||r.refund_id||`${String(r.user_email||'').toLowerCase()}|${r.event_id||r.event_title}|${r.requested_at}`}
+    function professionalSortState(){
+      state.registrations=uniqueRows(state.registrations,r=>r.registration_id||`${String(r.user_email||'').toLowerCase()}|${r.event_id||r.event_title}|${r.registered_at}`).sort((a,b)=>parseDateValue(b.registered_at)-parseDateValue(a.registered_at));
+      state.payments=uniqueRows(state.payments,paymentKey).sort((a,b)=>parseDateValue(b.paid_at||b.registered_at||b.created_at)-parseDateValue(a.paid_at||a.registered_at||a.created_at));
+      state.refunds=uniqueRows(state.refunds,refundKey).sort((a,b)=>Number(isPendingRefundStatus(b.status))-Number(isPendingRefundStatus(a.status))||parseDateValue(b.requested_at)-parseDateValue(a.requested_at));
+      state.settlements=uniqueRows(state.settlements,s=>s.event_id||s.event_title).sort((a,b)=>Number(!isFinalPaidStatus(a.settlement_status))-Number(!isFinalPaidStatus(b.settlement_status))||String(a.event_title||'').localeCompare(String(b.event_title||'')));
+    }
+    function generateNotifications(){/* strict mode: no generated/fake admin notifications */}
+    async function loadDashboard(silent=false){if(!silent)toast('Loading real admin data...');
+      clearLegacyAdminCache();
+      // Purge is a destructive operation; do not run automatically on dashboard load.
+      // If needed, the admin can trigger purge manually from the UI.
+      const d=await fetchFirstWorking(REAL_ROUTES.dashboard,{success:true,stats:{},events:[],pending_events:[],users:[],organisers:[],registrations:[],bookings:[],payments:[],notifications:[],refunds:[],settlements:[],reviews:[]});
+      state.stats=d.stats||{};
+      state.events=(arrayFromPayload(d,['events','all_events'])||[]).map(normalizeEvent);
+      state.pendingEvents=(d.pending_events||d.pendingEvents||[]).map(normalizeEvent);
+      state.users=arrayFromPayload(d,['users']);
+      state.organisers=arrayFromPayload(d,['organisers','organizers','hosts']);
+      state.refunds=arrayFromPayload(d,['refunds']).map(normalizeRefund);
+      state.settlements=arrayFromPayload(d,['settlements']);
+      state.reviews=arrayFromPayload(d,['reviews']).map(normalizeReview);
+
+      const [regPayloads,payPayloads,notPayloads,refundPayloads,reviewPayloads,users,orgs,refunds,settlements,reviews]=await Promise.all([
+        fetchAllWorking(REAL_ROUTES.registrations),
+        fetchAllWorking(REAL_ROUTES.payments),
+        Promise.resolve([]),
+        fetchAllWorking(REAL_ROUTES.refunds),
+        fetchAllWorking(REAL_ROUTES.reviews),
+        tryFetch(API.users,{users:[]}),
+        tryFetch(API.organisers,{organisers:[]}),
+        tryFetch(API.refunds,{refunds:[]}),
+        tryFetch(API.settlements,{settlements:[]}),
+        tryFetch(API.reviews,{reviews:[]})
+      ]);
+
+      const sharedRegistrationRows=collectSharedRegistrations();
+      const sharedPaymentRows=collectSharedPayments();
+      const sharedNotificationRows=collectSharedAdminNotifications();
+      const sharedRefundRows=collectSharedRefunds();
+      const sharedReviewRows=collectSharedReviews();
+      const realRegistrationRows=[...arrayFromPayload(d,['registrations','bookings','registered_events','attendees']),...arraysFromPayloads(regPayloads,['registrations','bookings','registered_events','attendees','data','records'])];
+      const realPaymentRows=[...arrayFromPayload(d,['payments','payment_records','transactions']),...arraysFromPayloads(payPayloads,['payments','payment_records','transactions','records','data'])];
+      const realNotificationRows=[];
+      const realRefundRows=[...arrayFromPayload(d,['refunds','refund_requests','refunds_requested']),...arraysFromPayloads(refundPayloads,['refunds','refund_requests','refunds_requested','records','data'])];
+      const realReviewRows=[...arrayFromPayload(d,['reviews','ratings','review_records']),...arraysFromPayloads(reviewPayloads,['reviews','ratings','review_records','records','data'])];
+
+      state.registrations=uniqueRows(realRegistrationRows.map(normalizeRegistration).filter(r=>slug(r.status)!=='duplicate-inactive'&&slug(r.registration_status)!=='duplicate-inactive'),r=>r.registration_id||`${r.user_email}-${r.event_id||r.event_title}-${r.registered_at}`);
+      state.payments=uniqueRows(realPaymentRows.map(normalizePayment).filter(p=>slug(p.status)!=='duplicate-inactive'&&slug(p.registration_status)!=='duplicate-inactive'),paymentKey);
+      state.notifications=uniqueRows(realNotificationRows.map(normalizeNotification),n=>n.notification_id||`${n.title}-${n.message}-${n.created_at}`);
+      state.refunds=uniqueRows(realRefundRows.map(normalizeRefund),r=>r.refund_id||r.registration_id||`${r.user_email}-${r.event_title}-${r.requested_at}`);
+      state.reviews=uniqueRows(realReviewRows.map(normalizeReview),r=>r.review_id||`${r.organiser_email||r.organiser_name}-${r.event_title}-${r.user_name}-${r.rating}`);
+
+      // If payment information is stored inside registrations/bookings instead of a separate payment collection,
+      // show those real payment fields in Payments too. This is not demo data; it comes from saved registration rows.
+      const paymentsInsideRegistrations=state.registrations
+        .filter(r=>Number(r.amount)>0||String(r.payment_status||'').trim())
+        .map(r=>normalizePayment({...r,payment_id:r.payment_id||r.registration_id,amount_paid:r.amount,paid_at:r.registered_at,event_title:r.event_title,user_name:r.user_name,user_email:r.user_email,payment_status:r.payment_status}));
+      state.payments=uniqueRows([...state.payments,...paymentsInsideRegistrations],paymentKey);
+
+      const refundsInsideRegistrations=state.registrations
+        .filter(r=>r.refund_requested||String(r.refund_status||'').trim()||slug(r.status).includes('cancel'))
+        .filter(r=>Number(r.amount)>0)
+        .map(r=>normalizeRefund({...r,refund_id:r.refund_id||`REF-${r.registration_id}`,amount:r.refundable_amount||r.event_amount||r.amount,reason:r.cancellation_reason||r.reason||'User cancelled registration',refund_status:r.refund_status||'Refund requested',requested_at:r.cancelled_at||r.registered_at,event_title:r.event_title,user_name:r.user_name,user_email:r.user_email}));
+      state.refunds=uniqueRows([...state.refunds,...refundsInsideRegistrations],r=>r.refund_id||r.registration_id||`${r.user_email}-${r.event_title}-${r.requested_at}`);
+
+      state.users=mergeBy(state.users,users.users||[],u=>u.email||getId(u));
+      state.organisers=mergeBy(state.organisers,orgs.organisers||orgs.organizers||orgs.hosts||[],o=>o.email||getId(o));
+      state.refunds=mergeBy(state.refunds,(refunds.refunds||[]).map(normalizeRefund),r=>getId(r));
+      state.settlements=mergeBy(state.settlements,settlements.settlements||[],s=>s.event_id||s.event_title);
+      state.reviews=mergeBy(state.reviews,(reviews.reviews||reviews.ratings||[]).map(normalizeReview),r=>getId(r)||`${r.organiser_email||r.organiser_name}-${r.event_title}-${r.user_name}-${r.rating}`);
+
+      syncRegistrationCountsToEvents();
+      state.settlements=mergeBy(buildSettlements(),state.settlements,s=>s.event_id||s.event_title);
+      buildUsersFromData();buildOrganisersFromData();professionalSortState();renderAll();await loadOrbitPaymentSettings();if(!silent)toast('Registrations, payments, refunds and reviews updated from backend.')}
+    function isActiveRegistration(row){
+      const status = slug(row.status||row.registration_status||row.booking_status||'');
+      if(!status) return true;
+      return !status.includes('cancel') && !status.includes('refund') && status !== 'duplicate_inactive';
+    }
+    function syncRegistrationCountsToEvents(){
+      const counts=new Map();
+      state.registrations.filter(isActiveRegistration).forEach(r=>{
+        const keys=[r.event_id,r.event_title].filter(Boolean);
+        keys.forEach(k=>counts.set(String(k),Math.max(counts.get(String(k))||0,0)+1));
+      });
+      state.events.forEach(e=>{const id=String(e.event_id||getId(e)||'');const title=String(e.title||'');e.registered_count=counts.get(id)||counts.get(title)||Number(e.registered_count||0)});
+      state.pendingEvents.forEach(e=>{const id=String(e.event_id||getId(e)||'');const title=String(e.title||'');e.registered_count=counts.get(id)||counts.get(title)||Number(e.registered_count||0)});
+    }
+    function renderAll(){renderStats();renderPriority();renderEvents();renderUsers();renderOrganisers();renderRegistrations();renderPayments();renderSettlements();renderRefunds();renderReviews()}
+    function setText(id,v){const el=document.getElementById(id);if(el)el.textContent=v}
+    function renderStats(){const all=mergeBy(state.events,state.pendingEvents,e=>getId(e)||e.title);setText('totalUsers',state.stats.total_users??state.users.length);setText('totalOrganisers',state.stats.total_organisers??state.organisers.length);setText('totalEvents',state.stats.total_events??all.length);setText('pendingEventsCount',state.stats.pending_events??state.pendingEvents.length);setText('totalRegistrations',state.stats.total_registrations??state.registrations.length);setText('paymentsHeld',money(state.stats.payments_held_by_orbit??state.payments.reduce((a,p)=>slug(p.payment_status).includes('refund')?a:a+Number(p.amount_paid||0),0)));setText('pendingRefunds',state.stats.pending_refunds??state.refunds.filter(r=>!slug(r.status).includes('refunded')).length);setText('orbitRevenue',money(state.stats.orbit_revenue??state.payments.reduce((a,p)=>a+Number(p.platform_fee||0),0)));setText('pendingDot',state.pendingEvents.length);setText('reviewDot',state.organisers.filter(o=>(o.one_star_review_count||0)>=50).length)}
+    function renderPriority(){const q=document.getElementById('priorityQueue');if(!q)return;q.innerHTML=`<div class="quick-item"><span>Events waiting approval</span><strong>${state.pendingEvents.length}</strong></div><div class="quick-item"><span>Refunds needing action</span><strong>${state.refunds.filter(r=>!slug(r.status).includes('refunded')).length}</strong></div><div class="quick-item"><span>Settlements not paid</span><strong>${state.settlements.filter(x=>!slug(x.settlement_status).includes('paid')).length}</strong></div>`;}
+    function eventStatus(e){return e.status||e.approval_status||'Pending'}function approvalStatus(e){return e.approval_status||e.admin_status||eventStatus(e)}function eventDate(e){return e.event_date||e.start_date||e.date||'-'}function eventTime(e){return e.start_time||e.event_time||e.time||'-'}function eventVenue(e){return e.venue||e.exact_address||e.venue_address||e.location||'-'}function eventImages(e){return [e.banner_image,...((e.reference_images||e.event_photos||e.images||[])||[])].filter(Boolean)}
+    function renderEvents(){const body=document.getElementById('eventsBody'),empty=document.getElementById('eventsEmpty');const search=(document.getElementById('eventSearch')?.value||'').toLowerCase();const filter=document.getElementById('eventFilter')?.value||'all';const list=mergeBy(state.events,state.pendingEvents,e=>getId(e)||e.title).filter(e=>{const text=`${e.title} ${e.organiser_name} ${e.organization}`.toLowerCase();const st=`${eventStatus(e)} ${approvalStatus(e)}`.toLowerCase();return (!search||text.includes(search))&&(filter==='all'||st.includes(filter))});body.innerHTML=list.map(e=>{const id=getId(e);const safeId=String(id||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'");const pending=slug(approvalStatus(e)).includes('pending');return `<tr><td><strong>${escapeHtml(e.title)}</strong><br>${escapeHtml(e.category||e.professional_type||'Event')}</td><td>${escapeHtml(e.organiser_name)}<br>${escapeHtml(e.organization||'')}</td><td>${escapeHtml(eventDate(e))}<br>${escapeHtml(eventTime(e))}</td><td>${escapeHtml(eventVenue(e))}</td><td>${money(e.price)}</td><td>${escapeHtml(e.slots)}</td><td>${escapeHtml(e.registered_count)}</td><td>${badge(eventStatus(e))}</td><td>${badge(approvalStatus(e))}</td><td><div class="actions"><button class="small-btn view" onclick="viewEvent('${safeId}')">Preview</button>${pending?`<button class="small-btn approve" onclick="approveEvent('${safeId}')">Approve</button><button class="small-btn reject" onclick="rejectEvent('${safeId}')">Reject</button>`:''}</div></td></tr>`}).join('');empty.style.display=list.length?'none':'block'}
+    function renderUsers(){const body=document.getElementById('usersBody'),empty=document.getElementById('usersEmpty');const search=(document.getElementById('userSearch')?.value||'').toLowerCase();const list=state.users.filter(u=>`${u.name||''} ${u.email||''}`.toLowerCase().includes(search));body.innerHTML=list.map(u=>{const id=getId(u);return `<tr><td><strong>${escapeHtml(u.name||'User')}</strong><br>${escapeHtml(u.email||'')}</td><td>${escapeHtml(u.city||u.location||'-')}</td><td>${escapeHtml((u.interests||u.profile?.interests||[]).join?.(', ')||'-')}</td><td>${u.registration_count||0}</td><td>${money(u.payment_total||0)}</td><td>${u.refund_count||0}</td><td>${badge(u.status||'Active')}</td><td><div class="actions"><button class="small-btn warn" onclick="flagAccount('user','${id}')">Flag</button><button class="small-btn ban" onclick="banAccount('user','${id}')">Ban</button><button class="small-btn approve" onclick="unbanAccount('user','${id}')">Unban</button></div></td></tr>`}).join('');empty.style.display=list.length?'none':'block'}
+    function renderOrganisers(){const body=document.getElementById('organisersBody'),empty=document.getElementById('organisersEmpty');const search=(document.getElementById('organiserSearch')?.value||'').toLowerCase();const list=state.organisers.filter(o=>`${o.name||''} ${o.email||''} ${o.organization||o.organisation||''}`.toLowerCase().includes(search));body.innerHTML=list.map(o=>{const id=getId(o);const avg=(o.rating_count?Number(o.rating_sum||0)/Number(o.rating_count):Number(o.avg_rating||o.rating||0));return `<tr><td><strong>${escapeHtml(o.name||'Organiser')}</strong><br>${escapeHtml(o.email||'')}</td><td>${escapeHtml(o.organization||o.organisation||'-')}</td><td>${o.event_count||0}</td><td>${o.registration_count||0}</td><td><span class="review-score ${avg&&avg<3?'bad':'good'}">${avg?avg.toFixed(1):'-'}</span></td><td>${o.bad_review_count||0}</td><td>${badge(o.status||'Active')}</td><td><div class="actions"><button class="small-btn warn" onclick="flagAccount('organiser','${id}')">Flag</button><button class="small-btn ban" onclick="banAccount('organiser','${id}')">Ban</button><button class="small-btn approve" onclick="unbanAccount('organiser','${id}')">Unban</button></div></td></tr>`}).join('');empty.style.display=list.length?'none':'block'}
+    function renderRegistrations(){const body=document.getElementById('registrationsBody'),empty=document.getElementById('registrationsEmpty');const search=(document.getElementById('registrationSearch')?.value||'').toLowerCase();professionalSortState();const list=state.registrations.filter(r=>`${r.user_name} ${r.user_email} ${r.event_title} ${r.status} ${r.payment_status}`.toLowerCase().includes(search));body.innerHTML=list.map(r=>`<tr><td><strong>${escapeHtml(r.user_name)}</strong><br>${escapeHtml(r.user_email)}</td><td>${escapeHtml(r.event_title)}</td><td>${r.tickets}</td><td>${money(r.amount)}</td><td>${badge(r.payment_status)}</td><td>${badge(r.status)}</td><td>${escapeHtml(r.registered_at||'-')}</td><td><div class="actions"><button class="small-btn view" onclick="viewRegistration('${getId(r)}')">View</button></div></td></tr>`).join('');empty.style.display=list.length?'none':'block'}
+    function renderPayments(){
+      const body=document.getElementById('paymentsBody'), empty=document.getElementById('paymentsEmpty');
+      const search=(document.getElementById('paymentSearch')?.value||'').toLowerCase();
+      professionalSortState();
+      const list=uniqueRows(state.payments,paymentKey).filter(p=>`${p.user_name} ${p.user_email} ${p.event_title} ${p.payment_status} ${p.upi_reference}`.toLowerCase().includes(search));
+      body.innerHTML=list.map(p=>{
+        const id=String(p.payment_id||p.registration_id||getId(p)||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+        const statusText=slug(String(p.payment_status||''));
+        const paid=isFinalPaidStatus(p.payment_status)&&!statusText.includes('organiser');
+        const initiated=statusText.includes('initiated')||statusText.includes('processing');
+        const refunded=isRefundedOrCancelled(p);
+        const userUpi=escapeHtml(p.user_upi_id||p.user_upi||p.upi||'-');
+        const orgUpi=escapeHtml(p.organiser_upi_id||p.organiser_upi||p.upi_id||'-');
+        const reference=escapeHtml(p.upi_reference||p.user_upi_id||p.reference_id||'-');
+        const paidAmount=Number(p.amount_paid||0);
+        return `<tr><td><strong>${escapeHtml(p.user_name)}</strong><br>${escapeHtml(p.user_email)}</td><td>${escapeHtml(p.event_title)}</td><td>${money(paidAmount)}</td><td>${money(p.platform_fee)}</td><td>${badge(p.payment_status)}</td><td>${escapeHtml(p.paid_at||'-')}</td><td>${userUpi}</td><td>${orgUpi}</td><td>${reference}</td><td><div class="actions"><button class="small-btn view" onclick="viewPayment('${id}')">View</button>${paidAmount<=0?'<span class="badge approved">Free</span>':refunded?'<span class="badge refunded">Refunded / not payable</span>':paid?'<span class="badge paid">Paid</span>':`${initiated?'<span class="badge pending">Initiated</span>':`<button class="small-btn settle" onclick="markPayment('${id}','Payment initiated')">Initiate</button>`}<button class="small-btn approve" onclick="markPayment('${id}','Paid')">Paid</button>`}</div></td></tr>`;
+      }).join('');
+      empty.style.display=list.length?'none':'block';
+    }
+    function renderSettlements(){
+      const body=document.getElementById('settlementsBody'), empty=document.getElementById('settlementsEmpty');
+      professionalSortState();
+      const payable=state.settlements.filter(s=>Number(s.organiser_payout_amount||s.total_organiser_payout||0)>0);
+      body.innerHTML = payable.map(s=>{
+        const id = s.event_id||s.event_title;
+        const isFree = Number(s.total_paid_amount||s.total_collected||0) <= 0;
+        const finalPaid = isFinalPaidStatus(s.settlement_status);
+        const ready = slug(s.settlement_status).includes('ready');
+        const organiserUpi = String(s.organiser_upi_id||s.organiser_upi||s.organizer_upi||s.upi_id||s.upi||'-');
+        const organiserQr = s.organiser_upi_qr||s.organiser_qr||s.org_qr||'';
+        const organiserUpiCell = `${escapeHtml(organiserUpi)}${organiserQr?`<div style="margin-top:6px;width:64px;height:64px;border-radius:8px;overflow:hidden;"><img src="${organiserQr}" style="width:100%;height:100%;object-fit:cover"/></div>`:''}`;
+        return `<tr>
+          <td><strong>${escapeHtml(s.event_title||'Event')}</strong></td>
+          <td>${escapeHtml(s.organiser_name||'Organiser')}<br>${escapeHtml(s.organiser_email||'')}</td>
+          <td>${isFree?'Free':money(s.total_paid_amount||s.total_collected)}</td>
+          <td>${isFree?'—':money(s.platform_fee||s.total_platform_fee_earned)}</td>
+          <td>${isFree?'—':money(s.organiser_payout_amount||s.total_organiser_payout)}</td>
+          <td>${organiserUpiCell}</td>
+          <td>${badge(s.event_completion_status||'Pending completion')}</td>
+          <td>${isFree?'<span class="badge approved">Free Event</span>':badge(s.settlement_status||'Held by Orbit')}</td>
+          <td><div class="actions">${isFree?'<span class="badge approved">No payout needed</span>':finalPaid?'<span class="badge paid">Paid to organiser</span>':`${ready?'<span class="badge ready">Ready</span>':`<button class="small-btn settle" onclick="markSettlement('${id}','Settlement ready')">Mark ready</button>`}<button class="small-btn approve" onclick="payOrganiser('${id}')">Paid</button>`}${!String(s.event_completion_status||'').toLowerCase().includes('completed')?`<button class="small-btn warn" onclick="markEventCompleted('${id}')">Mark completed</button>`:''}</div></td>
+        </tr>`;
+      }).join('');
+      empty.style.display = payable.length ? 'none' : 'block';
+    }
+    function renderRefunds(){const body=document.getElementById('refundsBody'),empty=document.getElementById('refundsEmpty');const search=(document.getElementById('refundSearch')?.value||'').toLowerCase();professionalSortState();const list=state.refunds.filter(r=>`${r.user_name} ${r.user_email} ${r.event_title} ${r.status} ${r.reason}`.toLowerCase().includes(search));body.innerHTML=list.map(r=>{const id=r.refund_id||r.registration_id||getId(r);const st=slug(r.status||r.refund_status);const done=st.includes('refunded')||st.includes('paid');const rejected=st.includes('reject');const initiated=st.includes('initiated');const userUpi=String(r.user_upi_id||r.user_upi||r.upi_id||r.upi||'-');const userQr=r.user_upi_qr||r.user_qr||r.qr_image||'';const userUpiCell=`${escapeHtml(userUpi)}${userQr?`<div style="margin-top:6px;width:64px;height:64px;border-radius:8px;overflow:hidden;"><img src="${userQr}" style="width:100%;height:100%;object-fit:cover"/></div>`:''}`;return `<tr><td><strong>${escapeHtml(r.user_name)}</strong><br>${escapeHtml(r.user_email)}</td><td>${escapeHtml(r.event_title)}</td><td>${money(r.amount)}</td><td>${escapeHtml(r.reason)}</td><td>${badge(r.status)}</td><td>${escapeHtml(r.requested_at||'-')}</td><td>${userUpiCell}</td><td><div class="actions"><button class="small-btn view" onclick="viewRefund('${id}')">View</button>${done?'<span class="badge refunded">Refunded</span>':rejected?'<span class="badge rejected">Rejected</span>':`${initiated?'<span class="badge pending">Initiated</span>':`<button class="small-btn settle" onclick="initiateRefund('${id}')">Initiate</button>`}<button class="small-btn approve" onclick="markRefunded('${id}')">Paid</button><button class="small-btn reject" onclick="rejectRefund('${id}')">Reject</button>`}</div></td></tr>`}).join('');empty.style.display=list.length?'none':'block'}
+    function renderReviews(){const body=document.getElementById('reviewsBody'),empty=document.getElementById('reviewsEmpty');const search=(document.getElementById('reviewSearch')?.value||'').toLowerCase();const list=state.reviews.filter(r=>`${r.organiser_name} ${r.event_title} ${r.user_name} ${r.review}`.toLowerCase().includes(search));body.innerHTML=list.map(r=>{const id=String(r.review_id||r.id||getId(r)||`${r.organiser_email||r.organiser_name}-${r.event_title}-${r.user_name}-${r.rating}`);const safeId=id.replace(/\\/g,'\\\\').replace(/'/g,"\\'");const organiserId=String(r.organiser_email||r.organiser_name||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'");return `<tr><td><strong>${escapeHtml(r.organiser_name)}</strong><br>${escapeHtml(r.organiser_email)}</td><td>${escapeHtml(r.event_title)}</td><td>${escapeHtml(r.user_name)}</td><td><span class="review-score ${r.rating<=2?'bad':'good'}">${r.rating||'-'}/5</span></td><td>${escapeHtml(r.review||'-')}</td><td>${badge(r.status)}</td><td><div class="actions"><button class="small-btn view" onclick="viewReview('${safeId}')">View</button><button class="small-btn warn" onclick="flagAccount('organiser','${organiserId}')">Flag organiser</button>${r.rating<=2?`<button class="small-btn ban" onclick="banAccount('organiser','${organiserId}')">Ban</button>`:''}</div></td></tr>`}).join('');empty.style.display=list.length?'none':'block'}
+    function renderNotifications(){/* Notification section removed as requested. User/profile notifications are still written when payments/refunds are updated. */}
+    function findEvent(id){return mergeBy(state.events,state.pendingEvents,e=>getId(e)||e.title).find(e=>String(getId(e))===String(id))}
+    function viewEvent(id){const e=findEvent(id);if(!e)return toast('Event not found.');const imgs=eventImages(e),banner=e.banner_image||imgs[0]||'';const safeId=String(id||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'");document.getElementById('modalTitle').textContent='Event Preview';document.getElementById('modalBody').innerHTML=`<div class="preview-card"><div class="preview-banner" ${banner?`style="background-image:linear-gradient(to top,rgba(9,6,17,.92),rgba(9,6,17,.18)),url('${String(banner).replace(/'/g,'%27')}')"`:''}>${badge(e.category||e.professional_type||'Event')}</div><div class="preview-body"><h2 class="preview-title">${escapeHtml(e.title)}</h2><div class="preview-grid"><div class="preview-detail"><span>Date</span><p>${escapeHtml(eventDate(e))}</p></div><div class="preview-detail"><span>Time</span><p>${escapeHtml(eventTime(e))}</p></div><div class="preview-detail"><span>Venue</span><p>${escapeHtml(eventVenue(e))}</p></div><div class="preview-detail"><span>Price</span><p>${money(e.price)}</p></div><div class="preview-detail"><span>Slots</span><p>${escapeHtml(e.slots)}</p></div><div class="preview-detail"><span>Organiser</span><p>${escapeHtml(e.organiser_name)}<br>${escapeHtml(e.organization||'')}</p></div><div class="preview-detail"><span>Contact</span><p>${escapeHtml(e.contact_email||e.organiser_email||'-')}<br>${escapeHtml(e.contact_phone||'-')}</p></div><div class="preview-detail"><span>Approval</span><p>${badge(approvalStatus(e))}</p></div></div><div class="preview-detail"><span>Description</span><p>${escapeHtml(e.description||'-')}</p></div><div class="preview-detail"><span>Benefits</span><p>${escapeHtml(e.benefits||'-')}</p></div><div class="preview-detail"><span>Reference Images</span>${imgs.length?`<div class="images">${imgs.map(src=>`<img src="${src}" alt="Event image" onclick="window.open('${String(src).replace(/'/g,'%27')}','_blank')"/>`).join('')}</div>`:'<p>No images uploaded.</p>'}</div><div class="actions" style="margin-top:16px;">${slug(approvalStatus(e)).includes('pending')?`<button class="small-btn approve" onclick="approveEvent('${safeId}')">Approve</button><button class="small-btn reject" onclick="rejectEvent('${safeId}')">Reject</button>`:''}</div></div></div>`;openModal()}
+    function viewRegistration(id){const r=state.registrations.find(x=>String(getId(x))===String(id));if(!r)return;document.getElementById('modalTitle').textContent='Registration Details';document.getElementById('modalBody').innerHTML=`<div class="preview-detail"><span>User</span><p>${escapeHtml(r.user_name)}<br>${escapeHtml(r.user_email)}</p></div><div class="preview-detail"><span>Event</span><p>${escapeHtml(r.event_title)}</p></div><div class="preview-detail"><span>Status</span><p>${badge(r.status)} ${badge(r.payment_status)}</p></div><div class="preview-detail"><span>Amount</span><p>${money(r.amount)}</p></div><div class="preview-detail"><span>Reference</span><p>${escapeHtml(r.reference_id||r.upi_reference||r.payment_id||'-')}</p></div>`;openModal()}
+    function viewPayment(id){const p=state.payments.find(x=>[x.payment_id,x.registration_id,getId(x)].map(String).includes(String(id)));if(!p)return toast('Payment record not found.');document.getElementById('modalTitle').textContent='Payment Details';document.getElementById('modalBody').innerHTML=`<div class="preview-detail"><span>User</span><p>${escapeHtml(p.user_name)}<br>${escapeHtml(p.user_email)}</p></div><div class="preview-detail"><span>Event</span><p>${escapeHtml(p.event_title)}</p></div><div class="preview-detail"><span>Amount</span><p>${money(p.amount_paid)}</p></div><div class="preview-detail"><span>Status</span><p>${badge(p.payment_status)}</p></div><div class="preview-detail"><span>UPI/Reference</span><p>${escapeHtml(p.upi_reference||p.user_upi_id||p.payment_id||'-')}</p></div><div class="preview-detail"><span>Paid at</span><p>${escapeHtml(p.paid_at||'-')}</p></div>`;openModal()}
+    function viewRefund(id){const r=state.refunds.find(x=>String(x.refund_id||x.registration_id||getId(x))===String(id));if(!r)return toast('Refund record not found.');document.getElementById('modalTitle').textContent='Refund Details';document.getElementById('modalBody').innerHTML=`<div class="preview-detail"><span>User</span><p>${escapeHtml(r.user_name)}<br>${escapeHtml(r.user_email)}</p></div><div class="preview-detail"><span>Event</span><p>${escapeHtml(r.event_title)}</p></div><div class="preview-detail"><span>Amount</span><p>${money(r.amount)}</p></div><div class="preview-detail"><span>Status</span><p>${badge(r.status||r.refund_status)}</p></div><div class="preview-detail"><span>Reason</span><p>${escapeHtml(r.reason||'-')}</p></div><div class="preview-detail"><span>Requested</span><p>${escapeHtml(r.requested_at||'-')}</p></div><div class="preview-detail"><span>UPI</span><p>${escapeHtml(r.user_upi_id||r.upi_id||'-')}</p></div>`;openModal()}
+    function viewReview(id){const r=state.reviews.find(x=>String(x.review_id||x.id||getId(x)||`${x.organiser_email||x.organiser_name}-${x.event_title}-${x.user_name}-${x.rating}`)===String(id));if(!r)return toast('Review not found.');document.getElementById('modalTitle').textContent='Review Details';document.getElementById('modalBody').innerHTML=`<div class="preview-detail"><span>Organiser</span><p>${escapeHtml(r.organiser_name)}<br>${escapeHtml(r.organiser_email)}</p></div><div class="preview-detail"><span>Event</span><p>${escapeHtml(r.event_title)}</p></div><div class="preview-detail"><span>User</span><p>${escapeHtml(r.user_name)}</p></div><div class="preview-detail"><span>Rating</span><p>${escapeHtml(r.rating||'-')}/5</p></div><div class="preview-detail"><span>Review</span><p>${escapeHtml(r.review||'-')}</p></div><div class="preview-detail"><span>Status</span><p>${badge(r.status||'Active')}</p></div>`;openModal()}
+    function openModal(){document.getElementById('detailsModal').classList.add('show')}function closeModal(){document.getElementById('detailsModal').classList.remove('show')}
+    async function approveEvent(id){
+      // Prefer JSON API route first (works with many proxies), fallback to ID URL route
+      let ok=false;
+      try{
+        await requestJSON('/api/admin/event/approve',{method:'POST',body:JSON.stringify({event_id:id})});
+        ok=true;
+      }catch(e1){
+        console.warn('approveEvent JSON route failed',e1.message);
+        try{
+          await requestJSON(API.approveEvent(id),{method:'POST'});
+          ok=true;
+        }catch(e2){
+          console.error('approveEvent URL route failed',e2.message);
+          toast(e2.message||'Could not approve event');
+        }
+      }
+      if(!ok) return;
+      closeModal();
+      await loadDashboard();
+      toast('Event approved.');
+    }
+
+    async function rejectEvent(id){
+      const reason=prompt('Rejection reason')||'';
+      let ok=false;
+      try{
+        // Try JSON API first
+        await requestJSON('/api/admin/event/reject',{method:'POST',body:JSON.stringify({event_id:id,reason})});
+        ok=true;
+      }catch(e1){
+        console.warn('rejectEvent JSON route failed',e1.message);
+        try{
+          await requestJSON(API.rejectEvent(id),{method:'POST',body:JSON.stringify({reason})});
+          ok=true;
+        }catch(e2){
+          console.error('rejectEvent fallback failed',e2.message);
+          toast(e2.message||'Could not reject event');
+        }
+      }
+      if(!ok) return;
+      closeModal();
+      await loadDashboard();
+      toast('Event rejected.');
+    }
+    function updatePerson(type,id,patch){const list=type==='user'?state.users:state.organisers;const item=list.find(x=>String(getId(x))===String(id)||String(x.email)===String(id)||String(x.name)===String(id));if(item)Object.assign(item,patch)}
+    async function flagAccount(type,id){try{await requestJSON(type==='user'?API.flagUser(id):API.flagOrganiser(id),{method:'POST'})}catch(e){console.warn(e.message)}updatePerson(type,id,{status:'Flagged'});renderAll();toast(`${type} flagged for review.`)}
+    async function banAccount(type,id){if(!confirm('Ban this account?'))return;try{await requestJSON(type==='user'?API.banUser(id):API.banOrganiser(id),{method:'POST'})}catch(e){console.warn(e.message)}updatePerson(type,id,{status:'Banned'});renderAll();toast(`${type} banned.`)}
+    async function unbanAccount(type,id){try{await requestJSON(type==='user'?API.unbanUser(id):API.unbanOrganiser(id),{method:'POST'})}catch(e){console.warn(e.message)}updatePerson(type,id,{status:'Active'});renderAll();toast(`${type} restored.`)}
+    
+    function pushSharedNotification(note){
+      const readList=key=>{try{return JSON.parse(localStorage.getItem(key)||'[]')||[]}catch{return []}};
+      const notes=readList('orbitSharedNotifications');
+      notes.unshift({...note,source:'profile_registration_action',status:'Unread',created_at:note.created_at||new Date().toISOString()});
+      localStorage.setItem('orbitSharedNotifications',JSON.stringify(notes.slice(0,500)));
+    }
+    async function notifyUserByBackend(email,title,message,type='Update',extra={}){
+      if(!email)return;
+      const payload={recipient_type:'user',recipient_email:email,email,title,message,type,...extra};
+      const routes=['/admin/notifications/create','/api/admin/notifications/create','/notifications/create','/api/notifications'];
+      for(const url of routes){try{await requestJSON(url,{method:'POST',body:JSON.stringify(payload)});return;}catch(e){console.warn('[notify route failed]',url,e.message)}}
+    }
+    function syncSharedPaymentStatus(id,status,p){
+      const now=new Date().toISOString();
+      const readList=key=>{try{return JSON.parse(localStorage.getItem(key)||'[]')||[]}catch{return []}};
+      const writeList=(key,list)=>localStorage.setItem(key,JSON.stringify((list||[]).slice(0,500)));
+      const pays=readList('orbitSharedPayments').map(x=>String(x.payment_id||x.registration_id)===String(id)?{...x,payment_status:status,status,paid_at:x.paid_at||now,updated_at:now}:x);
+      writeList('orbitSharedPayments',pays);
+      const regs=readList('orbitSharedRegistrations').map(x=>String(x.registration_id||x.booking_id||x.payment_id)===String(p.registration_id||id)?{...x,payment_status:status,updated_at:now}:x);
+      writeList('orbitSharedRegistrations',regs);
+      if(p.user_email){
+        pushSharedNotification({notification_id:`user-payment-${status}-${id}`,recipient_type:'user',recipient_email:p.user_email,user_email:p.user_email,title:'Payment received',message:`Your payment for ${p.event_title||'your event'} has been received by Orbit.`,type:'Payment',event_id:p.event_id,event_title:p.event_title,registration_id:p.registration_id,payment_id:id,created_at:now});
+        notifyUserByBackend(p.user_email,'Payment received',`Your payment for ${p.event_title||'your event'} has been received by Orbit.`,'Payment',{event_id:p.event_id,event_title:p.event_title,registration_id:p.registration_id,payment_id:id});
+      }
+    }
+async function markPayment(id,status){const p=state.payments.find(x=>[x.payment_id,x.registration_id,getId(x)].map(String).includes(String(id)));if(!p)return toast('Payment record not found.');try{await requestJSON(API.paymentStatus(id),{method:'POST',body:JSON.stringify({status,payment_status:status,registration_id:p.registration_id})});await loadDashboard();toast(`Payment marked ${status.toLowerCase()} and notification sent.`)}catch(e){console.warn(e.message);toast(e.message||'Could not update payment.')}}
+    async function markSettlement(id,status){const s=state.settlements.find(x=>String(x.event_id||x.event_title)===String(id));if(!s)return toast('Settlement not found.');if(status==='Completion reviewed'){s.event_completion_status='Completion reviewed';renderSettlements();return toast('Completion reviewed.')}try{await requestJSON(API.settleReady(id),{method:'POST'});await loadDashboard();toast('Settlement marked ready and organiser notified.')}catch(e){console.warn(e.message);s.settlement_status=status;renderSettlements();toast(e.message||'Settlement marked ready locally.')}}
+    async function payOrganiser(id){try{await requestJSON(API.settle(id),{method:'POST'});await loadDashboard();toast('Organiser payment marked paid and organiser notified.')}catch(e){console.warn(e.message);toast(e.message||'Could not mark organiser payment.')}}
+
+    function markEventCompleted(id){
+      const s = state.settlements.find(x=>String(x.event_id||x.event_title)===String(id));
+      if(!s) return toast('Settlement not found.');
+      s.event_completion_status = 'Completed';
+      renderSettlements();
+      toast('Marked event as completed.');
+    }
+
+    function updateSharedRefundStatus(id,status){
+      const now=new Date().toISOString();
+      const readList=key=>{try{return JSON.parse(localStorage.getItem(key)||'[]')||[]}catch{return []}};
+      const writeList=(key,list)=>localStorage.setItem(key,JSON.stringify((list||[]).slice(0,500)));
+      const refunds=readList('orbitSharedRefunds').map(r=>String(r.refund_id||r.registration_id)===String(id)?{...r,status,refund_status:status,updated_at:now}:r);
+      const refund=refunds.find(r=>String(r.refund_id||r.registration_id)===String(id));
+      writeList('orbitSharedRefunds',refunds);
+      if(refund){
+        const regs=readList('orbitSharedRegistrations').map(r=>String(r.registration_id||r.booking_id)===String(refund.registration_id||id)?{...r,refund_status:status,payment_status:status==='Refunded'?'Refunded':r.payment_status,registration_status:status==='Refunded'?'Refunded':r.registration_status,status:status==='Refunded'?'refunded':r.status,updated_at:now}:r);
+        writeList('orbitSharedRegistrations',regs);
+        const pays=readList('orbitSharedPayments').map(p=>String(p.registration_id||p.payment_id)===String(refund.registration_id||id)?{...p,refund_status:status,payment_status:status==='Refunded'?'Refunded':p.payment_status,updated_at:now}:p);
+        writeList('orbitSharedPayments',pays);
+        const notes=readList('orbitSharedNotifications');
+        if(refund.user_email){
+          const title=status==='Refunded'?'Refund completed':status==='Rejected'?'Refund rejected':'Refund initiated';
+          const message=status==='Refunded'?`Your refund for ${refund.event_title||'your event'} has been paid by Orbit.`:status==='Rejected'?`Your refund for ${refund.event_title||'your event'} was not approved by Orbit.`:`Orbit has started the refund process for ${refund.event_title||'your event'}.`;
+          notes.unshift({source:'profile_registration_action',notification_id:`user-refund-${status}-${refund.refund_id||refund.registration_id}`,recipient_type:'user',recipient_email:refund.user_email,user_email:refund.user_email,title,message,type:'Refund',status:'Unread',created_at:now,event_id:refund.event_id,event_title:refund.event_title,registration_id:refund.registration_id});
+          notifyUserByBackend(refund.user_email,title,message,'Refund',{event_id:refund.event_id,event_title:refund.event_title,registration_id:refund.registration_id,refund_id:refund.refund_id});
+        }
+        if(refund.host_email||refund.organiser_email||refund.organizer_email){
+          notes.unshift({source:'profile_registration_action',notification_id:`host-refund-${status}-${refund.refund_id||refund.registration_id}`,recipient_type:'host',recipient_email:refund.host_email||refund.organiser_email||refund.organizer_email,host_email:refund.host_email||refund.organiser_email||refund.organizer_email,title:'Refund status updated',message:`Refund for ${refund.event_title||'event'} is ${status.toLowerCase()}.`,type:'Refund',status:'Unread',created_at:now,event_id:refund.event_id,event_title:refund.event_title,registration_id:refund.registration_id});
+        }
+        writeList('orbitSharedNotifications',notes);
+      }
+    }
+    async function initiateRefund(id){try{await requestJSON(API.refundApprove(id),{method:'POST'});await loadDashboard();toast('Refund initiated.')}catch(e){console.warn(e.message);toast(e.message||'Could not initiate refund.')}}
+    async function markRefunded(id){try{await requestJSON(API.refundPaid(id),{method:'POST'});await loadDashboard();toast('Refund marked as paid.')}catch(e){console.warn(e.message);toast(e.message||'Could not mark refund paid.')}}
+    async function rejectRefund(id){try{await requestJSON(API.refundReject(id),{method:'POST'});await loadDashboard();toast('Refund rejected.')}catch(e){console.warn(e.message);toast(e.message||'Could not reject refund.')}}
+    async function markNotificationRead(id){try{await requestJSON(API.markRead(id),{method:'POST'})}catch(e){console.warn(e.message)}const n=state.notifications.find(x=>String(x.id||x.notification_id)===String(id));if(n)n.status='Read';renderNotifications();toast('Notification marked read.')}
+    async function logoutAdmin(){try{await requestJSON(API.logout,{method:'POST'})}catch(e){console.warn(e.message)}window.location.href='/admin.html'}
+    document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});document.getElementById('detailsModal').addEventListener('click',e=>{if(e.target.id==='detailsModal')closeModal()});loadDashboard();setInterval(()=>loadDashboard(true),15000);
+  </script>
+</body>
+</html>

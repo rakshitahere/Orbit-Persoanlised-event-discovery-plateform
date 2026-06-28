@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Orbit - Admin Login</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --accent: #8C72FF;
+      --accent-dark: #6C47FF;
+      --bg: #0E0A18;
+      --card: rgba(255, 255, 255, 0.08);
+      --card-strong: rgba(255, 255, 255, 0.12);
+      --border: rgba(255, 255, 255, 0.14);
+      --text: #F7F4FF;
+      --muted: #BDB4D8;
+      --danger: #ff7b9c;
+      --success: #78f0b4;
+      --shadow: 0 24px 70px rgba(0, 0, 0, 0.45);
+      --ease: cubic-bezier(.22, 1, .36, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(140, 114, 255, 0.22), transparent 32%),
+        radial-gradient(circle at bottom right, rgba(226, 161, 255, 0.12), transparent 30%),
+        linear-gradient(135deg, #070511 0%, #110B20 48%, #1B1230 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      overflow: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.04) 1px, transparent 1px);
+      background-size: 34px 34px;
+      mask-image: radial-gradient(circle at center, black 26%, transparent 78%);
+      pointer-events: none;
+      opacity: .65;
+    }
+
+    .login-wrap {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 430px;
+      animation: fadeUp .8s var(--ease) both;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .logo {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 22px;
+    }
+
+    .logo svg {
+      width: 150px;
+      height: auto;
+      filter: drop-shadow(0 0 18px rgba(140, 114, 255, .22));
+    }
+
+    .login-card {
+      width: 100%;
+      padding: 38px 34px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 28px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(22px) saturate(145%);
+    }
+
+    .title {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+
+    .title h1 {
+      font-size: 2rem;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      margin-bottom: 8px;
+    }
+
+    .title p {
+      color: var(--muted);
+      font-size: .95rem;
+      line-height: 1.6;
+    }
+
+    .field {
+      margin-bottom: 18px;
+    }
+
+    .field label {
+      display: block;
+      color: var(--muted);
+      font-size: .76rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      margin-bottom: 8px;
+    }
+
+    .input-box {
+      position: relative;
+    }
+
+    .field input {
+      width: 100%;
+      padding: 14px 15px;
+      border: 1px solid rgba(255,255,255,.16);
+      border-radius: 15px;
+      outline: none;
+      background: rgba(255,255,255,.08);
+      color: var(--text);
+      font-family: inherit;
+      font-size: .95rem;
+      transition: .3s var(--ease);
+    }
+
+    .field input::placeholder {
+      color: rgba(247,244,255,.42);
+    }
+
+    .field input:focus {
+      border-color: var(--accent);
+      background: rgba(255,255,255,.12);
+      box-shadow: 0 0 0 4px rgba(140,114,255,.16);
+    }
+
+    .toggle-pass {
+      position: absolute;
+      top: 50%;
+      right: 13px;
+      transform: translateY(-50%);
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      font-family: inherit;
+      font-weight: 700;
+      font-size: .8rem;
+      cursor: pointer;
+    }
+
+    .toggle-pass:hover {
+      color: var(--accent);
+    }
+
+    .login-btn {
+      width: 100%;
+      margin-top: 8px;
+      padding: 15px 16px;
+      border: none;
+      border-radius: 15px;
+      background: linear-gradient(135deg, var(--accent-dark), var(--accent));
+      color: #fff;
+      font-family: inherit;
+      font-size: 1rem;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 16px 34px rgba(108, 71, 255, .28);
+      transition: transform .28s var(--ease), box-shadow .28s var(--ease), opacity .2s;
+    }
+
+    .login-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 20px 44px rgba(108, 71, 255, .38);
+    }
+
+    .login-btn:disabled {
+      cursor: wait;
+      opacity: .78;
+      transform: none;
+    }
+
+    .message {
+      min-height: 22px;
+      margin-top: 16px;
+      text-align: center;
+      font-size: .86rem;
+      font-weight: 700;
+    }
+
+    .message.error { color: var(--danger); }
+    .message.success { color: var(--success); }
+
+    .back-link {
+      display: block;
+      margin-top: 22px;
+      text-align: center;
+      color: var(--muted);
+      text-decoration: none;
+      font-size: .88rem;
+      font-weight: 700;
+      transition: color .25s;
+    }
+
+    .back-link:hover {
+      color: var(--accent);
+    }
+
+    @media (max-width: 480px) {
+      body { padding: 18px; }
+      .login-card { padding: 30px 22px; border-radius: 24px; }
+      .title h1 { font-size: 1.7rem; }
+    }
+  
+/* ===== Orbit Ultra Dark Theme Override ===== */
+:root {
+  --accent: #6E4CFF !important;
+  --accent-d: #3F22D8 !important;
+  --accent-dark: #3F22D8 !important;
+  --accent-soft: #A995FF !important;
+  --accent-l: #DCD4F8 !important;
+  --accent-glow: rgba(98, 67, 255, 0.24) !important;
+  --text: #FFFFFF !important;
+  --text2: #E8E1FF !important;
+  --muted: #BEB3E6 !important;
+  --muted-strong: #DCD4F8 !important;
+  --dark-text: #FFFFFF !important;
+  --dark-muted: #BEB3E6 !important;
+  --bg: #020106 !important;
+  --card: rgba(255,255,255,0.045) !important;
+  --card-strong: rgba(255,255,255,0.075) !important;
+  --glass: rgba(255,255,255,0.045) !important;
+  --glass-strong: rgba(255,255,255,0.075) !important;
+  --glass-border: rgba(255,255,255,0.115) !important;
+  --surface: rgba(255,255,255,0.045) !important;
+  --surface-2: rgba(255,255,255,0.075) !important;
+  --surface-strong: rgba(5,3,13,0.88) !important;
+  --surface-deep: rgba(5,3,13,0.90) !important;
+  --border: rgba(255,255,255,0.115) !important;
+  --border-strong: rgba(180,160,255,0.28) !important;
+  --border-bright: rgba(180,160,255,0.28) !important;
+  --shadow: 0 30px 84px rgba(0,0,0,0.68) !important;
+  --shadow-sm: 0 20px 55px rgba(0,0,0,0.56) !important;
+  --shadow-md: 0 30px 84px rgba(0,0,0,0.68) !important;
+  --shadow-soft: 0 18px 46px rgba(0,0,0,0.48) !important;
+  --g-primary: linear-gradient(135deg, #A995FF 0%, #6E4CFF 44%, #3F22D8 100%) !important;
+  --g-card: linear-gradient(145deg, rgba(255,255,255,0.07), rgba(255,255,255,0.025)) !important;
+}
+
+html, body {
+  color-scheme: dark;
+}
+
+body {
+  font-family: 'Plus Jakarta Sans', sans-serif !important;
+  color: var(--text) !important;
+  background:
+    radial-gradient(circle at 12% 15%, rgba(98, 67, 255, 0.16), transparent 30%),
+    radial-gradient(circle at 82% 22%, rgba(77, 45, 210, 0.12), transparent 28%),
+    radial-gradient(circle at 50% 88%, rgba(120, 80, 220, 0.07), transparent 34%),
+    linear-gradient(135deg, #020106 0%, #05030D 38%, #080512 68%, #020105 100%) !important;
+  background-attachment: fixed !important;
+}
+
+body::before {
+  background:
+    linear-gradient(120deg, rgba(255,255,255,0.018), transparent 30%, rgba(255,255,255,0.012) 58%, transparent 80%),
+    radial-gradient(circle at 50% 0%, rgba(130,100,255,0.035), transparent 38%) !important;
+  opacity: .45 !important;
+}
+
+body::after {
+  opacity: .018 !important;
+  border-color: rgba(255,255,255,0.055) !important;
+  background-color: transparent !important;
+}
+
+nav, .nav, .sidebar, .topbar {
+  background: rgba(5,3,14,0.84) !important;
+  border-color: rgba(255,255,255,0.10) !important;
+  box-shadow: 0 24px 70px rgba(0,0,0,0.62), inset 0 1px 0 rgba(255,255,255,0.07) !important;
+}
+
+nav.scrolled, .nav.scrolled {
+  background: rgba(4,2,11,0.93) !important;
+  border-color: rgba(164,142,255,0.22) !important;
+  box-shadow: 0 26px 78px rgba(0,0,0,0.72), inset 0 1px 0 rgba(255,255,255,0.08) !important;
+}
+
+.shell, .visual, .form-side, .hero-inner::before, .feature-card, .step, .cta-card,
+.panel, .event-card, .dashboard-tile, .detail-card, .orbit-modal, .settings-card,
+.login-card, .card, .stat-card, .preview-card, .sidebar__host, .sidebar__admin,
+.dropdown, .empty-state, .chart-panel, .calendar-panel, .notif-item, .modal, .box,
+.payment-card, .refund-card, .approval-card, .table-wrap, .admin-card, .settings-panel {
+  background: linear-gradient(145deg, rgba(255,255,255,0.065), rgba(255,255,255,0.022)) !important;
+  border-color: rgba(255,255,255,0.105) !important;
+  color: var(--text) !important;
+  box-shadow: 0 22px 64px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.055) !important;
+}
+
+.visual, .hero, .cta-card {
+  background:
+    radial-gradient(circle at 18% 20%, rgba(98,67,255,0.16), transparent 32%),
+    radial-gradient(circle at 82% 30%, rgba(150,115,255,0.09), transparent 34%),
+    linear-gradient(145deg, rgba(255,255,255,0.055), rgba(255,255,255,0.018)) !important;
+}
+
+.hero, .hero-inner::before {
+  background:
+    radial-gradient(circle at 18% 20%, rgba(98,67,255,0.15), transparent 32%),
+    radial-gradient(circle at 82% 30%, rgba(130,100,255,0.08), transparent 34%),
+    rgba(255,255,255,0.035) !important;
+  border-color: rgba(255,255,255,0.10) !important;
+}
+
+.bg-blob, .blob-one, .blob-two, .blob-tl, .blob-br {
+  opacity: .42 !important;
+  filter: blur(86px) !important;
+}
+
+.bg-blob.v1, .blob-one, .blob-tl { background: rgba(98,67,255,0.22) !important; }
+.bg-blob.v2, .blob-two { background: rgba(125,92,255,0.14) !important; }
+.bg-blob.v3, .blob-br { background: rgba(77,45,210,0.16) !important; }
+
+.bg-grid, .hero::before {
+  opacity: .055 !important;
+}
+
+h1, h2, h3, h4, h5, h6, .title h1, .hero__title, .htitle, .section-title {
+  color: #FFFFFF !important;
+}
+
+p, .hero-sub, .hero__text, .section-header p, .feature-card p, .step p,
+.event-card__meta, .preview-text, .settings-subtitle, .notif-item__text,
+.sidebar__host-meta, .sidebar__admin-meta, .text-muted, label, .field label {
+  color: var(--text2) !important;
+}
+
+.nav-links a, .nav__links a, .nav-btn, .muted, .small, .help, .meta {
+  color: var(--muted-strong) !important;
+}
+
+.nav-links a:hover, .nav-links a.active, .nav__links a:hover, .nav__links a.active,
+.nav-btn:hover, .nav-btn.active {
+  color: #FFFFFF !important;
+  background: rgba(110,76,255,0.14) !important;
+  border-color: rgba(180,160,255,0.22) !important;
+}
+
+input, textarea, select, .input, .location-select {
+  background: rgba(255,255,255,0.045) !important;
+  border-color: rgba(255,255,255,0.12) !important;
+  color: #FFFFFF !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.035) !important;
+}
+
+input::placeholder, textarea::placeholder, .input::placeholder {
+  color: rgba(220,212,248,0.56) !important;
+}
+
+input:focus, textarea:focus, select:focus, .input:focus, .location-select:focus {
+  border-color: rgba(169,149,255,0.38) !important;
+  background: rgba(255,255,255,0.065) !important;
+  box-shadow: 0 0 0 4px rgba(98,67,255,0.14) !important;
+}
+
+select option {
+  background: #07040F !important;
+  color: #FFFFFF !important;
+}
+
+.btn-primary, .btn-hero, .primary-btn, .btn--primary, .snum, .avatar,
+button[type="submit"], .submit-btn {
+  background: linear-gradient(135deg, #6E4CFF, #9F86FF) !important;
+  color: #FFFFFF !important;
+  border-color: rgba(255,255,255,0.14) !important;
+  box-shadow: 0 16px 36px rgba(70,40,220,0.32), inset 0 1px 0 rgba(255,255,255,0.16) !important;
+}
+
+.btn-ghost, .btn-outline, .btn-sec, .ghost-btn, .btn--secondary,
+.category-btn, .multi-chip, .option-chip, .chip, .small-badge, .btn-cw {
+  background: rgba(255,255,255,0.045) !important;
+  color: #F4F0FF !important;
+  border-color: rgba(255,255,255,0.12) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.045) !important;
+}
+
+.btn-ghost:hover, .btn-outline:hover, .btn-sec:hover, .ghost-btn:hover,
+.btn--secondary:hover, .category-btn:hover, .category-btn.active,
+.multi-chip:hover, .option-chip:hover, .btn-cw:hover {
+  background: rgba(110,76,255,0.16) !important;
+  border-color: rgba(180,160,255,0.26) !important;
+  color: #FFFFFF !important;
+}
+
+.event-card {
+  background:
+    linear-gradient(to top, rgba(2,1,6,.98), rgba(2,1,6,.62)),
+    radial-gradient(circle at top right, rgba(98,67,255,.16), transparent 38%),
+    linear-gradient(145deg, rgba(255,255,255,0.05), rgba(255,255,255,0.018)) !important;
+}
+
+.event-card::before {
+  background: linear-gradient(to top, rgba(2,1,6,.96), rgba(2,1,6,.40)) !important;
+}
+
+table, th, td {
+  border-color: rgba(255,255,255,0.10) !important;
+}
+
+th {
+  background: rgba(255,255,255,0.045) !important;
+  color: var(--muted-strong) !important;
+}
+
+td {
+  color: var(--text2) !important;
+}
+
+footer {
+  background: rgba(3,2,8,0.62) !important;
+  border-color: rgba(255,255,255,0.07) !important;
+  color: var(--muted-strong) !important;
+}
+
+  
+/* ===== Admin Ultra Dark Final Polish ===== */
+:root{
+  --accent:#8C72FF !important;
+  --accent-dark:#5C38FF !important;
+  --bg:#020106 !important;
+  --card:rgba(255,255,255,0.045) !important;
+  --card-strong:rgba(255,255,255,0.075) !important;
+  --border:rgba(255,255,255,0.115) !important;
+  --text:#FFFFFF !important;
+  --muted:#DCD4F8 !important;
+  --danger:#ff9aa9 !important;
+  --success:#8fffc0 !important;
+  --shadow:0 34px 92px rgba(0,0,0,.72) !important;
+}
+html,body{color-scheme:dark;}
+body{
+  background:
+    radial-gradient(circle at 12% 16%, rgba(124,92,255,.13), transparent 30%),
+    radial-gradient(circle at 88% 12%, rgba(226,161,255,.055), transparent 30%),
+    radial-gradient(circle at 70% 82%, rgba(108,71,255,.08), transparent 34%),
+    linear-gradient(135deg,#020107 0%,#05030D 38%,#090516 72%,#03020A 100%) !important;
+}
+body::before{
+  opacity:.26 !important;
+  background-image:
+    linear-gradient(rgba(255,255,255,.018) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.018) 1px, transparent 1px) !important;
+}
+.login-card{
+  background:linear-gradient(145deg,rgba(13,9,28,.96),rgba(6,4,14,.96)) !important;
+  border:1px solid rgba(255,255,255,.12) !important;
+  box-shadow:0 28px 80px rgba(0,0,0,.58), inset 0 1px 0 rgba(255,255,255,.07) !important;
+  color:#fff !important;
+}
+.logo svg{filter:drop-shadow(0 0 18px rgba(140,114,255,.26)) !important;}
+.title h1{color:#fff !important;}
+.title p,.field label,.back-link{color:#BDB4DB !important;}
+.field input{
+  background:rgba(255,255,255,.055) !important;
+  border-color:rgba(255,255,255,.13) !important;
+  color:#fff !important;
+}
+.field input::placeholder{color:rgba(216,208,245,.52) !important;}
+.field input:focus{
+  border-color:rgba(187,170,255,.42) !important;
+  background:rgba(255,255,255,.08) !important;
+  box-shadow:0 0 0 4px rgba(124,92,255,.13), 0 14px 30px rgba(0,0,0,.25) !important;
+}
+.toggle-pass{color:#BDB4DB !important;}
+.toggle-pass:hover,.back-link:hover{color:#BBAAFF !important;}
+.login-btn{
+  background:linear-gradient(135deg,#5C38FF,#8C72FF) !important;
+  box-shadow:0 18px 40px rgba(92,56,255,.28), inset 0 1px 0 rgba(255,255,255,.20) !important;
+  border:1px solid rgba(255,255,255,.14) !important;
+}
+.login-btn:hover{
+  background:linear-gradient(135deg,#4E2BEF,#7C5CFF) !important;
+  box-shadow:0 22px 52px rgba(92,56,255,.34), inset 0 1px 0 rgba(255,255,255,.24) !important;
+}
+
+  </style>
+</head>
+<body>
+  <main class="login-wrap">
+    <div class="logo">
+      <svg viewBox="0 0 220 60" xmlns="http://www.w3.org/2000/svg" aria-label="Orbit logo">
+        <defs>
+          <linearGradient id="orbitGradAdminNormal" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#E2A1FF" />
+            <stop offset="45%" stop-color="#9D87FF" />
+            <stop offset="100%" stop-color="#6C47FF" />
+          </linearGradient>
+        </defs>
+        <g transform="translate(4,4)">
+          <circle cx="26" cy="26" r="18" fill="none" stroke="url(#orbitGradAdminNormal)" stroke-width="8" stroke-linecap="round" stroke-dasharray="74 24" transform="rotate(-16 26 26)" />
+          <circle cx="26" cy="26" r="5.5" fill="#ffffff" />
+        </g>
+        <text x="72" y="42" font-size="35" font-weight="800" font-family="Plus Jakarta Sans, sans-serif" fill="#F4F1FF">Or</text>
+        <text x="116" y="42" font-size="35" font-weight="800" font-family="Plus Jakarta Sans, sans-serif" fill="#8C72FF">bit</text>
+      </svg>
+    </div>
+
+    <section class="login-card">
+      <div class="title">
+        <h1>Admin Login</h1>
+        <p>Enter your admin credentials to continue.</p>
+      </div>
+
+      <form id="adminForm" novalidate>
+        <div class="field">
+          <label for="adminUser">Username</label>
+          <input id="adminUser" type="text" placeholder="Enter username" autocomplete="username" required />
+        </div>
+
+        <div class="field">
+          <label for="adminPass">Password</label>
+          <div class="input-box">
+            <input id="adminPass" type="password" placeholder="Enter password" autocomplete="current-password" required />
+            <button type="button" class="toggle-pass" id="togglePass">Show</button>
+          </div>
+        </div>
+
+        <button type="submit" class="login-btn" id="loginBtn">Login</button>
+        <p id="statusMsg" class="message"></p>
+      </form>
+
+      <a href="/" class="back-link">← Back to Home</a>
+    </section>
+  </main>
+
+  <!-- Admin UPI Settings Modal -->
+  <div id="adminUpiModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.76);z-index:9999;align-items:center;justify-content:center;padding:20px;">
+    <div style="background:linear-gradient(145deg,rgba(13,9,28,.98),rgba(6,4,14,.98));border:1px solid rgba(255,255,255,.12);border-radius:24px;padding:28px;max-width:460px;width:100%;box-shadow:0 28px 80px rgba(0,0,0,.58);">
+      <h2 style="font-size:1.3rem;font-weight:800;color:#fff;margin-bottom:4px;">Admin Payment Settings</h2>
+      <p style="color:#BDB4DB;font-size:.9rem;margin-bottom:20px;">Configure your admin UPI for receiving payments</p>
+      <div style="margin-bottom:16px;">
+        <label style="display:block;color:#BDB4DB;font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">Admin UPI ID</label>
+        <input id="adminUpiInput" type="text" placeholder="admin@bank" style="width:100%;padding:14px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:15px;color:#fff;font-family:inherit;outline:none;" />
+        <div style="color:#8fffc0;font-size:.75rem;margin-top:8px;">Payments from users will be sent to this UPI</div>
+      </div>
+      <div style="margin-bottom:16px;">
+        <label style="display:block;color:#BDB4DB;font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">QR Code Image URL (optional)</label>
+        <input id="adminQrInput" type="text" placeholder="https://..." style="width:100%;padding:14px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:15px;color:#fff;font-family:inherit;outline:none;" />
+        <div style="color:#BDB4DB;font-size:.75rem;margin-top:8px;">URL to admin QR code image</div>
+      </div>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;">
+        <button onclick="saveAdminUpi()" style="flex:1;background:linear-gradient(135deg,#5C38FF,#8C72FF);border:none;border-radius:15px;padding:15px;color:#fff;font-weight:800;cursor:pointer;">Save Settings</button>
+        <button onclick="closeAdminUpiModal()" style="flex:1;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:15px;padding:15px;color:#fff;font-weight:800;cursor:pointer;">Cancel</button>
+      </div>
+      <div id="adminUpiStatus" style="margin-top:12px;text-align:center;min-height:20px;font-size:.85rem;"></div>
+    </div>
+  </div>
+
+  <script>
+    const form = document.getElementById('adminForm');
+    const usernameInput = document.getElementById('adminUser');
+    const passwordInput = document.getElementById('adminPass');
+    const togglePass = document.getElementById('togglePass');
+    const loginBtn = document.getElementById('loginBtn');
+    const statusMsg = document.getElementById('statusMsg');
+
+    function showMessage(message, type) {
+      statusMsg.textContent = message || '';
+      statusMsg.className = 'message ' + (type || '');
+    }
+
+    function resetButton() {
+      loginBtn.disabled = false;
+      loginBtn.textContent = 'Login';
+    }
+
+    togglePass.addEventListener('click', () => {
+      passwordInput.type = passwordInput.type === 'password' ? 'text' : 'password';
+      togglePass.textContent = passwordInput.type === 'password' ? 'Show' : 'Hide';
+    });
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const username = usernameInput.value.trim();
+      const password = passwordInput.value;
+
+      if (!username || !password) {
+        showMessage('Please enter username and password.', 'error');
+        return;
+      }
+
+      loginBtn.disabled = true;
+      loginBtn.textContent = 'Logging in...';
+      showMessage('', '');
+
+      try {
+        const response = await fetch('/admin-login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ username: username, email: username, password: password })
+        });
+
+        const text = await response.text();
+        let data = {};
+
+        if (text) {
+          try {
+            data = JSON.parse(text);
+          } catch (err) {
+            throw new Error('Server returned HTML/error instead of JSON. Check Flask terminal.');
+          }
+        }
+
+        if (!response.ok || data.success === false) {
+          const message = data.error || data.message || 'Invalid credentials. Please try again.';
+          showMessage(message, 'error');
+          resetButton();
+          return;
+        }
+
+        showMessage('Login successful. Redirecting...', 'success');
+        // clear sensitive inputs before redirect
+        passwordInput.value = '';
+        togglePass.textContent = 'Show';
+        window.location.href = data.redirect || '/adp.html';
+      } catch (err) {
+        showMessage(err.message || 'Invalid credentials. Please try again.', 'error');
+        resetButton();
+      }
+    });
+
+    // Admin UPI Settings Functions
+    function openAdminUpiModal() {
+      const modal = document.getElementById('adminUpiModal');
+      const upiInput = document.getElementById('adminUpiInput');
+      const qrInput = document.getElementById('adminQrInput');
+      const stored = JSON.parse(localStorage.getItem('adminUpiSettings') || '{}');
+      upiInput.value = stored.upi_id || '';
+      qrInput.value = stored.qr_code || '';
+      modal.style.display = 'flex';
+    }
+
+    function closeAdminUpiModal() {
+      document.getElementById('adminUpiModal').style.display = 'none';
+    }
+
+    async function saveAdminUpi() {
+      const upiId = document.getElementById('adminUpiInput').value.trim();
+      const qrCode = document.getElementById('adminQrInput').value.trim();
+      const statusDiv = document.getElementById('adminUpiStatus');
+
+      if (!upiId) {
+        statusDiv.innerHTML = '<span style="color:#ff9aa9;">Please enter admin UPI ID</span>';
+        return;
+      }
+
+      const settings = {
+        upi_id: upiId,
+        qr_code: qrCode,
+        updated_at: new Date().toISOString()
+      };
+
+      try {
+        // Save to localStorage
+        localStorage.setItem('adminUpiSettings', JSON.stringify(settings));
+
+        // Try to save to backend
+        try {
+          await fetch('/api/admin-settings', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify(settings)
+          });
+        } catch (err) {
+          console.log('Backend save failed, using localStorage only');
+        }
+
+        statusDiv.innerHTML = '<span style="color:#8fffc0;">Settings saved successfully!</span>';
+        setTimeout(() => closeAdminUpiModal(), 2000);
+      } catch (err) {
+        statusDiv.innerHTML = '<span style="color:#ff9aa9;">Error saving settings</span>';
+      }
+    }
+
+    window.addEventListener('click', (e) => {
+      const modal = document.getElementById('adminUpiModal');
+      if (e.target === modal) closeAdminUpiModal();
+    });
+  </script>
+</body>
+</html>

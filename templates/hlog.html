@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Host Login - Orbit</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root{
+      --accent:#8C72FF;
+      --accent-d:#6C47FF;
+      --accent-soft:#E2A1FF;
+      --text:#F7F4FF;
+      --text2:#E4DDF8;
+      --muted:#C9C1E4;
+      --dark-text:#241B35;
+      --dark-muted:#625A78;
+      --danger:#ff6b6b;
+      --success:#22c55e;
+      --glass:rgba(255,255,255,.10);
+      --glass-strong:rgba(255,255,255,.18);
+      --glass-border:rgba(255,255,255,.20);
+      --shadow:0 28px 80px rgba(0,0,0,.34);
+      --ease:cubic-bezier(.22,1,.36,1);
+      --spring:cubic-bezier(.34,1.56,.64,1);
+    }
+
+    *{ margin:0; padding:0; box-sizing:border-box; }
+    html, body{ height:100%; width:100%; }
+
+    body{
+      font-family:'Plus Jakarta Sans',sans-serif;
+      color:var(--text);
+      height:100vh;
+      min-height:100vh;
+      background:
+        radial-gradient(circle at 12% 16%, rgba(140,114,255,.24), transparent 28%),
+        radial-gradient(circle at 88% 12%, rgba(226,161,255,.13), transparent 30%),
+        radial-gradient(circle at 72% 84%, rgba(108,71,255,.17), transparent 32%),
+        linear-gradient(135deg,#070511 0%,#110b20 42%,#1b1230 100%);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      -webkit-font-smoothing:antialiased;
+      overflow:hidden;
+      padding:20px;
+    }
+
+    body::before{
+      content:'';
+      position:fixed;
+      inset:0;
+      background-image:
+        linear-gradient(rgba(255,255,255,.045) 1px, transparent 1px),
+        linear-gradient(90deg,rgba(255,255,255,.045) 1px, transparent 1px);
+      background-size:34px 34px;
+      mask-image:radial-gradient(circle at center, black 25%, transparent 78%);
+      pointer-events:none;
+      opacity:.70;
+    }
+
+    body::after{
+      content:'';
+      position:fixed;
+      inset:20px;
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:32px;
+      pointer-events:none;
+    }
+
+    .shell{
+      position:relative;
+      z-index:1;
+      width:min(1080px,100%);
+      height:min(720px,calc(100vh - 40px));
+      max-height:calc(100vh - 40px);
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      overflow:hidden;
+      border:1px solid var(--glass-border);
+      border-radius:34px;
+      background:rgba(255,255,255,.08);
+      box-shadow:var(--shadow);
+      backdrop-filter:blur(22px) saturate(145%);
+      animation:shellIn .9s var(--ease) both;
+    }
+
+    @keyframes shellIn{
+      from{ opacity:0; transform:scale(.99); }
+      to{ opacity:1; transform:none; }
+    }
+
+    .form-side{
+      background:linear-gradient(145deg,rgba(255,255,255,.18),rgba(255,255,255,.08));
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:34px 44px;
+      overflow:hidden;
+      backdrop-filter:blur(24px) saturate(150%);
+    }
+
+    .card{
+      width:100%;
+      max-width:390px;
+      padding:32px;
+      border-radius:28px;
+      background:rgba(255,255,255,.90);
+      border:1px solid rgba(255,255,255,.58);
+      box-shadow:0 24px 70px rgba(0,0,0,.24);
+      backdrop-filter:blur(18px) saturate(150%);
+      animation:cardIn 1s .18s var(--ease) both;
+    }
+
+    @keyframes cardIn{
+      from{ opacity:0; transform:translateX(20px); }
+      to{ opacity:1; transform:none; }
+    }
+
+    .mobile-logo{ display:none; margin-bottom:20px; }
+    .logo-svg{ width:136px; transition:transform .4s var(--spring); }
+    .logo-svg:hover{ transform:translateY(-2px) scale(1.03); }
+
+    .card-title{
+      font-size:2.25rem;
+      font-weight:800;
+      line-height:1.02;
+      letter-spacing:-.05em;
+      color:var(--dark-text);
+      margin-bottom:8px;
+    }
+
+    .card-title span{ color:var(--accent); }
+
+    .card-sub{
+      font-size:.88rem;
+      color:var(--dark-muted);
+      margin-bottom:24px;
+      line-height:1.55;
+    }
+
+    .field{
+      margin-bottom:13px;
+      opacity:0;
+      transform:translateY(10px);
+      animation:fieldIn .6s var(--ease) forwards;
+    }
+    .field:nth-child(1){ animation-delay:.35s; }
+    .field:nth-child(2){ animation-delay:.43s; }
+
+    @keyframes fieldIn{ to{ opacity:1; transform:none; } }
+
+    .field label{
+      display:block;
+      font-size:.72rem;
+      font-weight:700;
+      text-transform:uppercase;
+      letter-spacing:.06em;
+      color:#473D63;
+      margin-bottom:7px;
+      transition:color .25s var(--ease);
+    }
+
+    .field:focus-within label{ color:var(--accent); }
+    .field-wrap{ position:relative; }
+
+    .field input{
+      width:100%;
+      padding:14px 16px;
+      border:1.5px solid rgba(108,71,255,.16);
+      border-radius:16px;
+      background:rgba(255,255,255,.84);
+      font-family:inherit;
+      font-size:.92rem;
+      color:var(--dark-text);
+      outline:none;
+      transition:border-color .28s var(--ease),box-shadow .28s var(--ease),background .28s var(--ease),transform .25s var(--spring);
+    }
+
+    .field input::placeholder{ color:#9087A8; }
+
+    .field input:focus{
+      border-color:var(--accent);
+      background:#fff;
+      box-shadow:0 0 0 4px rgba(108,71,255,.13),0 10px 24px rgba(108,71,255,.10);
+      transform:translateY(-1px);
+    }
+
+    .eye-btn{
+      position:absolute;
+      right:14px;
+      top:50%;
+      transform:translateY(-50%);
+      background:none;
+      border:none;
+      cursor:pointer;
+      color:#8f8aae;
+      font-size:.84rem;
+      font-weight:700;
+      padding:2px 4px;
+      transition:color .2s var(--ease), transform .25s var(--spring);
+    }
+
+    .eye-btn:hover{
+      color:var(--accent);
+      transform:translateY(-50%) scale(1.08);
+    }
+
+    .forgot-row{
+      display:flex;
+      justify-content:flex-end;
+      margin-top:4px;
+      opacity:0;
+      animation:fieldIn .6s .50s var(--ease) forwards;
+    }
+
+    .forgot-link{
+      font-size:.78rem;
+      font-weight:700;
+      color:var(--accent);
+      text-decoration:none;
+      position:relative;
+    }
+
+    .forgot-link::after,
+    .card-foot a::after{
+      content:'';
+      position:absolute;
+      left:0;
+      bottom:-2px;
+      width:0;
+      height:1.5px;
+      background:var(--accent);
+      border-radius:999px;
+      transition:width .3s var(--ease);
+    }
+
+    .forgot-link:hover::after,
+    .card-foot a:hover::after{ width:100%; }
+
+    .btn-submit{
+      width:100%;
+      padding:15px;
+      border:none;
+      border-radius:15px;
+      background:linear-gradient(135deg,var(--accent),#7F5CFF);
+      color:#fff;
+      font-family:inherit;
+      font-size:1rem;
+      font-weight:700;
+      cursor:pointer;
+      box-shadow:0 14px 34px rgba(108,71,255,.22);
+      margin-top:18px;
+      position:relative;
+      overflow:hidden;
+      transition:transform .35s var(--spring),box-shadow .35s var(--ease),background .35s var(--ease),opacity .2s var(--ease);
+      opacity:0;
+      animation:fieldIn .6s .58s var(--ease) forwards;
+    }
+
+    .btn-submit::before{
+      content:'';
+      position:absolute;
+      top:0;
+      left:-100%;
+      width:60%;
+      height:100%;
+      background:linear-gradient(90deg,transparent,rgba(255,255,255,.18),transparent);
+      transform:skewX(-20deg);
+      transition:left .55s var(--ease);
+    }
+
+    .btn-submit:hover::before{ left:160%; }
+
+    .btn-submit:hover{
+      transform:translateY(-3px);
+      box-shadow:0 20px 44px rgba(108,71,255,.30);
+      background:linear-gradient(135deg,var(--accent-d),var(--accent));
+    }
+
+    .btn-submit:disabled{ cursor:not-allowed; opacity:.85; }
+
+    .error-text,
+    .success-text{
+      min-height:18px;
+      margin-top:10px;
+      font-size:.80rem;
+      font-weight:700;
+      line-height:1.35;
+    }
+
+    .error-text{ color:var(--danger); }
+    .success-text{ color:var(--success); }
+
+    .card-foot{
+      text-align:center;
+      margin-top:18px;
+      font-size:.84rem;
+      color:var(--dark-muted);
+      opacity:0;
+      animation:fieldIn .6s .70s var(--ease) forwards;
+    }
+
+    .card-foot a{
+      color:var(--accent);
+      font-weight:700;
+      text-decoration:none;
+      position:relative;
+    }
+
+    @keyframes shake{
+      0%,100%{ transform:translateX(0); }
+      15%{ transform:translateX(-8px); }
+      30%{ transform:translateX(7px); }
+      45%{ transform:translateX(-5px); }
+      60%{ transform:translateX(4px); }
+      75%{ transform:translateX(-2px); }
+    }
+
+    .shake{ animation:shake .5s var(--ease) !important; }
+
+    .visual{
+      background:
+        radial-gradient(circle at 18% 18%, rgba(140,114,255,.30), transparent 30%),
+        radial-gradient(circle at 82% 28%, rgba(226,161,255,.14), transparent 26%),
+        linear-gradient(180deg,rgba(20,13,36,.94) 0%,rgba(31,21,54,.90) 100%);
+      display:flex;
+      flex-direction:column;
+      position:relative;
+      overflow:hidden;
+      border-right:1px solid rgba(255,255,255,.14);
+    }
+
+    .visual::before{
+      content:'';
+      position:absolute;
+      inset:0;
+      background-image:radial-gradient(rgba(255,255,255,.05) 1px, transparent 1px);
+      background-size:28px 28px;
+      pointer-events:none;
+    }
+
+    .orb{
+      position:absolute;
+      border-radius:50%;
+      filter:blur(80px);
+      pointer-events:none;
+      z-index:1;
+    }
+
+    .orb-a{
+      width:420px;
+      height:420px;
+      top:-140px;
+      left:-120px;
+      background:rgba(108,71,255,.24);
+      animation:drift 8s infinite alternate;
+    }
+
+    .orb-b{
+      width:320px;
+      height:320px;
+      bottom:-80px;
+      right:-60px;
+      background:rgba(185,127,255,.14);
+      animation:drift 10s infinite alternate-reverse;
+    }
+
+    @keyframes drift{
+      from{ transform:translate(0,0); }
+      to{ transform:translate(25px,20px); }
+    }
+
+    .v-content{
+      position:relative;
+      z-index:2;
+      padding:46px 50px;
+      display:flex;
+      flex-direction:column;
+      height:100%;
+    }
+
+    .v-logo-svg{
+      width:142px;
+      transition:transform .4s var(--spring),filter .4s;
+    }
+
+    .v-logo-svg:hover{
+      transform:translateY(-2px) scale(1.03);
+      filter:drop-shadow(0 4px 12px rgba(180,130,255,.35));
+    }
+
+    .v-middle{
+      flex:1;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+    }
+
+    .v-headline{
+      font-size:clamp(2.05rem,3vw,3.25rem);
+      font-weight:800;
+      color:#fff;
+      line-height:1.06;
+      letter-spacing:-.04em;
+      margin-bottom:18px;
+    }
+
+    .v-headline em{
+      font-style:normal;
+      background:linear-gradient(135deg,#E2A1FF,#8C72FF);
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
+      background-clip:text;
+    }
+
+    .v-desc{
+      color:rgba(255,255,255,.76);
+      font-size:.95rem;
+      line-height:1.7;
+      max-width:340px;
+    }
+
+    @media(max-width:900px){
+      body{
+        padding:14px;
+        overflow:hidden;
+      }
+      body::after{ inset:14px; border-radius:26px; }
+      .shell{
+        grid-template-columns:1fr;
+        width:min(100%,520px);
+        height:calc(100vh - 28px);
+        max-height:calc(100vh - 28px);
+      }
+      .visual{ display:none; }
+      .form-side{ padding:24px 20px; }
+      .mobile-logo{ display:block; }
+      .card{
+        max-width:410px;
+        padding:28px 24px;
+      }
+    }
+
+    @media(max-width:560px){
+      .card{ padding:24px 20px; border-radius:24px; }
+      .card-title{ font-size:2rem; }
+      .card-sub{ margin-bottom:20px; }
+      .field input{ padding:13px 15px; }
+      .btn-submit{ padding:14px; margin-top:15px; }
+      .card-foot{ margin-top:15px; }
+    }
+
+/* ===== Orbit Ultra Dark Theme Override ===== */
+:root {
+  --accent: #6E4CFF !important;
+  --accent-d: #3F22D8 !important;
+  --accent-dark: #3F22D8 !important;
+  --accent-soft: #A995FF !important;
+  --accent-l: #DCD4F8 !important;
+  --accent-glow: rgba(98, 67, 255, 0.24) !important;
+  --text: #FFFFFF !important;
+  --text2: #E8E1FF !important;
+  --muted: #BEB3E6 !important;
+  --muted-strong: #DCD4F8 !important;
+  --dark-text: #FFFFFF !important;
+  --dark-muted: #BEB3E6 !important;
+  --bg: #020106 !important;
+  --card: rgba(255,255,255,0.045) !important;
+  --card-strong: rgba(255,255,255,0.075) !important;
+  --glass: rgba(255,255,255,0.045) !important;
+  --glass-strong: rgba(255,255,255,0.075) !important;
+  --glass-border: rgba(255,255,255,0.115) !important;
+  --surface: rgba(255,255,255,0.045) !important;
+  --surface-2: rgba(255,255,255,0.075) !important;
+  --surface-strong: rgba(5,3,13,0.88) !important;
+  --surface-deep: rgba(5,3,13,0.90) !important;
+  --border: rgba(255,255,255,0.115) !important;
+  --border-strong: rgba(180,160,255,0.28) !important;
+  --border-bright: rgba(180,160,255,0.28) !important;
+  --shadow: 0 30px 84px rgba(0,0,0,0.68) !important;
+  --shadow-sm: 0 20px 55px rgba(0,0,0,0.56) !important;
+  --shadow-md: 0 30px 84px rgba(0,0,0,0.68) !important;
+  --shadow-soft: 0 18px 46px rgba(0,0,0,0.48) !important;
+  --g-primary: linear-gradient(135deg, #A995FF 0%, #6E4CFF 44%, #3F22D8 100%) !important;
+  --g-card: linear-gradient(145deg, rgba(255,255,255,0.07), rgba(255,255,255,0.025)) !important;
+}
+
+html, body {
+  color-scheme: dark;
+}
+
+body {
+  font-family: 'Plus Jakarta Sans', sans-serif !important;
+  color: var(--text) !important;
+  background:
+    radial-gradient(circle at 12% 15%, rgba(98, 67, 255, 0.16), transparent 30%),
+    radial-gradient(circle at 82% 22%, rgba(77, 45, 210, 0.12), transparent 28%),
+    radial-gradient(circle at 50% 88%, rgba(120, 80, 220, 0.07), transparent 34%),
+    linear-gradient(135deg, #020106 0%, #05030D 38%, #080512 68%, #020105 100%) !important;
+  background-attachment: fixed !important;
+}
+
+body::before {
+  background:
+    linear-gradient(120deg, rgba(255,255,255,0.018), transparent 30%, rgba(255,255,255,0.012) 58%, transparent 80%),
+    radial-gradient(circle at 50% 0%, rgba(130,100,255,0.035), transparent 38%) !important;
+  opacity: .45 !important;
+}
+
+body::after {
+  opacity: .018 !important;
+  border-color: rgba(255,255,255,0.055) !important;
+  background-color: transparent !important;
+}
+
+nav, .nav, .sidebar, .topbar {
+  background: rgba(5,3,14,0.84) !important;
+  border-color: rgba(255,255,255,0.10) !important;
+  box-shadow: 0 24px 70px rgba(0,0,0,0.62), inset 0 1px 0 rgba(255,255,255,0.07) !important;
+}
+
+nav.scrolled, .nav.scrolled {
+  background: rgba(4,2,11,0.93) !important;
+  border-color: rgba(164,142,255,0.22) !important;
+  box-shadow: 0 26px 78px rgba(0,0,0,0.72), inset 0 1px 0 rgba(255,255,255,0.08) !important;
+}
+
+.shell, .visual, .form-side, .hero-inner::before, .feature-card, .step, .cta-card,
+.panel, .event-card, .dashboard-tile, .detail-card, .orbit-modal, .settings-card,
+.login-card, .card, .stat-card, .preview-card, .sidebar__host, .sidebar__admin,
+.dropdown, .empty-state, .chart-panel, .calendar-panel, .notif-item, .modal, .box,
+.payment-card, .refund-card, .approval-card, .table-wrap, .admin-card, .settings-panel {
+  background: linear-gradient(145deg, rgba(255,255,255,0.065), rgba(255,255,255,0.022)) !important;
+  border-color: rgba(255,255,255,0.105) !important;
+  color: var(--text) !important;
+  box-shadow: 0 22px 64px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.055) !important;
+}
+
+.visual, .hero, .cta-card {
+  background:
+    radial-gradient(circle at 18% 20%, rgba(98,67,255,0.16), transparent 32%),
+    radial-gradient(circle at 82% 30%, rgba(150,115,255,0.09), transparent 34%),
+    linear-gradient(145deg, rgba(255,255,255,0.055), rgba(255,255,255,0.018)) !important;
+}
+
+.hero, .hero-inner::before {
+  background:
+    radial-gradient(circle at 18% 20%, rgba(98,67,255,0.15), transparent 32%),
+    radial-gradient(circle at 82% 30%, rgba(130,100,255,0.08), transparent 34%),
+    rgba(255,255,255,0.035) !important;
+  border-color: rgba(255,255,255,0.10) !important;
+}
+
+.bg-blob, .blob-one, .blob-two, .blob-tl, .blob-br {
+  opacity: .42 !important;
+  filter: blur(86px) !important;
+}
+
+.bg-blob.v1, .blob-one, .blob-tl { background: rgba(98,67,255,0.22) !important; }
+.bg-blob.v2, .blob-two { background: rgba(125,92,255,0.14) !important; }
+.bg-blob.v3, .blob-br { background: rgba(77,45,210,0.16) !important; }
+
+.bg-grid, .hero::before {
+  opacity: .055 !important;
+}
+
+h1, h2, h3, h4, h5, h6, .title h1, .hero__title, .htitle, .section-title {
+  color: #FFFFFF !important;
+}
+
+p, .hero-sub, .hero__text, .section-header p, .feature-card p, .step p,
+.event-card__meta, .preview-text, .settings-subtitle, .notif-item__text,
+.sidebar__host-meta, .sidebar__admin-meta, .text-muted, label, .field label {
+  color: var(--text2) !important;
+}
+
+.nav-links a, .nav__links a, .nav-btn, .muted, .small, .help, .meta {
+  color: var(--muted-strong) !important;
+}
+
+.nav-links a:hover, .nav-links a.active, .nav__links a:hover, .nav__links a.active,
+.nav-btn:hover, .nav-btn.active {
+  color: #FFFFFF !important;
+  background: rgba(110,76,255,0.14) !important;
+  border-color: rgba(180,160,255,0.22) !important;
+}
+
+input, textarea, select, .input, .location-select {
+  background: rgba(255,255,255,0.045) !important;
+  border-color: rgba(255,255,255,0.12) !important;
+  color: #FFFFFF !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.035) !important;
+}
+
+input::placeholder, textarea::placeholder, .input::placeholder {
+  color: rgba(220,212,248,0.56) !important;
+}
+
+input:focus, textarea:focus, select:focus, .input:focus, .location-select:focus {
+  border-color: rgba(169,149,255,0.38) !important;
+  background: rgba(255,255,255,0.065) !important;
+  box-shadow: 0 0 0 4px rgba(98,67,255,0.14) !important;
+}
+
+select option {
+  background: #07040F !important;
+  color: #FFFFFF !important;
+}
+
+.btn-primary, .btn-hero, .primary-btn, .btn--primary, .snum, .avatar,
+button[type="submit"], .submit-btn {
+  background: linear-gradient(135deg, #6E4CFF, #9F86FF) !important;
+  color: #FFFFFF !important;
+  border-color: rgba(255,255,255,0.14) !important;
+  box-shadow: 0 16px 36px rgba(70,40,220,0.32), inset 0 1px 0 rgba(255,255,255,0.16) !important;
+}
+
+.btn-ghost, .btn-outline, .btn-sec, .ghost-btn, .btn--secondary,
+.category-btn, .multi-chip, .option-chip, .chip, .small-badge, .btn-cw {
+  background: rgba(255,255,255,0.045) !important;
+  color: #F4F0FF !important;
+  border-color: rgba(255,255,255,0.12) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.045) !important;
+}
+
+.btn-ghost:hover, .btn-outline:hover, .btn-sec:hover, .ghost-btn:hover,
+.btn--secondary:hover, .category-btn:hover, .category-btn.active,
+.multi-chip:hover, .option-chip:hover, .btn-cw:hover {
+  background: rgba(110,76,255,0.16) !important;
+  border-color: rgba(180,160,255,0.26) !important;
+  color: #FFFFFF !important;
+}
+
+.event-card {
+  background:
+    linear-gradient(to top, rgba(2,1,6,.98), rgba(2,1,6,.62)),
+    radial-gradient(circle at top right, rgba(98,67,255,.16), transparent 38%),
+    linear-gradient(145deg, rgba(255,255,255,0.05), rgba(255,255,255,0.018)) !important;
+}
+
+.event-card::before {
+  background: linear-gradient(to top, rgba(2,1,6,.96), rgba(2,1,6,.40)) !important;
+}
+
+table, th, td {
+  border-color: rgba(255,255,255,0.10) !important;
+}
+
+th {
+  background: rgba(255,255,255,0.045) !important;
+  color: var(--muted-strong) !important;
+}
+
+td {
+  color: var(--text2) !important;
+}
+
+footer {
+  background: rgba(3,2,8,0.62) !important;
+  border-color: rgba(255,255,255,0.07) !important;
+  color: var(--muted-strong) !important;
+}
+
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <section class="visual">
+      <div class="orb orb-a"></div>
+      <div class="orb orb-b"></div>
+
+      <div class="v-content">
+        <a href="index.html" style="text-decoration:none;">
+          <svg class="v-logo-svg" viewBox="0 0 220 60" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="lg1" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#E2A1FF"/>
+                <stop offset="45%" stop-color="#7A4DFF"/>
+                <stop offset="100%" stop-color="#4A28D9"/>
+              </linearGradient>
+            </defs>
+            <g transform="translate(4,4)">
+              <circle cx="26" cy="26" r="18" fill="none" stroke="url(#lg1)" stroke-width="8" stroke-dasharray="74 24" />
+              <circle cx="26" cy="26" r="5.5" fill="#ffffff"/>
+            </g>
+            <text x="72" y="42" font-size="35" font-weight="800" font-family="Plus Jakarta Sans" fill="#F4F1FF">Or<tspan fill="#8C72FF">bit</tspan></text>
+          </svg>
+        </a>
+
+        <div class="v-middle">
+          <h2 class="v-headline">Manage your<br>events with <em>ease.</em></h2>
+          <p class="v-desc">Access your hosting dashboard to track attendees, manage bookings, and grow your community in one place.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="form-side">
+      <div class="card" id="loginCard">
+        <a href="index.html" class="mobile-logo" style="text-decoration:none;">
+          <svg class="logo-svg" viewBox="0 0 220 60" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="mlg1" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#E2A1FF"/>
+                <stop offset="45%" stop-color="#7A4DFF"/>
+                <stop offset="100%" stop-color="#4A28D9"/>
+              </linearGradient>
+            </defs>
+            <g transform="translate(4,4)">
+              <circle cx="26" cy="26" r="18" fill="none" stroke="url(#mlg1)" stroke-width="8" stroke-dasharray="74 24" />
+              <circle cx="26" cy="26" r="5.5" fill="#6C47FF"/>
+            </g>
+            <text x="72" y="42" font-size="35" font-weight="800" font-family="Plus Jakarta Sans" fill="#1A1523">Or<tspan fill="#6C47FF">bit</tspan></text>
+          </svg>
+        </a>
+
+        <h1 class="card-title">Welcome<span> Back</span></h1>
+        <p class="card-sub">Manage your events and community from your dashboard.</p>
+
+        <form id="hostLoginForm" novalidate>
+          <div class="field">
+            <label for="email">Email Address</label>
+            <input id="email" name="email" type="email" placeholder="host@orbit.com" autocomplete="email" required />
+          </div>
+
+          <div class="field">
+            <label for="pass">Password</label>
+            <div class="field-wrap">
+              <input id="pass" name="password" type="password" placeholder="Enter your password" autocomplete="current-password" required />
+              <button class="eye-btn" type="button" id="togglePassword">Show</button>
+            </div>
+          </div>
+
+          <div class="forgot-row">
+            <a href="hfog.html" class="forgot-link">Forgot password?</a>
+          </div>
+
+          <button type="submit" class="btn-submit" id="submitBtn">Login as Host</button>
+          <p class="error-text" id="errorText"></p>
+          <p class="success-text" id="successText"></p>
+        </form>
+
+          <p class="card-foot">Don't have an account? <a href="hsign.html">Sign up</a></p>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const form = document.getElementById('hostLoginForm');
+    const card = document.getElementById('loginCard');
+    const submitBtn = document.getElementById('submitBtn');
+    const errorText = document.getElementById('errorText');
+    const successText = document.getElementById('successText');
+    const passwordInput = document.getElementById('pass');
+    const togglePassword = document.getElementById('togglePassword');
+    const API_BASE = window.location.origin.includes("5000")
+      ? window.location.origin
+      : (window.location.protocol === 'file:' ? 'https://orbit-persoanlised-event-discovery.onrender.com' : '');
+
+    function shakeCard(){
+      card.classList.remove('shake');
+      void card.offsetWidth;
+      card.classList.add('shake');
+    }
+
+    function setError(message){
+      errorText.textContent = message || '';
+      successText.textContent = '';
+    }
+
+    function setSuccess(message){
+      successText.textContent = message || '';
+      errorText.textContent = '';
+    }
+
+    /**
+     * CRITICAL: Clear old localStorage data for the email being logged in.
+     * This ensures that when logging into a host account, stale data from previous sessions
+     * or deleted accounts with the same email won't contaminate the new session.
+     */
+    function clearOldHostDataBeforeLogin(email) {
+      if (!email) return;
+      const target = email.toLowerCase();
+      
+      const knownKeys = [
+        'hostUser', 'hostEmail', 'orbitLastHostEmail', 'hostWelcomeMode',
+        'orbitSharedEvents', 'orbitSharedRegistrations', 'orbitSharedPayments',
+        'orbitSharedRefunds', 'orbitSharedNotifications', 'orbitSharedReviews',
+        'orbitEventReviews', 'orbitSharedRatings', 'orbitEventMetricOverrides',
+        'orbitOrganiserProfile', 'orbitHostData', 'orbitOrganiserEvents',
+        'orbitOrganiserNotifications', 'orbitOrganiserRegistrations', 'orbitOrganiserReviews',
+        'orbitOrganiserSettlements', 'hostLoginMode', 'hostWelcomeText', 'organiserUser'
+      ];
+      
+      knownKeys.forEach(k => {
+        try {
+          localStorage.removeItem(k);
+          localStorage.removeItem(`${k}_${target}`);
+        } catch (e) {}
+      });
+      
+      try {
+        const keysToDelete = [];
+        for (let i = localStorage.length - 1; i >= 0; i--) {
+          const key = localStorage.key(i) || '';
+          if (!key) continue;
+          
+          const keyLower = key.toLowerCase();
+          const hasEmail = keyLower.includes(target);
+          
+          const isHostScoped =
+            keyLower.startsWith('orbitorganiserevents_') ||
+            keyLower.startsWith('orbit_organiser_events_history_') ||
+            keyLower.startsWith('orbitorganizer_events_') ||
+            keyLower.startsWith('orbit_organizer_events_history_') ||
+            keyLower.startsWith('orbithostevents_') ||
+            keyLower.startsWith('orbit_host_events_history_') ||
+            keyLower.startsWith('orbitorganiserprofile_') ||
+            keyLower.startsWith('orbitorganisernotifications_') ||
+            keyLower.startsWith('orbitorganiserregistrations_') ||
+            keyLower.startsWith('orbit_organiser_registrations_history_') ||
+            keyLower.startsWith('orbit_organiser_notifications_history_') ||
+            keyLower.startsWith('orbit_organiser_reviews_history_') ||
+            keyLower.startsWith('orbitorganiserreviews_') ||
+            keyLower.startsWith('orbitorganisersettlements_') ||
+            keyLower.startsWith('orbithostsettlements_') ||
+            keyLower.startsWith('orbithostregistrations_') ||
+            keyLower.startsWith('orbithostnotifications_') ||
+            keyLower.startsWith('orbithostreviews_');
+          
+          if ((isHostScoped && hasEmail) || hasEmail) {
+            keysToDelete.push(key);
+          }
+        }
+        
+        keysToDelete.forEach(key => {
+          try {
+            localStorage.removeItem(key);
+          } catch (e) {}
+        });
+      } catch (e) {
+        console.warn('Error during pre-host-login cleanup:', e);
+      }
+    }
+
+    togglePassword.addEventListener('click', () => {
+      const isVisible = passwordInput.type === 'text';
+      passwordInput.type = isVisible ? 'password' : 'text';
+      togglePassword.textContent = isVisible ? 'Show' : 'Hide';
+    });
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      setError('');
+      setSuccess('');
+
+      const email = document.getElementById('email').value.trim().toLowerCase();
+      const password = passwordInput.value;
+
+      if (!email || !password) {
+        shakeCard();
+        setError('Please enter email and password.');
+        return;
+      }
+
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) {
+        shakeCard();
+        setError('Enter a valid email address.');
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Verifying...';
+
+      try {
+        const response = await fetch(`${API_BASE}/host-login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ email, password })
+        });
+
+        const result = await response.json().catch(() => ({}));
+
+        if (!response.ok || result.success === false) {
+          shakeCard();
+          setError(result.error || result.message || 'Invalid login credentials.');
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Login as Host';
+          return;
+        }
+
+        const host = result.host || result.account || result.organiser || {};
+        const hostData = {
+          name: host.name || host.organiser_name || host.username || 'Organiser',
+          email: (host.email || email).toLowerCase(),
+          phone: host.phone || '',
+          organization: host.organization || host.organisation || '',
+          role: 'host'
+        };
+
+        // CRITICAL: Clear old localStorage data BEFORE setting new host session data
+        clearOldHostDataBeforeLogin(hostData.email);
+
+        localStorage.setItem('hostUser', JSON.stringify(hostData));
+        localStorage.setItem('organiserUser', JSON.stringify(hostData));
+        localStorage.setItem('hostWelcomeMode', 'login');
+        localStorage.setItem('hostLoginMode', 'login');
+        localStorage.setItem('hostWelcomeText', `Welcome back ${hostData.name}`);
+
+        setSuccess(`Welcome back ${hostData.name}`);
+        submitBtn.style.background = 'linear-gradient(135deg,#22c55e,#16a34a)';
+        submitBtn.style.boxShadow = '0 14px 34px rgba(34,197,94,0.28)';
+        submitBtn.textContent = `Welcome back ${hostData.name}`;
+
+        window.location.href = `${API_BASE}/organiser.html?mode=login&email=${encodeURIComponent(hostData.email)}`;
+      } catch (error) {
+        console.error(error);
+        shakeCard();
+        setError('Unable to connect to Flask. Make sure app.py is running.');
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Login as Host';
+      }
+    });
+  </script>
+</body>
+</html>
