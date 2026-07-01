@@ -859,7 +859,7 @@ const statusMessage = document.getElementById("statusMessage");
 const emailInput = document.getElementById("email");
 const nameInput = document.getElementById("name");
 
-const API_BASE = window.location.origin;
+const API_BASE = window.location.protocol === 'file:' ? 'http://127.0.0.1:5000' : window.location.origin;
 
 function setStatus(message, type = "") {
   statusMessage.textContent = message;

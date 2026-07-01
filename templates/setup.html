@@ -1214,7 +1214,7 @@ button:disabled {
   </div>
 
   <script>
-    const API_BASE = window.location.origin;
+    const API_BASE = window.location.protocol === 'file:' ? 'http://127.0.0.1:5000' : window.location.origin;
     const SETUP_SAVE_URL = `${API_BASE}/save-setup`;
     const PROFILE_URL = `${API_BASE}/profile.html`;
     const totalSteps = 6;
